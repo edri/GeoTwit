@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Leaflet Test-Application</title>
+        <link rel="stylesheet" href="css/style.css" />
+        <link rel="stylesheet" href="lib/leaflet/leaflet.css" />
+        <script src="lib/leaflet/leaflet.js"></script>
+
+        <script>
+            window.onload = function() {
+                console.log("Loaded.");
+
+                swissMap = L.map('swissMap').setView([46.783, 8.152], 8);
+
+                L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+                    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; <a href="http://mapbox.com">Mapbox</a>',
+                    maxZoom: 20,
+                    id: 'edri.pjdcfni6',
+                    accessToken: 'pk.eyJ1IjoiZWRyaSIsImEiOiJjaW1tN2FhM3UwMDJheDdrbGI4MXJnbTZ0In0.upezaa8cZbUkDRoHRwInMA'
+                }).addTo(swissMap);
+            }
+
+            function addMarker() {
+                L.marker([document.getElementById('markerCoordinatesX').value, document.getElementById('markerCoordinatesY').value]).addTo(swissMap);
+            }
+
+            function addCircle() {
+                L.circle([document.getElementById('circleCoordinatesX').value, document.getElementById('circleCoordinatesY').value], (document.getElementById('circleRadius').value * 1000), {
+                    color: 'red',
+                    fillColor: '#f03',
+                    fillOpacity: 0.5
+                }).addTo(swissMap);
+            }
+        </script>
+    </head>
+    <body>
+        <h1>Welcome the the Leaflet test-application!</h1>
+
+        Here is a map of the Switzerland:
+        <div id="swissMap"></div>
+
+        <p>
+            <input id="markerCoordinatesX" placeholder="X coordinate" type="text" value="46.778678" />
+            <input id="markerCoordinatesY" placeholder="Y coordinate" type="text" value="6.658285" />
+            <input type="button" onClick="addMarker()" value="Add a marker" />
+        </p>
+
+        <p>
+            <input id="circleCoordinatesX" placeholder="X coordinate" type="text" value="46.778678" />
+            <input id="circleCoordinatesY" placeholder="Y coordinate" type="text" value="6.658285" />
+            <input id="circleRadius" placeholder="Radius in km" type="text" value="50" />
+            <input type="button" onClick="addCircle()" value="Add a circle" />
+        </p>
+    </body>
+</html>
