@@ -1,2 +1,2 @@
 # GeoTwit
-More information will come soon!
+More information coming soon!
