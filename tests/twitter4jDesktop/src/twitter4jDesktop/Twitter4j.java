@@ -54,11 +54,14 @@ public class Twitter4j {
       //mainExecution.getAndShowTweets("yverdon");
       
       // Switzerland's coordinates, format {longitude, latitude}
-      double[] southwestCoordinates = {5.956085, 45.817851};
-      double[] northeastCoordinates = {10.489254, 47.808454};
+      //double[] southwestCoordinates = {5.956085, 45.817851};
+      //double[] northeastCoordinates = {10.489254, 47.808454};
       // USA's coordinates
       //double[] southwestCoordinates = {-124.411668, 24.957884};
       //double[] northeastCoordinates = {-66.888435, 49.001895};
+      // UK's coordinates
+      double[] southwestCoordinates = {-8.306947, 49.696022};
+      double[] northeastCoordinates = {1.801128, 59.258967};
       
       mainExecution.readStreaming(readTags(), southwestCoordinates, northeastCoordinates, false);
    }

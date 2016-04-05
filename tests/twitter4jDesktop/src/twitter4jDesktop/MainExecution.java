@@ -203,13 +203,14 @@ public class MainExecution {
             if (geoLocation != null) {
                ++nbTweetsWithLocation;
                
-               if (showDetails) {
-                  double longitude = geoLocation.getLongitude();
-                  double latitude = geoLocation.getLatitude();
+               double longitude = geoLocation.getLongitude();
+               double latitude = geoLocation.getLatitude();
 
-                  if (longitude >= southwestCoordinates[0] && longitude <= northeastCoordinates[0] &&
-                      latitude >= southwestCoordinates[1] && latitude <= northeastCoordinates[1]) {
-                     ++nbTweetsWithRightLocation;
+               if (longitude >= southwestCoordinates[0] && longitude <= northeastCoordinates[0] &&
+                   latitude >= southwestCoordinates[1] && latitude <= northeastCoordinates[1]) {
+                  ++nbTweetsWithRightLocation;
+
+                  if (showDetails) {
                      System.out.println(longitude + "," + latitude + " => " + status.getUser().getName() + " : " + status.getText());
                   }
                }
@@ -252,9 +253,9 @@ public class MainExecution {
       
       TwitterStream twitterStream = new TwitterStreamFactory(configuration).getInstance();
       twitterStream.addListener(listener);
-      FilterQuery fq = new FilterQuery();
-      double[][] location = {southwestCoordinates, northeastCoordinates};
-      fq.locations(location);
+      FilterQuery fq = new FilterQuery(queryString);
+      //double[][] location = {southwestCoordinates, northeastCoordinates};
+      //fq.locations(location);
       twitterStream.filter(fq);
    }
    
