@@ -1,0 +1,93 @@
+// Check if WebSocket is supported by the user's browser and if connection has not already been initialized.
+if ("WebSocket" in window) {
+    // Will contain the access token grant-URL.
+    var url = null;
+
+    console.log("Init socket...");
+    connection = new WebSocket("ws://localhost:8080/twitter4jWeb/");
+
+    connection.onopen = function() {
+        console.log("Socket connection successfully opened!");
+    };
+
+    connection.onclose = function() {
+        console.log("Socket connection closed.");
+        alert("WebSocket connection lost, please check that the Java's websocket-server is running and refresh the page.")
+        document.getElementById("streamingBtn").disabled = true;
+    };
+
+    // Log errors.
+    connection.onerror = function(error) {
+        alert("A websocket error occured, please check that the Java's websocket-server is running and refresh the page.");
+        document.getElementById("streamingBtn").disabled = true;
+    };
+
+    // Log messages from the server and deal with each type of possible message.
+    connection.onmessage = function(e) {
+        console.log("Receive socket message from server: " + e.data);
+        var data = JSON.parse(e.data);
+
+        switch(data.message) {
+            case "incorrectPin":
+                alert("The pin you entered is incorrect, please retry.");
+            // Ask the user to get the application's PIN and send it to the Java server.
+            case "askAccessToken":
+                var pin = null;
+
+                // Get the URL if not null (is null when the user typed a wrong pin).
+                if (data.url != undefined) {
+                    url = data.url;
+                }
+
+                do {
+                    pin = window.prompt("Open the following URL, grant access to your account and enter the received PIN:\n" + url);
+                } while (!pin)
+
+                connection.send(JSON.stringify({
+                    message: "accessTokenPin",
+                    pin: pin
+                }));
+
+                break;
+            // Received if the server's token and configuration's initializations
+            // has been successful.
+            case "successfulInit":
+                document.getElementById("streamingBtn").disabled = true;
+                document.getElementById("streamingBtn").style.display = "none";
+                document.getElementById("waitSpan").style.display = "none";
+                document.getElementById("stopStreamingBtn").disabled = false;
+                document.getElementById("stopStreamingBtn").style.display = "block";
+                document.getElementById("tweetsDetails").style.visibility = "visible";
+                break;
+            // Occurs when new Tweet's data are coming from the server.
+            case "newTweet":
+                // Add the new Tweet in the map.
+                addTweetOnMap(data.latitude, data.longitude);
+                // Add the new Tweet in the Tweets list.
+                var divTweet = document.createElement("div");
+                divTweet.innerHTML = data.user + " : " + data.content + "<br/>";
+                divTweet.className = "tweetInfo";
+                var child = document.getElementById("tweetsDetailsTitle");
+                child.parentNode.insertBefore(divTweet, child.nextSibling);
+                break;
+        }
+    };
+    i = 0
+    // Send a "start streaming" socket to the server so it can initialize the process.
+    function sendStartStreamingSocket() {
+        console.log("Sending \"start streaming\" socket...");
+
+        document.getElementById("streamingBtn").disabled = true;
+        document.getElementById("waitSpan").style.display = "block";
+
+        connection.send(JSON.stringify({
+            message: "startStreaming"
+        }));
+
+        setTimeout(function() {
+
+        }, 10000);
+    }
+} else {
+    alert("Your web browser does not support WebSocket implementation, please use a recent version of either Firefox or Chrome.")
+}

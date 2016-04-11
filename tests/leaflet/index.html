@@ -5,54 +5,13 @@
         <link rel="stylesheet" href="css/style.css" />
         <link rel="stylesheet" href="lib/leaflet/leaflet.css" />
         <script src="lib/leaflet/leaflet.js"></script>
-
-        <script>
-            window.onload = function() {
-                console.log("Loaded.");
-
-                swissMap = L.map('swissMap').setView([46.783, 8.152], 8);
-
-                L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-                    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; <a href="http://mapbox.com">Mapbox</a>',
-                    maxZoom: 20,
-                    id: 'edri.pjdcfni6',
-                    accessToken: 'pk.eyJ1IjoiZWRyaSIsImEiOiJjaW1tN2FhM3UwMDJheDdrbGI4MXJnbTZ0In0.upezaa8cZbUkDRoHRwInMA'
-                }).addTo(swissMap);
-
-                swissMap.on('click', function(e) {
-                    document.getElementById('circleCoordinatesX').value = e.latlng.lat;
-                    document.getElementById('circleCoordinatesY').value = e.latlng.lng;
-                    L.marker([e.latlng.lat, e.latlng.lng]).addTo(swissMap);
-                });
-            }
-
-            function addCircle() {
-                L.circle([document.getElementById('circleCoordinatesX').value, document.getElementById('circleCoordinatesY').value], (document.getElementById('circleRadius').value * 1000), {
-                    color: 'red',
-                    fillColor: '#f03',
-                    fillOpacity: 0.5
-                }).addTo(swissMap);
-            }
-
-            function addRectangle() {
-                var bounds = [[document.getElementById('squareSWCoordinatesX').value, document.getElementById('squareSWCoordinatesY').value],
-                              [document.getElementById('squareNECoordinatesX').value, document.getElementById('squareNECoordinatesY').value]];
-
-                L.rectangle(bounds, {color: "#ff7800", weight: 1}).addTo(swissMap);
-
-                // Zoom the map to the rectangle bounds.x
-                swissMap.fitBounds(bounds);
-            }
-
-            function addMarker() {
-                L.marker([document.getElementById('markerCoordinatesX').value, document.getElementById('markerCoordinatesY').value]).addTo(swissMap);
-            }
-        </script>
+        <script src="js/map.js"></script>
     </head>
     <body>
         <h1>Welcome the the Leaflet test-application!</h1>
 
         Here is a map of the Switzerland:
+        <!-- This div will contain the map. -->
         <div id="swissMap"></div>
 
         <p>

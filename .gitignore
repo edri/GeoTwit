@@ -1,2 +1,5 @@
 /tests/twitter4jDesktop/nbproject/private/
 /tests/twitter4jDesktop/build/
+/tests/twitter4jWeb/nbproject/private/
+/tests/twitter4jWeb/build/
+/tests/leafletAndTwitter4J/twitter4jWeb/dist/
