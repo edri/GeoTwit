@@ -40,9 +40,24 @@ public class Streaming {
    private AccessToken accessToken;
    private RequestToken requestToken;
    private Configuration configuration;
+   private TwitterStream twitterStream;
    private long nbReceivedTweets = 0;
    private long nbTweetsWithLocation = 0;
    private long nbTweetsWithRightLocation = 0;
+   
+   /**
+    * Reset all application's preferences (the stored token - used for debugging).
+    */
+   public void resetPreferences() {
+      Preferences prefs = Preferences.userNodeForPackage(Streaming.class);
+      prefs.remove("token");
+      prefs.remove("tokenSecret");
+   }
+   
+   public void stopStreaming() {
+      twitterStream.clearListeners();
+      twitterStream.shutdown();
+   }
    
    /**
     * Store the given Twitter API's access token in the application's preferences so it will
@@ -239,7 +254,7 @@ public class Streaming {
          }
       };
       
-      TwitterStream twitterStream = new TwitterStreamFactory(configuration).getInstance();
+      twitterStream = new TwitterStreamFactory(configuration).getInstance();
       twitterStream.addListener(listener);
       FilterQuery fq = new FilterQuery(queryString);
       //double[][] location = {southwestCoordinates, northeastCoordinates};
@@ -277,6 +292,6 @@ public class Streaming {
     * Reset the current numbers of received Tweets.
     */
    public void resetData() {
-      nbReceivedTweets = nbTweetsWithLocation = 0;
+      nbReceivedTweets = nbTweetsWithLocation = nbTweetsWithRightLocation = 0;
    }
 }

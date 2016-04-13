@@ -3,6 +3,13 @@ if ("WebSocket" in window) {
     // Will contain the access token grant-URL.
     var url = null;
 
+    function resetInterface() {
+        document.getElementById("streamingBtn").style.display = "block";
+        document.getElementById("waitSpan").style.display = "none";
+        document.getElementById("stopStreamingBtn").disabled = true;
+        document.getElementById("stopStreamingBtn").style.display = "none";
+    }
+
     console.log("Init socket...");
     connection = new WebSocket("ws://localhost:8080/twitter4jWeb/");
 
@@ -13,6 +20,7 @@ if ("WebSocket" in window) {
     connection.onclose = function() {
         console.log("Socket connection closed.");
         alert("WebSocket connection lost, please check that the Java's websocket-server is running and refresh the page.")
+        resetInterface();
         document.getElementById("streamingBtn").disabled = true;
     };
 
@@ -57,7 +65,7 @@ if ("WebSocket" in window) {
                 document.getElementById("waitSpan").style.display = "none";
                 document.getElementById("stopStreamingBtn").disabled = false;
                 document.getElementById("stopStreamingBtn").style.display = "block";
-                document.getElementById("tweetsDetails").style.visibility = "visible";
+                document.getElementById("tweetsDetailsTr").style.visibility = "visible";
                 break;
             // Occurs when new Tweet's data are coming from the server.
             case "newTweet":
@@ -72,21 +80,31 @@ if ("WebSocket" in window) {
                 break;
         }
     };
-    i = 0
+
     // Send a "start streaming" socket to the server so it can initialize the process.
     function sendStartStreamingSocket() {
         console.log("Sending \"start streaming\" socket...");
 
         document.getElementById("streamingBtn").disabled = true;
-        document.getElementById("waitSpan").style.display = "block";
+        document.getElementById("waitSpan").style.visibility = "visible";
 
         connection.send(JSON.stringify({
             message: "startStreaming"
         }));
+    }
 
-        setTimeout(function() {
+    // Send a "stop streaming" socket to the server so it can stop the current
+    // streaming.
+    function stopStreaming() {
+        console.log("Sending \"stop streaming\" socket...");
 
-        }, 10000);
+        resetInterface();
+        document.getElementById("waitingForTweetsText").style.display = "none";
+        document.getElementById("streamingBtn").disabled = false;
+
+        connection.send(JSON.stringify({
+            message: "stopStreaming"
+        }));
     }
 } else {
     alert("Your web browser does not support WebSocket implementation, please use a recent version of either Firefox or Chrome.")

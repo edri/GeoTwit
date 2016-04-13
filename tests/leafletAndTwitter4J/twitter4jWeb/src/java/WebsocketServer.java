@@ -29,6 +29,9 @@ public class WebsocketServer {
 
    public WebsocketServer() throws TwitterException, IOException {
       WebsocketServer.streaming = new Streaming();
+      // Reset application's preferences to ask the user to get a new token's PIN
+      // (used for debugging).
+      //streaming.resetPreferences();
    }
    
    public static void sendMessage(String message) throws IOException {
@@ -72,10 +75,14 @@ public class WebsocketServer {
 
          switch(messageType) {
             case "startStreaming":
+               // Initialize application's access token.
                streaming.initializeToken();
                break;
             case "accessTokenPin":
                streaming.createApplicationAccessToken(data.getString("pin"));
+               break;
+            case "stopStreaming":
+               streaming.stopStreaming();
                break;
          }
       }

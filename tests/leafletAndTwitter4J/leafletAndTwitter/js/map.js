@@ -1,6 +1,14 @@
 window.onload = function() {
+    // Sometime browsers keep button's status in cache so we have to be sure the
+    // Streaming button is enabled.
+    document.getElementById("streamingBtn").disabled = false;
+    document.getElementById("stopStreamingBtn").disabled = true;
+
     // Set the default map's values (coordinates and zoom's value).
-    swissMap = L.map('swissMap').setView([46.783, 8.152], 8);
+    // SWISS MAP
+    //map = L.map('map').setView([46.783, 8.152], 8);
+    // USA MAP
+    map = L.map('map').setView([39.155, -97.822], 4);
 
     // Load the map's imagery with Mapbox.
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
@@ -8,13 +16,13 @@ window.onload = function() {
         maxZoom: 20,
         id: 'edri.pjdcfni6',
         accessToken: 'pk.eyJ1IjoiZWRyaSIsImEiOiJjaW1tN2FhM3UwMDJheDdrbGI4MXJnbTZ0In0.upezaa8cZbUkDRoHRwInMA'
-    }).addTo(swissMap);
+    }).addTo(map);
 
     // Catch the "click" event on the map, save the coordinates and add a marker on the map.
-    swissMap.on('click', function(e) {
+    map.on('click', function(e) {
         document.getElementById('circleCoordinatesX').value = e.latlng.lat;
         document.getElementById('circleCoordinatesY').value = e.latlng.lng;
-        L.marker([e.latlng.lat, e.latlng.lng]).addTo(swissMap);
+        L.marker([e.latlng.lat, e.latlng.lng]).addTo(map);
     });
 }
 
@@ -24,7 +32,7 @@ function addCircle() {
         color: 'red',
         fillColor: '#f03',
         fillOpacity: 0.5
-    }).addTo(swissMap);
+    }).addTo(map);
 }
 
 // This function draws a rectangle on the map by the user's inputs.
@@ -32,17 +40,17 @@ function addRectangle() {
     var bounds = [[document.getElementById('squareSWCoordinatesX').value, document.getElementById('squareSWCoordinatesY').value],
                   [document.getElementById('squareNECoordinatesX').value, document.getElementById('squareNECoordinatesY').value]];
 
-    L.rectangle(bounds, {color: "#ff7800", weight: 1}).addTo(swissMap);
+    L.rectangle(bounds, {color: "#ff7800", weight: 1}).addTo(map);
 
     // Zoom the map to the rectangle bounds.x.
-    swissMap.fitBounds(bounds);
+    map.fitBounds(bounds);
 }
 
 // Add a marken to the map by the user's inputs.
 function addMarker() {
-    L.marker([document.getElementById('markerCoordinatesX').value, document.getElementById('markerCoordinatesY').value]).addTo(swissMap);
+    L.marker([document.getElementById('markerCoordinatesX').value, document.getElementById('markerCoordinatesY').value]).addTo(map);
 }
 
 function addTweetOnMap(lat, long) {
-    L.marker([lat, long]).addTo(swissMap);
+    L.marker([lat, long]).addTo(map);
 }
