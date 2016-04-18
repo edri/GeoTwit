@@ -31,7 +31,7 @@ public class WebsocketServer {
       WebsocketServer.streaming = new Streaming();
       // Reset application's preferences to ask the user to get a new token's PIN
       // (used for debugging).
-      //streaming.resetPreferences();
+      streaming.resetPreferences();
    }
    
    public static void sendMessage(String message) throws IOException {
