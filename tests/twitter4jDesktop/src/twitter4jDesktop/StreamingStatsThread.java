@@ -16,10 +16,10 @@ import java.util.logging.Logger;
 public class StreamingStatsThread extends Observable implements Runnable {
    private final String queryString;
    private final long timeBetweenStats;
-   private final MainExecution mainExecution;
+   private final Streaming mainExecution;
    private final Thread thread;
    
-   public StreamingStatsThread(String queryString, long timeBetweenStats, MainExecution mainExecution) {
+   public StreamingStatsThread(String queryString, long timeBetweenStats, Streaming mainExecution) {
       this.queryString = queryString;
       this.timeBetweenStats = timeBetweenStats;
       this.mainExecution = mainExecution;      

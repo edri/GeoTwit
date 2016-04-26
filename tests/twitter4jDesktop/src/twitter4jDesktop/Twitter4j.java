@@ -15,32 +15,7 @@ import twitter4j.TwitterException;
  *
  * @author miguel
  */
-public class Twitter4j {
-   /**
-    * Read user's input and return the Twitter's tags the user want to search.
-    * @return the Twitter's tags the user want to search
-    * @throws IOException 
-    */
-   public static String readTags() throws IOException {
-      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-      boolean success = false;
-      String filter = "";
-      
-      do {
-         System.out.print("Please enter some tags to search: ");
-         
-         filter = br.readLine();
-         
-         /*if (filter.isEmpty()) {
-            System.out.println("Please enter at least one character.");
-         } else {*/
-            success = true;
-         //}
-      } while(!success);
-      
-      return filter;
-   }
-   
+public class Twitter4j {   
    /**
     * @param args the command line arguments
     * @throws twitter4j.TwitterException
@@ -49,7 +24,7 @@ public class Twitter4j {
     * @throws java.util.concurrent.ExecutionException
     */
    public static void main(String[] args) throws TwitterException, IOException, InterruptedException, ExecutionException {
-      MainExecution mainExecution = new MainExecution();
+      Streaming mainExecution = new Streaming();
       
       //mainExecution.getAndShowTweets("yverdon");
       
@@ -62,7 +37,15 @@ public class Twitter4j {
       // UK's coordinates
       //double[] southwestCoordinates = {-8.306947, 49.696022};
       //double[] northeastCoordinates = {1.801128, 59.258967};
+      // Italy coordinates
+      //double[] southwestCoordinates = {6.6357421875, 47.09805038936004};
+      //double[] northeastCoordinates = {18.6328125, 36.577893995157474};
       
-      mainExecution.readStreaming(readTags(), southwestCoordinates, northeastCoordinates, true);
+      // Read user's entered tags.
+      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+      System.out.print("Please enter some tags to search: ");
+      String tags = br.readLine();
+      
+      mainExecution.readStreaming(tags, southwestCoordinates, northeastCoordinates, false);
    }
 }

@@ -3,6 +3,20 @@ if ("WebSocket" in window) {
     // Will contain the access token grant-URL.
     var url = null;
 
+    // Return current time as a "[HH:MM:SS]" format.
+    function getCurrentTime() {
+        var d = new Date();
+        var h = d.getHours();
+        var m = d.getMinutes();
+        var s = d.getSeconds();
+
+        if (h < 10) h = "0" + h;
+        if (m < 10) m = "0" + m;
+        if (s < 10) s = "0" + s;
+
+        return "[" + h + ":" + m + ":" + s + "]";
+    }
+
     function resetInterface() {
         document.getElementById("streamingBtn").style.display = "block";
         document.getElementById("waitSpan").style.display = "none";
@@ -66,6 +80,7 @@ if ("WebSocket" in window) {
                 document.getElementById("stopStreamingBtn").disabled = false;
                 document.getElementById("stopStreamingBtn").style.display = "block";
                 document.getElementById("tweetsDetailsTr").style.visibility = "visible";
+                document.getElementById("waitingForTweetsText").textContent = getCurrentTime() + " Waiting for Tweets...";
                 break;
             // Occurs when new Tweet's data are coming from the server.
             case "newTweet":
@@ -73,7 +88,15 @@ if ("WebSocket" in window) {
                 addTweetOnMap(data.latitude, data.longitude);
                 // Add the new Tweet in the Tweets list.
                 var divTweet = document.createElement("div");
-                divTweet.innerHTML = data.user + " : " + data.content + "<br/>";
+                divTweet.innerHTML = getCurrentTime() + " " + data.user + " : " + data.content + "<br/>";
+                divTweet.className = "tweetInfo";
+                var child = document.getElementById("tweetsDetailsTitle");
+                child.parentNode.insertBefore(divTweet, child.nextSibling);
+                break;
+            case "stats":
+                // Add the new stats messages in the Tweets list.
+                var divTweet = document.createElement("div");
+                divTweet.innerHTML = getCurrentTime() + " " + data.content1 + "<br/>" + getCurrentTime() + " " + data.content2 + "<br/><br/>";
                 divTweet.className = "tweetInfo";
                 var child = document.getElementById("tweetsDetailsTitle");
                 child.parentNode.insertBefore(divTweet, child.nextSibling);

@@ -103,7 +103,7 @@ public class Streaming {
       WebsocketServer.sendMessage(jsonMessage.toString());
             
       // Start streaming's reading.
-      readStreaming("job", true);
+      readStreaming("scala", false);
    }
    
    /**
@@ -182,7 +182,7 @@ public class Streaming {
       //double[] southwestCoordinates = {-8.306947, 49.696022};
       //double[] northeastCoordinates = {1.801128, 59.258967};
       
-      StreamingStatsThread sst = new StreamingStatsThread(queryString, 30 * 1000, this);
+      StreamingStatsThread sst = new StreamingStatsThread(queryString, 300 * 1000, this);
       
       StatusListener listener = new StatusListener() {
          @Override

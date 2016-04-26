@@ -32,7 +32,7 @@ import twitter4j.conf.ConfigurationBuilder;
  *
  * @author miguel
  */
-public class MainExecution {
+public class Streaming {
    public final String CONSUMER_KEY = "zvPuOcouiYZTC1SX8oxxFUJlF";
    public final String CONSUMER_SECRET = "DtKSu11TQeqly23aJbpjNtGM2KtQoz71zBCPhLNt76I6daJOXV";
    public Twitter twitter = TwitterFactory.getSingleton();
@@ -149,7 +149,7 @@ public class MainExecution {
       return token;
    }
    
-   public MainExecution() throws TwitterException, IOException {
+   public Streaming() throws TwitterException, IOException {
       // First get a Twitter's access token for the running application.
       accessToken = getApplicationAccessToken();
       // Then initialize and build the configuration builder, which contains all
@@ -289,6 +289,6 @@ public class MainExecution {
     * Reset the current numbers of received Tweets.
     */
    public void resetData() {
-      nbReceivedTweets = nbTweetsWithLocation = 0;
+      nbReceivedTweets = nbTweetsWithLocation = nbTweetsWithRightLocation = 0;
    }
 }

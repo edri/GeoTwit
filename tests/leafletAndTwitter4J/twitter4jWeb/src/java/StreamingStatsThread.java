@@ -5,9 +5,12 @@
  */
 
 
+import java.io.IOException;
 import java.util.Observable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.json.Json;
+import javax.json.JsonObject;
 
 /**
  *
@@ -45,15 +48,26 @@ public class StreamingStatsThread extends Observable implements Runnable {
             // Calculate and display stats.
             percentsGeoloc = Math.round(nbTweetsWithGeoloc * (100.0 / nbReceivedTweets) * 100) / (double)100;
             percentRightGeoloc = Math.round(nbTweetsWithRightGeoloc * (100.0 / nbReceivedTweets) * 100) / (double)100;
-            System.out.println("I received " + nbReceivedTweets + " Tweets in " + 
+            String content1 = "I received " + nbReceivedTweets + " Tweets in " + 
                                timeBetweenStats / 1000 + " seconds" + ", including " + 
                                nbTweetsWithGeoloc + " ones WITH geolocalion tags and " + 
-                               nbTweetsWithRightGeoloc + " ones with the wanted geolocation.");
-            System.out.println("This means " + percentsGeoloc + " % of the received " + 
+                               nbTweetsWithRightGeoloc + " ones with the wanted geolocation.";
+            String content2 = "This means " + percentsGeoloc + " % of the received " + 
                                "Tweets with the \"" + queryString + "\" tag(s) owned a" +
                                " geolocation tag and " + percentRightGeoloc + " % " + 
-                               "contained the desired location.");
-         } catch (InterruptedException ex) {
+                               "contained the desired location.";
+            
+            System.out.println(content1);
+            System.out.println(content2);
+            
+            // Send the new Tweet's data to the client.
+            JsonObject jsonMessage = Json.createObjectBuilder()
+                     .add("message", "stats")
+                     .add("content1", content1)
+                     .add("content2", content2)
+                     .build();
+            WebsocketServer.sendMessage(jsonMessage.toString());
+         } catch (InterruptedException | IOException ex) {
             Logger.getLogger(StreamingStatsThread.class.getName()).log(Level.SEVERE, null, ex);
          }
       }
