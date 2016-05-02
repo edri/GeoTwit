@@ -1,0 +1,15 @@
+{
+  "name": "leaflet_borders",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Miguel Santamaria",
+  "license": "MIT",
+  "dependencies": {
+    "which-country": "^1.0.0",
+    "world-countries": "^1.7.8"
+  }
+}
