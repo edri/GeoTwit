@@ -1,0 +1,47 @@
+// ================================== LAYOUT ===================================
+@font-face {
+   font-family: kGLifeisMessy;
+   src: url("../fonts/KGLifeisMessy.ttf");
+}
+
+
+
+// ================================= HOME PAGE =================================
+.home-page {
+    background: rgba(0, 0, 0, 0) url("../images/home3.jpg") no-repeat center 0 / cover;
+    height: 100vh;
+    text-align: center;
+    width: 100%;
+}
+
+.helper {
+    display: inline-block;
+    height: 60%;
+    vertical-align: middle;
+}
+
+@tmp: #253082;
+
+.home-title {
+    color: #286090;
+    font-family: kGLifeisMessy;
+    font-size: 8em;
+    text-shadow: 0px 0px 5px white;
+    /*text-shadow: 1px 0 0 @tmp, -1px 0 0 @tmp, 0 1px 0 @tmp, 0 -1px 0 @tmp, 1px 1px @tmp, -1px -1px 0 @tmp, 1px -1px 0 @tmp, -1px 1px 0 @tmp;*/
+}
+
+.get-started-button {
+    bottom: 5em;
+    box-shadow: 0px 0px 2px black;
+    font-size: 1.5em;
+    left: 0;
+    margin-left: 50%;
+    padding: 6px 1em;
+    position: absolute;
+    transform: translateX(-50%);
+
+    &:hover, &:active, &:focus {
+        border-color: white;
+        outline: 0;
+    }
+}
