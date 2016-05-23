@@ -10,7 +10,8 @@ libraryDependencies ++= Seq(
   jdbc,
   cache,
   ws,
-  "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test
+  "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test,
+  "org.twitter4j" % "twitter4j-core" % "4.0.4"
 )
 
 resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"

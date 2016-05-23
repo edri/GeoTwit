@@ -1,3 +1,5 @@
+@(error: Option[String])
+
 @*
  * Call the `main` template with two arguments. The first
  * argument is a `String` with the title of the page, the second
@@ -9,7 +11,19 @@
         <div class="home-title">
             GeoTwit
         </div>
-        <span class="home-slogan">Search for Tweets, pin them on a map and analyze data with real-time tools!</span>
-        <a class="btn btn-primary get-started-button">Get Started</a>
+        <div class="home-slogan">Search for Tweets and visualize real-time activities on a map!</div>
+        <a class="btn btn-primary get-started-button" href="@routes.HomeController.auth">Get Started</a>
+
+        @if(error.isDefined) {
+            <div class="panel panel-danger home-error">
+                <div class="panel-heading">
+                    @error.get match {
+                        case "errorGettingApplicationToken" => {An error occurred when trying to connect to Twitter, please retry in a while.}
+                        case "errorDenied"                  => {You denied the access to your account so you cannot access the web site's tools.}
+                        case _                              => {An error occurred, please retry in a while.}
+                    }
+                </div>
+            </div>
+        }
     </div>
 }
