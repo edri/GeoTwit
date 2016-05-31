@@ -1,11 +1,13 @@
 @(error: Option[String])
 
 @*
- * Call the `main` template with two arguments. The first
+ * Call the `mainIndex` template with two arguments. The first
  * argument is a `String` with the title of the page, the second
  * argument is an `Html` object containing the body of the page.
+ * The 'main' template is used to properly format all pages but
+ * the index, which is differently presented.
  *@
-@main("Welcome to GeoTwit!") {
+@mainIndex("Welcome to GeoTwit!") {
     <div class="home-page">
         <span class="helper"></span>
         <div class="home-title">

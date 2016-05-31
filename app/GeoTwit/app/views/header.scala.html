@@ -1,0 +1,18 @@
+@(title: String)
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        @* Here's where we render the page title `String`. *@
+        <title>@title</title>
+        <link href="@routes.Assets.versioned("images/favicon.png")" rel="shortcut icon" type="image/png">
+
+        <link href="@routes.Assets.versioned("lib/bootstrap/css/bootstrap.css")" rel="stylesheet">
+        <link href="@routes.Assets.versioned("lib/leaflet/leaflet.css")" rel="stylesheet">
+        <link href="@routes.Assets.versioned("stylesheets/style.css")" media="screen" rel="stylesheet">
+
+        <script src="@routes.Assets.versioned("javascripts/jquery.min.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.versioned("lib/leaflet/leaflet.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.versioned("lib/bootstrap/js/bootstrap.js")" type="text/javascript"></script>
+    </head>
+    <body>

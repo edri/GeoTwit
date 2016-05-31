@@ -1,3 +1,9 @@
+@blue-color: #286090;
+@dark-blue-color: #1e476a;
+@subtitles-margin-bottom: 1.5vh;
+@subtitles-margin-top: 5vh;
+@group-fields-spacing: 0.6vh;
+
 // ================================== LAYOUT ===================================
 @font-face {
    font-family: caviarDreams;
@@ -11,6 +17,49 @@
 
 body {
     font-family: raleWay;
+}
+
+.header, .header-decoration, .content-container, .footer {
+    margin-left: 50%;
+    min-width: 800px;
+    transform: translateX(-50%);
+    width: 55%;
+}
+
+.header, .header-decoration, .footer {
+    background-color: @blue-color;
+    border: 1px solid @blue-color;
+    color: white;
+    padding: 1vh 2vw;
+}
+
+.header-title {
+    color: white;
+    font-family: caviarDreams;
+    font-size: 2vw;
+    font-weight: 600;
+    text-shadow: 0px 0px 2px black;
+
+    &:hover, &:active, &:focus {
+        color: white;
+        text-decoration: none;
+        outline: 0;
+    }
+}
+
+.header-logo {
+    height: 1.5em;
+    margin-right: 0.5vw;
+}
+
+.header-decoration {
+    margin-top: 0.5vh;
+}
+
+.content-container {
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    padding: 4vh 2vw;
 }
 
 
@@ -30,7 +79,7 @@ body {
 }
 
 .home-title {
-    color: #286090;
+    color: @blue-color;
     font-family: caviarDreams;
     font-size: 7.5vw;
     font-weight: 600;
@@ -39,7 +88,7 @@ body {
 }
 
 .home-slogan {
-    color: #1e476a;
+    color: @dark-blue-color;
     font-size: 1.2vw;
 }
 
@@ -66,4 +115,82 @@ body {
     margin-left: 50%;
     position: absolute;
     transform: translateX(-50%);
+}
+
+// ================================ SEARCH PAGE ================================
+.search-title {
+    margin-bottom: 5vh;
+}
+
+.nav-tabs a:active, .nav-tabs a:focus {
+    outline: 0;
+}
+
+.tab-content {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    border-color: -moz-use-text-color #ddd #ddd;
+    border-style: none solid solid;
+    border-width: medium 1px 1px;
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.05);
+    padding: 1vh 1vw 3vh 1vw;
+}
+
+.search-first-subtitle {
+    margin: 1vh 0 @subtitles-margin-bottom 0;
+}
+
+.search-subtitle {
+    margin: @subtitles-margin-top 0 @subtitles-margin-bottom 0;
+}
+
+.search-subcontent {
+    margin: 0 2vw;
+}
+
+.group-field-bottom {
+    margin-top: @group-fields-spacing;
+}
+
+.default-area-table {
+    margin-top: @group-fields-spacing;
+    width: 100%;
+}
+
+.default-area-label {
+    font-weight: bold;
+    padding-right: 0.8vw;
+    white-space: nowrap;
+    width: 0;
+}
+
+.search-map {
+    border: 1px solid black;
+    height: 550px;
+    margin-top: ~"calc(2 * @{group-fields-spacing})";
+    width: 100%;
+}
+
+.btn-search {
+    font-size: 2em;
+    margin-top: @subtitles-margin-top;
+    width: 100%;
+}
+
+.search-from-date {
+    margin-right: 5vw;
+}
+
+.date-label {
+    margin-right: 1vw;
+}
+
+.search-location-radius {
+    margin-top: ~"calc(2 * @{group-fields-spacing})";
+}
+
+.search-checkbox-accelerated {
+    margin-top: @subtitles-margin-top;
 }
