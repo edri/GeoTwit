@@ -9,6 +9,7 @@ In order to make the application work, please do the following:
 1. `sudo npm install -g browserify`
 2. `npm install`
 3. Open "index.html" in your web browser.
+
 ## twitter4jDesktop
 This is a simple Java application in which you can search for Tweets or subscribe to the Twitter's Streaming API (by default) or ask the REST API.  
 In order to use this application please do the following: uncomment the country in which you want to search Tweets in the “main” of the “Twitter4j.java”, then compile the application, launch "Twitter4j.java" and follow the output instructions.
