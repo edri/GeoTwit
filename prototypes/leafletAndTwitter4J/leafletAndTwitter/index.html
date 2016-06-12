@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Leaflet Test-Application</title>
+        <link rel="stylesheet" href="css/style.css" />
+        <link rel="stylesheet" href="lib/leaflet/leaflet.css" />
+        <script src="lib/leaflet/leaflet.js"></script>
+        <script src="js/map.js"></script>
+        <script src="js/websocket.js"></script>
+    </head>
+    <body>
+        <h1>Welcome the the Leaflet test-application!</h1>
+
+        Here is a map of the Earth:<br/>
+
+        <table>
+            <tr>
+                <td>
+                    <div id="map"></div>
+                </td>
+                <td class="rightContent">
+                    <p>
+                        <strong>Circle</strong> (please click on a location on the map to automaticaly fill the circle's fields)<br/>
+                        (<input id="circleCoordinatesX" placeholder="Latitude" type="text" />,
+                        <input id="circleCoordinatesY" placeholder="Longitude" type="text" />), radius of
+                        <input id="circleRadius" placeholder="Radius in km" type="number" /> km
+                        <input class="addBtn" onClick="addCircle()" type="button" value="Add a circle" />
+                    </p>
+
+                    <p>
+                        <strong>Rectangle</strong> (default: whole Switzerland)<br/>
+                        Southwest coordinates: (<input id="squareSWCoordinatesX" placeholder="Latitude" type="text" value="45.817851" />,
+                        <input id="squareSWCoordinatesY" placeholder="Longitude" type="text" value="5.956085" />)<br/>
+                        Nordeast coordinates: (<input id="squareNECoordinatesX" placeholder="Latitude" type="text" value="47.808454" />,
+                        <input id="squareNECoordinatesY" placeholder="Longitude" type="text" value="10.489254" />)<br/>
+                        <input onClick="addRectangle()" type="button" value="Add a rectangle" />
+                    </p>
+
+                    <p>
+                        <strong>Marker</strong> (default marker's location is the HEIG-VD in Yverdon-Les-Bains)<br/>
+                        (<input id="markerCoordinatesX" placeholder="Latitude" type="text" value="46.778678" />,
+                        <input id="markerCoordinatesY" placeholder="Longitude" type="text" value="6.658285" />)
+                        <input class="addBtn" onClick="addMarker()" type="button" value="Add a marker" />
+                    </p>
+
+                    <input class="streamingButton" id="streamingBtn" onClick="sendStartStreamingSocket()" type="button" value="Start Streaming" />
+                    <input class="stopStreamingButton" disabled="disabled" id="stopStreamingBtn" onClick="stopStreaming()" type="button" value="Stop Streaming" />
+                    <span class="waitSpan" id="waitSpan">Please wait...</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="tweetsDetails" id="tweetsDetailsTr" colspan="2">
+                    <h3 id="tweetsDetailsTitle"><u>Tweets Details:</u></h3>
+                    <div class="waitingForTweets" id="waitingForTweetsText">Waiting for Tweets...</div>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
