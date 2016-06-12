@@ -1,4 +1,4 @@
-# Test applications used in the project's analysis phase
+# Prototype applications used in the project's analysis phase
 ## leaflet
 This application contains a simple map drawn with **Mapbox**'s imagery and **OpenStreetMap**'s data all together through the **Leaflet** JavaScript library. In this basic application, you can pin markers and draw rectangles and circles on a map. The "js/map.js" file contains all the map's code.  
 Just open "index.html" in your web browser and it will work.
