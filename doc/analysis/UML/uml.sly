@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="iso-8859-15" standalone="no"?>
+<classDiagram>
+  <diagramElements name="GeoTwit">
+    <dependency id="3954" label="">
+      <source>3791</source>
+      <target>3886</target>
+    </dependency>
+    <dependency id="3953" label="">
+      <source>3791</source>
+      <target>3794</target>
+    </dependency>
+    <entity entityType="CLASS" id="3886" isAbstract="false" name="SearchController" visibility="PUBLIC">
+      <method isAbstract="false" isStatic="false" name="index" returnType="void" view="DEFAULT" visibility="PUBLIC"/>
+    </entity>
+    <entity entityType="CLASS" id="3794" isAbstract="false" name="HomeController" visibility="PUBLIC">
+      <method isAbstract="false" isStatic="false" name="index" returnType="void" view="DEFAULT" visibility="PUBLIC">
+        <variable const="false" name="error" type="Option(String)"/>
+      </method>
+      <method isAbstract="false" isStatic="false" name="auth" returnType="void" view="DEFAULT" visibility="PUBLIC"/>
+      <method isAbstract="false" isStatic="false" name="callback" returnType="void" view="DEFAULT" visibility="PUBLIC">
+        <variable const="false" name="denied" type="Option(String)"/>
+        <variable const="false" name="oauthToken" type="Option(String)"/>
+        <variable const="false" name="oauthVerifier" type="Option(String)"/>
+      </method>
+    </entity>
+    <entity entityType="CLASS" id="3791" isAbstract="false" name="Controller" visibility="PUBLIC"/>
+  </diagramElements>
+  <umlView grid="10" name="view no name">
+    <relationView color="-12566464" relationId="3953">
+      <line>
+        <point>
+          <x>791</x>
+          <y>116</y>
+        </point>
+        <point>
+          <x>791</x>
+          <y>151</y>
+        </point>
+        <point>
+          <x>491</x>
+          <y>151</y>
+        </point>
+        <point>
+          <x>491</x>
+          <y>191</y>
+        </point>
+      </line>
+      <labelAssociation>
+        <x>645</x>
+        <y>155</y>
+        <w>0</w>
+        <h>17</h>
+      </labelAssociation>
+    </relationView>
+    <relationView color="-12566464" relationId="3954">
+      <line>
+        <point>
+          <x>791</x>
+          <y>116</y>
+        </point>
+        <point>
+          <x>791</x>
+          <y>151</y>
+        </point>
+        <point>
+          <x>881</x>
+          <y>151</y>
+        </point>
+        <point>
+          <x>881</x>
+          <y>191</y>
+        </point>
+      </line>
+      <labelAssociation>
+        <x>840</x>
+        <y>155</y>
+        <w>0</w>
+        <h>17</h>
+      </labelAssociation>
+    </relationView>
+    <componentView color="-2079" componentID="3791" displayAttributes="true" displayDefault="true" displayMethods="true">
+      <geometry>
+        <x>710</x>
+        <y>60</y>
+        <w>150</w>
+        <h>55</h>
+      </geometry>
+    </componentView>
+    <componentView color="-2079" componentID="3794" displayAttributes="true" displayDefault="true" displayMethods="true">
+      <geometry>
+        <x>210</x>
+        <y>190</y>
+        <w>560</w>
+        <h>100</h>
+      </geometry>
+    </componentView>
+    <componentView color="-2079" componentID="3886" displayAttributes="true" displayDefault="true" displayMethods="true">
+      <geometry>
+        <x>810</x>
+        <y>190</y>
+        <w>130</w>
+        <h>70</h>
+      </geometry>
+    </componentView>
+  </umlView>
+</classDiagram>

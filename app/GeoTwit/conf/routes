@@ -6,7 +6,7 @@
 GET     /                           controllers.HomeController.index(error: Option[String])
 GET     /auth                       controllers.HomeController.auth
 GET     /callback                   controllers.HomeController.callback(denied: Option[String], oauth_token: Option[String], oauth_verifier: Option[String])
-GET     /search                     controllers.HomeController.search
+GET     /search                     controllers.SearchController.index
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

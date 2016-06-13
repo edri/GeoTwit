@@ -20,11 +20,19 @@ class HomeController extends Controller {
    * The configuration in the `routes` file means that this method
    * will be called when the application receives a `GET` request with
    * a path of `/`.
+   *
+   * Parameter:
+   *    - error: optional parameter containing an error's string.
    */
   def index(error: Option[String]) = Action {
     Ok(views.html.index(error))
   }
 
+  /**
+  * Occurs when the user clicked on the "Get Started" button of the home page.
+  * Redirects the user on the Twitter's connection page, giving it the URL of
+  * the callback function, which corresponds to the "callback" action below.
+  */
   def auth = Action { request =>
     val url =
       if(request.host.contains(":9000"))
@@ -43,18 +51,30 @@ class HomeController extends Controller {
     }
   }
 
+  /**
+  * Redirects the user either on the search page if the connection was
+  * successful or on the home page if there is an error or the user denied the
+  * connection process. This action is called anyway by the Twitter's API when
+  * the user leaves the Twitter's connection page.
+  *
+  * Parameters:
+  *     - denied: if set, this means the user denied the Twitter's connection
+  *               process. It also mmeans that the two following parameters are
+  *               null.
+  *     - oauthToken: if the "denied" parameter is null, this parameters
+  *                   contains the token's string value.
+  *     - oauthVerifier: if the "denied" parameter is null, this parameters
+  *                      contains a string used by Twitter to verify the
+  *                      requests.
+  */
   def callback(denied: Option[String], oauthToken: Option[String], oauthVerifier: Option[String]) = Action {
     denied match {
       case Some(_) => Redirect(routes.HomeController.index(Some("errorDenied")))
       case None => (oauthToken, oauthVerifier) match {
-        case (Some(_), Some(_)) => Redirect(routes.HomeController.search)
+        case (Some(_), Some(_)) => Redirect(routes.SearchController.index)
         case _ => Redirect(routes.HomeController.index(Some("error")))
       }
     }
-  }
-
-  def search = Action {
-    Ok(views.html.search())
   }
 
 }
