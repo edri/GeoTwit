@@ -47,7 +47,7 @@ public class StreamingStatsThread extends Observable implements Runnable {
             percentRightGeoloc = Math.round(nbTweetsWithRightGeoloc * (100.0 / nbReceivedTweets) * 100) / (double)100;
             System.out.println("I received " + nbReceivedTweets + " Tweets in " + 
                                timeBetweenStats / 1000 + " seconds" + ", including " + 
-                               nbTweetsWithGeoloc + " ones WITH geolocalion tags and " + 
+                               nbTweetsWithGeoloc + " ones WITH geolocation tags and " + 
                                nbTweetsWithRightGeoloc + " ones with the wanted geolocation.");
             System.out.println("This means " + percentsGeoloc + " % of the received " + 
                                "Tweets with the \"" + queryString + "\" tag(s) owned a" +
