@@ -188,8 +188,11 @@ public class Streaming {
       //double[] southwestCoordinates = {6.6357421875, 47.09805038936004};
       //double[] northeastCoordinates = {18.6328125, 36.577893995157474}; 
       // Germany-Poland area's coordinates
-      double[] southwestCoordinates = {5.86669921875, 47.27010385272593};
-      double[] northeastCoordinates = {24.145889282226562, 54.91124458876571};
+      //double[] southwestCoordinates = {5.86669921875, 47.27010385272593};
+      //double[] northeastCoordinates = {24.145889282226562, 54.91124458876571};
+      // France-Switzerland area's coordinates
+      double[] southwestCoordinates = {-4.805145263671875, 42.34528267746347};
+      double[] northeastCoordinates = {10.489254, 51.09052797518529};
       
       StreamingStatsThread sst = new StreamingStatsThread(queryString, 600 * 1000, this);
       
