@@ -1,4 +1,4 @@
-@(error: Option[String])
+@(status: String)
 
 @*
  * Call the `mainIndex` template with two arguments. The first
@@ -16,12 +16,14 @@
         <div class="home-slogan">Search for Tweets and visualize real-time activities on a map!</div>
         <a class="btn btn-primary get-started-button" href="@routes.HomeController.auth">Get Started</a>
 
-        @if(error.isDefined) {
+        @if(status != "success") {
             <div class="panel panel-danger home-error">
                 <div class="panel-heading">
-                    @error.get match {
+                    @status match {
                         case "errorGettingApplicationToken" => {An error occurred when trying to connect to Twitter, please retry in a while.}
                         case "errorDenied"                  => {You denied the access to your account so you cannot access the web site's tools.}
+                        case "notAuthenticated"             => {Session timeout, please login anew.}
+                        case "sessionExpired"               => {Your session has expired, please reconnect.}
                         case _                              => {An error occurred, please retry in a while.}
                     }
                 </div>
