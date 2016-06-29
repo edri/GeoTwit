@@ -22,7 +22,6 @@
                     @status match {
                         case "errorGettingApplicationToken" => {An error occurred when trying to connect to Twitter, please retry in a while.}
                         case "errorDenied"                  => {You denied the access to your account so you cannot access the web site's tools.}
-                        case "notAuthenticated"             => {Session timeout, please login anew.}
                         case "sessionExpired"               => {Your session has expired, please reconnect.}
                         case _                              => {An error occurred, please retry in a while.}
                     }

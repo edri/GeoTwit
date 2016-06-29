@@ -15,7 +15,6 @@ import play.api.cache.CacheApi
 import play.api.mvc._
 
 import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
  * This controller creates an `Action` to handle HTTP requests to the application's search page.
@@ -35,17 +34,26 @@ class SearchController @Inject() (cache: CacheApi, configuration: Configuration)
   object AuthenticatedAction extends ActionBuilder[Request] {
     // The invokeBlock method is called for every action built by the ActionBuilder.
     def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[Result]) = {
-      // Redirects the user to the Home page if he is not connected, otherwise just give the current action the control
-      // of the request.
-      (cache.get("twitter"), request.session.get("userName")) match {
-          // Gives the control to the current action.
-        case (Some(_), Some(_)) =>
-          block(request)
-        // Redirects the user to the Logout page (to ensure everything is properly cleaned) if he is not connected to
-        // the application.
-        case _                  =>
+      // Checks that the session have an unique ID.
+      request.session.get("id") match {
+        case Some(id) => {
+          // Redirects the user to the Home page if he is not connected, otherwise just give the current action the control
+          // of the request.
+          (cache.get(id + "-twitter"), request.session.get("username")) match {
+            // Gives the control to the current action.
+            case (Some(_), Some(_)) =>
+              block(request)
+            // Redirects the user to the Logout page (to ensure everything is properly cleaned) if he is not connected to
+            // the application.
+            case _ =>
+              Future.successful(Redirect(routes.HomeController.logout).flashing(
+                "error" -> "error"
+              ))
+          }
+        }
+        case None =>
           Future.successful(Redirect(routes.HomeController.logout).flashing(
-            "error" -> "notAuthenticated"
+            "error" -> "sessionExpired"
           ))
       }
     }

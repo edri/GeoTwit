@@ -8,6 +8,7 @@
 
 package controllers
 
+import java.util.UUID
 import javax.inject._
 
 import com.typesafe.config.ConfigFactory
@@ -39,13 +40,18 @@ class HomeController @Inject() (cache: CacheApi, configuration: Configuration) e
   object NotAuthenticatedAction extends ActionBuilder[Request] {
     // The invokeBlock method is called for every action built by the ActionBuilder.
     def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[Result]) = {
-      // Redirects the user to the Search page if he is already connected to the application, otherwise just give the
-      // action the control of the request.
-      (cache.get("twitter"), request.session.get("userName")) match {
-        // Redirects the user to the search page if he is already connected to the application.
-        case (Some(_), Some(_)) => Future.successful(Redirect(routes.SearchController.index))
-        // Otherwise just give the action the control of the request.
-        case _                  => block(request)
+      // Checks that the session have an unique ID.
+      request.session.get("id") match {
+        case Some(id) =>
+          // Redirects the user to the Search page if he is already connected to the application, otherwise just give the
+          // action the control of the request.
+          (cache.get(id + "-twitter"), request.session.get("username")) match {
+            // Redirects the user to the search page if he is already connected to the application.
+            case (Some(_), Some(_)) => Future.successful(Redirect(routes.SearchController.index))
+            // Otherwise just give the action the control of the request.
+            case _ => block(request)
+          }
+        case None => block(request)
       }
     }
   }
@@ -69,27 +75,31 @@ class HomeController @Inject() (cache: CacheApi, configuration: Configuration) e
   * to the "callback" action below.
   */
   def auth = NotAuthenticatedAction { implicit request =>
-    val url =
+    val callbackUrl =
       if(request.host.contains(":9000"))
         "http://" + request.host + "/callback"
       else
         "https://" + request.host + "/callback"
 
-    // Initializes the Twitter object with the right consumer's key and secret
-    // present in the "twitter.conf" configuration file.
+    // Initializes the Twitter object with the right consumer's key and secret present in the "twitter.conf"
+    // configuration file.
     val twitter: Twitter = (new TwitterFactory()).getInstance()
     twitter.setOAuthConsumer(config.getString("twitter4j.oauth.consumerKey"),
                              config.getString("twitter4j.oauth.consumerSecret"))
 
     try {
-      val requestToken: RequestToken = twitter.getOAuthRequestToken(url)
+      // Gets the request token from the Twitter's API, in order to get the Twitter's authentication URL.
+      val requestToken: RequestToken = twitter.getOAuthRequestToken(callbackUrl)
+      // Generates an unique ID, in order to recognize the current user in the cache.
+      val uniqueId = UUID.randomUUID()
 
       // Writes the Twitter and RequestToken objects in the cache, since
       // we cannot store objects in sessions with Play.
-      cache.set("tmpTwitter", twitter, 2.minutes)
-      cache.set("requestToken", requestToken, 2.minutes)
+      cache.set(uniqueId + "-tmpTwitter", twitter, 2.minutes)
+      cache.set(uniqueId + "-requestToken", requestToken, 2.minutes)
 
-      Redirect(requestToken.getAuthenticationURL)
+      // Redirects the user to the Twitter's authentication URL and add the unique ID's value in the session.
+      Redirect(requestToken.getAuthenticationURL).withSession("id" -> uniqueId.toString)
     } catch {
       case e: TwitterException =>
         Redirect(routes.HomeController.index).flashing(
@@ -102,6 +112,7 @@ class HomeController @Inject() (cache: CacheApi, configuration: Configuration) e
     * Redirects the user either on the search page if the connection was successful or on the home page if there is an
     * error or the user denied the connection process. This action is called anyway by the Twitter's API when the user
     * leaves the Twitter's connection page.
+    *
     * @param denied if set, this means the user denied the Twitter's connection process. It also means that the two
     *               following parameters are null.
     * @param oauthToken if the "denied" parameter is null, this parameters contains the token's string value.
@@ -113,33 +124,36 @@ class HomeController @Inject() (cache: CacheApi, configuration: Configuration) e
     // First checks if the user did not denied the connection process.
     denied match {
       case Some(_)  => Redirect(routes.HomeController.index).flashing("error" -> "errorDenied")
-      // Then checks if we successfully received the OAuth's token and verifier.
-      case _        => (oauthToken, oauthVerifier) match {
-        case (Some(_), Some(verifier)) => {
-          val getTwitter = cache.get[Twitter]("tmpTwitter")
-          val getRequestToken = cache.get[RequestToken]("requestToken")
+      // Then checks if we successfully received the OAuth's token and verifier as well as the session's unique ID.
+      case _        => {
+        (oauthToken, oauthVerifier, request.session.get("id")) match {
+          case (Some(_), Some(verifier), Some(id)) => {
+            val getTwitter = cache.get[Twitter](id + "-tmpTwitter")
+            val getRequestToken = cache.get[RequestToken](id + "-requestToken")
 
-          // Tries to get the Twitter and RequestToken objects from the cache.
-          (getTwitter, getRequestToken) match {
-            case (Some(twitter), Some(requestToken)) => {
-              // Get the authentication's token, in order to be able to make requests to the APIs.
-              twitter.getOAuthAccessToken(requestToken, verifier)
+            // Tries to get the Twitter and RequestToken objects from the cache.
+            (getTwitter, getRequestToken) match {
+              case (Some(twitter), Some(requestToken)) => {
+                // Get the authentication's token, in order to be able to make requests to the APIs.
+                twitter.getOAuthAccessToken(requestToken, verifier)
 
-              // Removes objects from the cache.
-              cache.remove("tmpTwitter")
-              cache.remove("requestToken")
-              // Then sets the new Twitter object.
-              cache.set("twitter", twitter, configuration.getMilliseconds("play.http.session.maxAge").get.milliseconds)
+                // Removes objects from the cache.
+                cache.remove(id + "-tmpTwitter")
+                cache.remove(id + "-requestToken")
+                // Then sets the new Twitter object.
+                cache.set(id + "-twitter", twitter, configuration.getMilliseconds("play.http.session.maxAge").get.milliseconds)
 
-              // Sets the user's name in the session and redirects him to the Search page.
-              Redirect(routes.SearchController.index).withSession(
-                "userName" -> twitter.showUser(twitter.getId()).getScreenName()
-              )
+                // Sets the user's name in the session and redirects him to the Search page.
+                Redirect(routes.SearchController.index).withSession(
+                  request.session +
+                  ("username" -> twitter.showUser(twitter.getId()).getScreenName())
+                )
+              }
+              case _ => Redirect(routes.HomeController.index).flashing("error" -> "sessionExpired")
             }
-            case _ => Redirect(routes.HomeController.index).flashing("error" -> "sessionExpired")
           }
+          case _ => Redirect(routes.HomeController.index).flashing("error" -> "error")
         }
-        case _ => Redirect(routes.HomeController.index).flashing("error" -> "error")
       }
     }
   }
@@ -148,7 +162,11 @@ class HomeController @Inject() (cache: CacheApi, configuration: Configuration) e
     * Disconnects the connected user and redirects him to the home page.
     */
   def logout = Action { implicit request =>
-    cache.remove("twitter")
+    // Clears the current user's cache the session have an unique ID.
+    if (!request.session.get("id").isEmpty) {
+      cache.remove(request.session.get("id").get + "-twitter")
+    }
+
     // Discards the whole session, then redirects the user.
     // Also passes the error if there was one, otherwise just passes the "success" string.
     Redirect(routes.HomeController.index).withNewSession.flashing(
