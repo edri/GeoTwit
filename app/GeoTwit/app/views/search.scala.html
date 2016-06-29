@@ -4,15 +4,12 @@
  * argument is an `Html` object containing the body of the page.
  *@
 @main("GeoTwit - Search") {
-    <!-- Load the search page's JavaScript code. -->
-    <!--<script src="@routes.Assets.versioned("javascripts/search.js")" type="text/javascript"></script>-->
-
-    <h1 class="search-title">Let's follow a Twitter's Streaming...</h1>
+    <h1 class="search-title">Let's follow a Twitter's Streaming....</h1>
 
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" id="searchTabs" role="tablist">
         <li role="presentation" class="active"><a href="#dynamic" aria-controls="dynamic" role="tab" data-toggle="tab">Dynamic Mode</a></li>
-        <li role="presentation"><a href="#static" aria-controls="static" role="tab" data-toggle="tab">Static Mode</a></li>
+        <li role="presentation"><a href="#static" id="tabStatic" aria-controls="static" role="tab" data-toggle="tab">Static Mode</a></li>
     </ul>
 
     <!-- Tab panes -->
@@ -40,7 +37,9 @@
                         <td class="default-area-label">Default area:</td>
                         <td>
                             <select class="form-control horizontal-field" id="defaultArea">
-                                <option value="usa">USA</option>
+                              <option value="">select an area or draw a rectangle on the map...</option>
+                              <option value="switzerland">Switzerland</option>
+                              <option value="usa">USA</option>
                             </select>
                         </td>
                     </tr>

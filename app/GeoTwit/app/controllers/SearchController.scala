@@ -36,7 +36,7 @@ class SearchController @Inject() (cache: CacheApi, configuration: Configuration)
     def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[Result]) = {
       // Checks that the session have an unique ID.
       request.session.get("id") match {
-        case Some(id) => {
+        case Some(id) => block(request)/*{
           // Redirects the user to the Home page if he is not connected, otherwise just give the current action the control
           // of the request.
           (cache.get(id + "-twitter"), request.session.get("username")) match {
@@ -47,10 +47,10 @@ class SearchController @Inject() (cache: CacheApi, configuration: Configuration)
             // the application.
             case _ =>
               Future.successful(Redirect(routes.HomeController.logout).flashing(
-                "error" -> "error"
+                "error" -> "sessionExpired"
               ))
           }
-        }
+        }*/
         case None =>
           Future.successful(Redirect(routes.HomeController.logout).flashing(
             "error" -> "sessionExpired"

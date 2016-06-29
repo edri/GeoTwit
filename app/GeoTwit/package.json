@@ -1,0 +1,25 @@
+{
+  "name": "geotwit",
+  "version": "1.0.0",
+  "description": "GeoTwit is an application, which allows you to visualize real-time activities on Twitter's subjects with a map.",
+  "main": "app/views/index.scala.html",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/edri/GeoTwit.git"
+  },
+  "author": "Miguel Santamaria",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/edri/GeoTwit/issues"
+  },
+  "homepage": "https://github.com/edri/GeoTwit#readme",
+  "dependencies": {
+    "leaflet-draw-drag": "^0.1.5"
+  }
+}
