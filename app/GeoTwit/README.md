@@ -5,6 +5,7 @@ More information coming soon!
 
 # Installation
 In order to use the application, please follow the instructions below:
+
 1. First install the Play framework with activator on your computer => https://www.playframework.com/documentation/2.5.x/Installing.
 2. Type `npm install` in your console in order to install dependencies.
 3. Type `activator run` and open the “http://localhost:9000” URL.  
