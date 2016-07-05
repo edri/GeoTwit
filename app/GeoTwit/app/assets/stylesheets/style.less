@@ -1,8 +1,8 @@
 @blue-color: #286090;
 @dark-blue-color: #1e476a;
-@subtitles-margin-bottom: 1.5vh;
-@subtitles-margin-top: 5vh;
-@group-fields-spacing: 0.6vh;
+@subtitles-margin-bottom: 0.4em;
+@subtitles-margin-top: 1em;
+@group-fields-spacing: 0.3em;
 
 // ================================== LAYOUT ===================================
 @font-face {
@@ -23,7 +23,7 @@ body {
     margin-left: 50%;
     min-width: 800px;
     transform: translateX(-50%);
-    width: 55%;
+    width: 70%;
 }
 
 .header, .header-decoration, .footer {
@@ -52,6 +52,17 @@ body {
     margin-right: 0.5vw;
 }
 
+.header-right {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.welcome-message {
+    margin-right: 10px;
+}
+
 .header-decoration {
     margin-top: 0.5vh;
 }
@@ -60,6 +71,7 @@ body {
     border-left: 1px solid #ddd;
     border-right: 1px solid #ddd;
     padding: 4vh 2vw;
+    position: relative;
 }
 
 .tooltip-inner {
@@ -115,7 +127,7 @@ body {
 
 .home-error {
     bottom: 1vh;
-    font-size: 1vw;
+    font-size: 1em;
     left: 0;
     margin-left: 50%;
     position: absolute;
@@ -144,7 +156,7 @@ body {
 }
 
 .search-first-subtitle {
-    margin: 1vh 0 @subtitles-margin-bottom 0;
+    margin: 0.5em 0 @subtitles-margin-bottom 0;
 }
 
 .search-subtitle {
@@ -178,6 +190,11 @@ body {
     width: 100%;
 }
 
+.error-search {
+    display: none;
+    margin: 2em 0 0 0;
+}
+
 .btn-search {
     font-size: 2em;
     margin-top: @subtitles-margin-top;
@@ -198,4 +215,63 @@ body {
 
 .search-checkbox-accelerated {
     margin-top: @subtitles-margin-top;
+}
+
+.loading-icon {
+    margin-right: 0.5em;
+}
+
+.streaming-results {
+    display: none;
+}
+
+.streaming-results-header-table {
+    margin: 20px 0 5vh 0;
+    width: 100%;
+}
+
+.streaming-results-title {
+    margin: 0;
+}
+
+.td-stop-streaming {
+    text-align: right;
+}
+
+.btn-stop-streaming, .btn-new-search {
+    font-size: 1.5em;
+    width: 14vw;
+}
+
+.btn-new-search {
+    display: none;
+}
+
+.tweets-content-results {
+    margin-top: 1.5em;
+    width: 100%;
+}
+
+.received-tweets-title {
+    margin: 0;
+}
+
+.tweets-reception-speed {
+    color: green;
+    text-align: right;
+}
+
+.no-tweet-received {
+    color: #999;
+    font-style: italic;
+    margin-top: 1.5em;
+}
+
+.tweets-content {
+    border: 1px solid #ddd;
+    display: none;
+    line-height: 2em;
+    height: 300px;
+    overflow: auto;
+    padding: 0.5em 1em;
 }

@@ -23,8 +23,10 @@ import twitter4j._
 import scala.concurrent.Future
 
 /**
- * This controller creates an `Action` to handle HTTP requests to the application's home page.
- */
+  * This controller creates an `Action` to handle HTTP requests to the application's home page.
+  * @param cache the cache object used to access the server's cache.
+  * @param configuration the configuration object used to access the server's configuration.
+  */
 @Singleton
 class HomeController @Inject() (cache: CacheApi, configuration: Configuration) extends Controller {
   val config = ConfigFactory.load("twitter.conf")

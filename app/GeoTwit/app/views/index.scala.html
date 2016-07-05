@@ -17,15 +17,14 @@
         <a class="btn btn-primary get-started-button" href="@routes.HomeController.auth">Get Started</a>
 
         @if(status != "success") {
-            <div class="panel panel-danger home-error">
-                <div class="panel-heading">
-                    @status match {
-                        case "errorGettingApplicationToken" => {An error occurred when trying to connect to Twitter, please retry in a while.}
-                        case "errorDenied"                  => {You denied the access to your account so you cannot access the web site's tools.}
-                        case "sessionExpired"               => {Your session has expired, please reconnect.}
-                        case _                              => {An error occurred, please retry in a while.}
-                    }
-                </div>
+            <div class="alert alert-danger home-error">
+                <span aria-hidden="true" class="fa fa-exclamation-circle"></span>
+                @status match {
+                    case "errorGettingApplicationToken" => {An error occurred when trying to connect to Twitter, please retry in a while.}
+                    case "errorDenied"                  => {You denied the access to your account so you cannot access the web site's tools.}
+                    case "sessionExpired"               => {Your session has expired, please reconnect.}
+                    case _                              => {An error occurred, please retry in a while.}
+                }
             </div>
         }
     </div>

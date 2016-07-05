@@ -2,12 +2,15 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# An example controller showing a sample home page
+# Actions of controllers
 GET     /                           controllers.HomeController.index
 GET     /auth                       controllers.HomeController.auth
 GET     /callback                   controllers.HomeController.callback(denied: Option[String], oauth_token: Option[String], oauth_verifier: Option[String])
 GET     /logout                     controllers.HomeController.logout
 GET     /search                     controllers.SearchController.index
+
+# WebSocket management
+GET     /streamingSocket            controllers.SearchController.streamingSocket
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

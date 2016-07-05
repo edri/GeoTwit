@@ -1,0 +1,53 @@
+<div class="streaming-results" id="streamingResults">
+    <div class="view-details">
+        View details...
+        <span class="fa fa-arrow-down"></span>
+    </div>
+
+    <table class="streaming-results-header-table">
+        <tr>
+            <td>
+                <h1 class="streaming-results-title" id="streamingResultsTitle">
+                    <span class="fa fa-spinner fa-spin loading-icon"></span>
+                    Streaming in progression...
+                </h1>
+            </td>
+            <td class="td-stop-streaming">
+                <button class="btn btn-primary btn-stop-streaming" id="btnStopStreaming">Stop Streaming</button>
+                <button class="btn btn-primary btn-new-search" id="btnNewSearch" onclick="location.reload()">Make a new search</button>
+            </td>
+        </tr>
+    </table>
+
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" id="streamingResultsTabs" role="tablist">
+        <li role="presentation" class="active"><a href="#map" aria-controls="map" role="tab" data-toggle="tab">Map</a></li>
+        <li role="presentation"><a href="#charts" aria-controls="charts" role="tab" data-toggle="tab">Charts</a></li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane fade in active" id="map">
+            <!-- This div will contain the map of the streaming's results. -->
+            <div class="search-map" id="streamingResultsMap"></div>
+
+            <table class="tweets-content-results">
+                <tr>
+                    <td>
+                        <h3 class="received-tweets-title">Received Tweets</h3>
+                    </td>
+                    <td class="tweets-reception-speed">
+                        Speed: 10 Tweets / second
+                    </td>
+                </tr>
+            </table>
+
+            <div class="no-tweet-received" id="noTweetReceivedText">No Tweet received yet.</div>
+            <div class="tweets-content" id="tweetsContent"></div>
+        </div>
+
+        <div role="tabpanel" class="tab-pane fade" id="charts">
+            CHARTS
+        </div>
+    </div>
+</div>
