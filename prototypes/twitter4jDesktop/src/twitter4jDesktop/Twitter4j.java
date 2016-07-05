@@ -49,6 +49,6 @@ public class Twitter4j {
       System.out.print("Please enter some tags to search: ");
       String tags = br.readLine();
       
-      mainExecution.readStreaming(tags, southwestCoordinates, northeastCoordinates, false);
+      mainExecution.readStreaming(tags, southwestCoordinates, northeastCoordinates, true);
    }
 }

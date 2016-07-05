@@ -1,3 +1,5 @@
+var INIT_MAP_CENTER = [37.360843495760044, -94.833984375];
+var INIT_MAP_ZOOM = 4;
 var MAP_LAYER_URL = "http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png";
 var MAP_MAX_ZOOM = 20;
 var MAP_ATTRIBUTION = "&copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>, Tiles courtesy of <a href='http://hot.openstreetmap.org/' target='_blank'>Humanitarian OpenStreetMap Team</a>";
@@ -9,7 +11,9 @@ var LOCATION_NOT_SELECTED = "locationNotSelected";
 // to type "browserify public/javascripts/search.js -o public/javascripts/search-bundle.js".
 // Load the "leaflet-draw-drag" library, which allows the user to draw and drag polygons on the map with a toolbar.
 var drawControl = require('leaflet-draw-drag');
-var socketConnection, dynamicMap, staticMap, streamingResultsMap, rectangleLatLngs;
+// Load the "Leaflet.markercluster" library, which is used to automatically group markers on the map.
+require('leaflet.markercluster');
+var socketConnection, dynamicMap, staticMap, streamingResultsMap, rectangleLatLngs, markers;
 // Used as a locker when the user reconnects to the web socket's server. Since JavaScript is indeed
 // an asynchronous language, we need to wait for the disconnection before reconnect.
 var deferred = $.Deferred();
@@ -31,14 +35,6 @@ function getCurrentTime() {
 }
 
 /**
-* Adds a marker on the map of the streaming's results. The marker's coordinates
-* corresponds to the given latitude and longitude.
-*/
-function addMarkerOnMap(lat, long) {
-    L.marker([lat, long]).addTo(streamingResultsMap);
-}
-
-/**
 * Loads all elements related to the dynamic map.
 */
 function loadDynamicMap() {
@@ -48,7 +44,7 @@ function loadDynamicMap() {
     // Set dynamic map's values (coordinates and zoom's value).
     // Also load the maps' imagery with OpenStreetMap's hot imagery.
     // You can find a list of imagery providers right here: https://leaflet-extras.github.io/leaflet-providers/preview/.
-    dynamicMap = new L.Map("dynamicMap", {center: [46.783, 8.152], zoom: 8})
+    dynamicMap = new L.Map("dynamicMap", {center: INIT_MAP_CENTER, zoom: INIT_MAP_ZOOM})
         .addLayer(new L.tileLayer(MAP_LAYER_URL, {
             maxZoom: MAP_MAX_ZOOM,
             attribution: MAP_ATTRIBUTION
@@ -91,14 +87,14 @@ function loadDynamicMap() {
     dynamicMap.on('draw:created', function(e) {
         // Saves the rectangle southwest and northeast's coordinates.
         rectangleLatLngs = {
-            southwest: {
-                lat: e.layer._latlngs[0].lat,
-                lng: e.layer._latlngs[0].lng
-            },
-            northeast: {
-                lat: e.layer._latlngs[2].lat,
-                lng: e.layer._latlngs[2].lng
-            }
+            southwest: [
+                e.layer._latlngs[0].lng,
+                e.layer._latlngs[0].lat
+            ],
+            northeast: [
+                e.layer._latlngs[2].lng,
+                e.layer._latlngs[2].lat
+            ]
         };
 
         drawnItems.addLayer(e.layer);
@@ -111,14 +107,14 @@ function loadDynamicMap() {
     dynamicMap.on('draw:edited', function(e) {
         // Saves the rectangle southwest and northeast's coordinates.
         rectangleLatLngs = {
-            southwest: {
-                lat: e.layers._layers[Object.keys(e.layers._layers)[0]]._latlngs[0].lat,
-                lng: e.layers._layers[Object.keys(e.layers._layers)[0]]._latlngs[0].lng
-            },
-            northeast: {
-                lat: e.layers._layers[Object.keys(e.layers._layers)[0]]._latlngs[2].lat,
-                lng: e.layers._layers[Object.keys(e.layers._layers)[0]]._latlngs[2].lng
-            }
+            southwest: [
+                e.layers._layers[Object.keys(e.layers._layers)[0]]._latlngs[0].lng,
+                e.layers._layers[Object.keys(e.layers._layers)[0]]._latlngs[0].lat
+            ],
+            northeast: [
+                e.layers._layers[Object.keys(e.layers._layers)[0]]._latlngs[2].lng,
+                e.layers._layers[Object.keys(e.layers._layers)[0]]._latlngs[2].lat
+            ]
         };
     });
 
@@ -140,7 +136,7 @@ function loadDynamicMap() {
 * Loads all elements related to the static map.
 */
 function loadStaticMap() {
-    staticMap = new L.Map("staticMap", {center: [46.783, 8.152], zoom: 8})
+    staticMap = new L.Map("staticMap", {center: INIT_MAP_CENTER, zoom: INIT_MAP_ZOOM})
         .addLayer(new L.tileLayer(MAP_LAYER_URL, {
             maxZoom: MAP_MAX_ZOOM,
             attribution: MAP_ATTRIBUTION
@@ -151,11 +147,16 @@ function loadStaticMap() {
 * Loads all elements related to the map of the streaming's results.
 */
 function loadStreamingResultsMap() {
-    streamingResultsMap = new L.Map("streamingResultsMap", {center: [46.783, 8.152], zoom: 8})
+    streamingResultsMap = new L.Map("streamingResultsMap", {center: INIT_MAP_CENTER, zoom: INIT_MAP_ZOOM})
         .addLayer(new L.tileLayer(MAP_LAYER_URL, {
             maxZoom: MAP_MAX_ZOOM,
             attribution: MAP_ATTRIBUTION
         }));
+
+    // Adds the cluster goup object as a layer to the map of the streaming's results,
+    // in order to automatically group markers with the Leaflet.markercluster library.
+    markers = L.markerClusterGroup();
+    streamingResultsMap.addLayer(markers);
 }
 
 /*
@@ -187,6 +188,78 @@ function streamingFieldsValidation() {
     }
 
     return status;
+}
+
+/**
+* Gets the string representing the track (query) parameter of the Twitter's streaming request,
+* according to the values of the user's AND and OR inputs.
+* In the Twitter's API, AND parameters take priority over OR parameters (for example
+* "dog AND eating OR dog AND drinking" will be interpreted as "(dog AND eating) OR (dog AND drinking)").
+* In the query, a space (" ") is interpreted as a AND, and a comma (",") will be interpreted as
+* a OR. Parentheses are not supported.
+* Here are some example of output, according to the input fields:
+*   : AND: ""               OR: ""                  => ""
+*   - AND: "job engineer"   OR: ""                  => "job engineer"
+*   - AND: ""               OR: "job engineer"      => "job,engineer"
+*   - AND: "job"            OR: "engineer nursing"  => "job engineer,job nursing"
+*   - AND: "job anybody"    OR: "engineer"          => "job anybody engineer"
+*   - AND: "job anybody"    OR: "engineer nursing"  => "job anybody engineer, job anybody nursing"
+*   - AND: "job"            OR: "engineer"          => "job engineer"
+*
+* Parameters:
+*   - keywordsSetNumber: indicates the keyword set we are working on => "first" for the first
+*                        one, "second" for the second one.
+*/
+function getAndFormatKeywords(keywordsSetNumber) {
+    var orField, andField;
+    var resultString = "";
+
+    // Gets the right fields, according to the given parameter.
+    switch (keywordsSetNumber) {
+        case "first":
+            orField = $("#streamingFirstKeywordSetOr").val();
+            andField = $("#streamingFirstKeywordSetAnd").val();
+            break;
+        case "second":
+            orField = $("#streamingSecondKeywordSetOr").val();
+            andField = $("#streamingSecondKeywordSetAnd").val();
+            break;
+        // Returns an empty string if the given parameter doesn't match with existing fields.
+        default:
+            return resultString;
+    }
+
+    // There are four possible cases:
+    //      1. The OR and AND fields are set => returns a space-and-comma-separated string.
+    //      2. Only the OR field is set => returns a comma-separated string.
+    //      3. Only the AND field is set => returns a space-separated string.
+    //      4. Neither the OR and AND fields are set => returns an empty string.
+    // 1. The OR and AND fields are set => returns a space-and-comma-separated string.
+    if (orField && andField) {
+        // Gets each word of the OR field.
+        var orWords = orField.split(" ");
+
+        // Iterates over each OR word and adds it to the end of the AND fields.
+        for (var i = 0, len = orWords.length; i < len; ++i) {
+            resultString += andField + " " + orWords[i];
+            if (i < len - 1) resultString += ",";
+        }
+    // 2. Only the OR field is set => returns a comma-separated string.
+    } else if (orField) {
+        var orWords = orField.split(" ");
+
+        // Adds each comma-separated OR word to the query.
+        for (var j = 0, lenOr = orWords.length; j < lenOr; ++j) {
+            resultString += orWords[j];
+            if (j < lenOr - 1) resultString += ",";
+        }
+    // 3. Only the AND field is set => returns a space-separated string.
+    } else if (andField) {
+        // Just gets the AND field value, since words are already space-separated.
+        resultString = andField;
+    }
+
+    return resultString;
 }
 
 /**
@@ -269,15 +342,18 @@ function initWebSocket() {
                             $("#searchContent").hide();
                             $("#streamingResults").fadeIn();
                             loadStreamingResultsMap();
-                            drawRectangle(streamingResultsMap, data.northeastCoordinates, data.southwestCoordinates)
+                            drawRectangle(streamingResultsMap, rectangleLatLngs.northeast, rectangleLatLngs.southwest)
+
+                            console.log(getAndFormatKeywords("first"));
+                            console.log(getAndFormatKeywords("second"));
 
                             console.log("Streaming process successfully initialized! Asking the server to begin to stream...");
                             socketConnection.send(JSON.stringify({
                                 "messageType": "readyToStream",
-                                "firstKeywords": "job",
-                                "secondKeywords": "",
-                                "northeastCoordinates": [-66.888435, 49.001895],
-                                "southwestCoordinates": [-124.411668, 24.957884]
+                                "firstKeywords": getAndFormatKeywords("first"),
+                                "secondKeywords": getAndFormatKeywords("second"),
+                                "northeastCoordinates": rectangleLatLngs.northeast,
+                                "southwestCoordinates": rectangleLatLngs.southwest
                             }));
                             break;
                         // Occurs if the user's session expired during the streaming
@@ -295,7 +371,8 @@ function initWebSocket() {
                             }
 
                             // Adds the new Tweet on the map and displays it in the results panel.
-                            addMarkerOnMap(data.latitude, data.longitude);
+                            // The Leaflet.markercluster library will automatically group Tweets on the map.
+                            markers.addLayer(L.marker([data.latitude, data.longitude]));
                             $("#tweetsContent").prepend("<div><strong>" + getCurrentTime() + " " + data.user + "</strong>: " + data.content + "<br/></div>")
 
                             break;

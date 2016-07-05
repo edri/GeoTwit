@@ -90,15 +90,11 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
     * @param id the current session's unique ID
     */
   class StreamingSocketActor(out: ActorRef, id: String) extends Actor {
-    val northeastCoordinates: Array[Double] = Array(-66.888435, 49.001895)
-    val southwestCoordinates: Array[Double] = Array(-124.411668, 24.957884)
+    //val northeastCoordinates: Array[Double] = Array(-66.888435, 49.001895)
+    //val southwestCoordinates: Array[Double] = Array(-124.411668, 24.957884)
 
     // Sends a successful initialization's status as soon as the connection has been established.
-    out ! JsObject(Seq(
-      "messageType" -> JsString("successfulInit"),
-      "northeastCoordinates"  -> JsArray(Seq(JsNumber(northeastCoordinates(0)), JsNumber(northeastCoordinates(1)))),
-      "southwestCoordinates"  -> JsArray(Seq(JsNumber(southwestCoordinates(0)), JsNumber(southwestCoordinates(1))))
-    ))
+    out ! JsObject(Seq("messageType" -> JsString("successfulInit")))
 
     // Instantiates the Twitter's stream object used to work with the Streaming API and starts the streaming.
     val twitterStream: TwitterStream = new TwitterStreamFactory().getInstance()
@@ -114,7 +110,16 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
           // stream.
           case JsSuccess("readyToStream", _) =>
             println("Yay, ready to stream!")
-            streaming(out, id, twitterStream, "job", northeastCoordinates, southwestCoordinates)
+            val firstKeywords = (data \ "firstKeywords").validate[String]
+            val secondKeywords = (data \ "secondKeywords").validate[String]
+            val northeastCoordinates = (data \ "northeastCoordinates").validate[Array[Double]]
+            val southwestCoordinates = (data \ "southwestCoordinates").validate[Array[Double]]
+
+            (firstKeywords, secondKeywords, northeastCoordinates, southwestCoordinates) match {
+              case (JsSuccess(fk, _), JsSuccess(sk, _), JsSuccess(nec, _), JsSuccess(swc, _)) => {
+                streaming(out, id, twitterStream, fk, nec, swc)
+              }
+            }
           // Stops streaming when the user clicked on the well-named button.
           case JsSuccess("stopStreaming", _) => out ! PoisonPill
         }
@@ -132,6 +137,7 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
 
   /**
     * Starts a new Twitter's streaming, by the given parameters.
+    *
     * @param out the actor who is in charge of the current client's web socket discussion.
     * @param sessionId the current session's unique ID
     * @param twitterStream a instantiated (but not configured) Twitter's stream object
@@ -140,6 +146,7 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
     * @param southwestCoordinates the southwest coordinates of the bounding box in which the Tweets will be searched.
     */
   def streaming(out: ActorRef, sessionId: String, twitterStream: TwitterStream, query: String, northeastCoordinates: Array[Double], southwestCoordinates: Array[Double]) = {
+    println("Starting streaming...")
     // Gets the cached Twitter object, which will be used to correctly configure the Twitter's stream object.
     val getTwitter = cache.get[Twitter](sessionId + "-twitter")
 
@@ -160,6 +167,7 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
             * Occurs when the listener received a new Tweet from the Twitter's API.
             * Checks if the received Tweet has a geolocation tag, and if so, sends a new web socket to the client in
             * order to inform it.
+            *
             * @param status the new Tweet's data
             */
           override def onStatus(status: twitter4j.Status): Unit = {
