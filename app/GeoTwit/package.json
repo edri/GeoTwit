@@ -21,6 +21,8 @@
   "homepage": "https://github.com/edri/GeoTwit#readme",
   "dependencies": {
     "leaflet-draw-drag": "^0.1.5",
-    "leaflet.markercluster": "^0.5.0"
+    "leaflet.markercluster": "^0.5.0",
+    "which-country": "^1.0.0",
+    "world-countries": "^1.7.8"
   }
 }

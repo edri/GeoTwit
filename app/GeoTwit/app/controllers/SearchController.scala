@@ -19,6 +19,7 @@ import play.api.mvc._
 import play.api.libs.streams._
 import twitter4j._
 
+import scala.collection.mutable.ListBuffer
 import scala.concurrent.Future
 
 /**
@@ -57,6 +58,108 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
   }
 
   /**
+    * Instantiates a new WebSocket's actor, used for the Twitter's streaming process.
+    */
+  object StreamingSocketActor {
+    def props(out: ActorRef, id: String) = Props(new StreamingSocketActor(out, id))
+  }
+
+  /**
+    * Represents a WebSocket's actor, used for the Twitter's streaming process.
+    *
+    * @param out the output string message sent to the client.
+    * @param id the current session's unique ID
+    */
+  class StreamingSocketActor(out: ActorRef, id: String) extends Actor {
+    // Sends a successful initialization's status as soon as the connection has been established.
+    out ! JsObject(Seq("messageType" -> JsString("successfulInit")))
+
+    // Instantiates the first Twitter's stream object used to work with the Streaming API and starts the first streaming.
+    // If the user entered a second keywords set, a second streaming will be started.
+    var twitterStreams: ListBuffer[TwitterStream] = ListBuffer(new TwitterStreamFactory().getInstance())
+
+    /**
+      * Occurs when the web socket server received a new Json message from the client.
+      */
+    def receive = {
+      case data: JsValue =>
+        // Searchs for the received message's type.
+        (data \ "messageType").validate[String] match {
+          // Occurs when the client successfully displayed the result components and asked the server to begin the
+          // stream.
+          case JsSuccess("readyToStream", _) => {
+            println("Yay, ready to stream!")
+            val firstKeywords = (data \ "firstKeywords").validate[String]
+            val secondKeywords = (data \ "secondKeywords").validate[String]
+            val coordinates = (data \ "coordinates").validate[Array[Array[Double]]]
+            val language = (data \ "language").validate[String]
+
+            (firstKeywords, secondKeywords, coordinates, language) match {
+              case (JsSuccess(fk, _), JsSuccess(sk, _), JsSuccess(c, _), JsSuccess(l, _)) => {
+                // Gets the cached Twitter object, which will be used to correctly configure the Twitter's stream object.
+                val getTwitter = cache.get[Twitter](id + "-twitter")
+
+                getTwitter match {
+                  // If the Twitter object no longer exists, the session expired so the user has to be disconnected.
+                  case None => {
+                    out ! JsObject(Seq(
+                      "messageType" -> JsString("sessionExpired")
+                    ))
+
+                    // Kills the actor in charge of the current client. This will also stop the current streaming process.
+                    out ! PoisonPill
+                  }
+                  case Some(twitter) => {
+                    // Sets the Twitter's Stream object with the Twitter object's configuration.
+                    twitterStreams(0).setOAuthConsumer(
+                      config.getString("twitter4j.oauth.consumerKey"),
+                      config.getString("twitter4j.oauth.consumerSecret")
+                    )
+                    twitterStreams(0).setOAuthAccessToken(twitter.getOAuthAccessToken)
+
+                    streaming(out, twitterStreams(0), "first", fk, c(0), c(2), l)
+
+                    // Starts a second streaming process if the second keywords set is set.
+                    if (!sk.isEmpty) {
+                      // Creates a new Twitter's stream object.
+                      twitterStreams += (new TwitterStreamFactory().getInstance())
+                      // Sets the new Twitter's Stream object with the Twitter object's configuration.
+                      twitterStreams(1).setOAuthConsumer(
+                        config.getString("twitter4j.oauth.consumerKey"),
+                        config.getString("twitter4j.oauth.consumerSecret")
+                      )
+                      twitterStreams(1).setOAuthAccessToken(twitter.getOAuthAccessToken)
+
+                      streaming(out, twitterStreams(1), "second", sk, c(0), c(2), l)
+                    }
+                  }
+                }
+              }
+              case _ => println("I received a bad-formatted socket.")
+            }
+          }
+          // Stops streaming when the user clicked on the well-named button.
+          case JsSuccess("stopStreaming", _) => out ! PoisonPill
+          case _ => println("I received a bad-formatted socket.")
+        }
+    }
+
+    /**
+      * Stops the currents streamings if the socket is destroyed.
+      */
+    override def postStop() = {
+      println("Got it, I am stopping the streaming process...")
+      out ! JsObject(Seq("messageType" -> JsString("stopStreaming")))
+
+      // Clears and stops each existing streaming.
+      for (ts <- twitterStreams) {
+        ts.clearListeners()
+        ts.shutdown()
+      }
+    }
+  }
+
+  /**
     * Checks if the user is correctly authenticated and returns a boolean value.
     *
     * @param request the current HTTP request's header object.
@@ -77,145 +180,79 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
   }
 
   /**
-    * Instantiates a new WebSocket's actor, used for the Twitter's streaming process.
-    */
-  object StreamingSocketActor {
-    def props(out: ActorRef, id: String) = Props(new StreamingSocketActor(out, id))
-  }
-
-  /**
-    * Represents a WebSocket's actor, used for the Twitter's streaming process.
-    *
-    * @param out the output string message sent to the client.
-    * @param id the current session's unique ID
-    */
-  class StreamingSocketActor(out: ActorRef, id: String) extends Actor {
-    //val northeastCoordinates: Array[Double] = Array(-66.888435, 49.001895)
-    //val southwestCoordinates: Array[Double] = Array(-124.411668, 24.957884)
-
-    // Sends a successful initialization's status as soon as the connection has been established.
-    out ! JsObject(Seq("messageType" -> JsString("successfulInit")))
-
-    // Instantiates the Twitter's stream object used to work with the Streaming API and starts the streaming.
-    val twitterStream: TwitterStream = new TwitterStreamFactory().getInstance()
-
-    /**
-      * Occurs when the web socket server received a new Json message from the client.
-      */
-    def receive = {
-      case data: JsValue =>
-        // Searchs for the received message's type.
-        (data \ "messageType").validate[String] match {
-          // Occurs when the client successfully displayed the result components and asked the server to begin the
-          // stream.
-          case JsSuccess("readyToStream", _) =>
-            println("Yay, ready to stream!")
-            val firstKeywords = (data \ "firstKeywords").validate[String]
-            val secondKeywords = (data \ "secondKeywords").validate[String]
-            val northeastCoordinates = (data \ "northeastCoordinates").validate[Array[Double]]
-            val southwestCoordinates = (data \ "southwestCoordinates").validate[Array[Double]]
-
-            (firstKeywords, secondKeywords, northeastCoordinates, southwestCoordinates) match {
-              case (JsSuccess(fk, _), JsSuccess(sk, _), JsSuccess(nec, _), JsSuccess(swc, _)) => {
-                streaming(out, id, twitterStream, fk, nec, swc)
-              }
-            }
-          // Stops streaming when the user clicked on the well-named button.
-          case JsSuccess("stopStreaming", _) => out ! PoisonPill
-        }
-    }
-
-    /**
-      * Stop the currents streaming if the socket is destroyed.
-      */
-    override def postStop() = {
-      println("Got it, I am stopping the streaming process...")
-      twitterStream.clearListeners()
-      twitterStream.shutdown()
-    }
-  }
-
-  /**
     * Starts a new Twitter's streaming, by the given parameters.
     *
     * @param out the actor who is in charge of the current client's web socket discussion.
-    * @param sessionId the current session's unique ID
-    * @param twitterStream a instantiated (but not configured) Twitter's stream object
+    * @param twitterStream a instantiated and configured Twitter's stream object
+    * @param keywordsSet indicates the keywords set ("first" or "second") for which the current streaming process will
+    *                    be, so the client can display Tweet with different colors.
     * @param query the query used to filter the streaming of Tweets
-    * @param northeastCoordinates the northeast coordinates of the bounding box in which the Tweets will be searched.
-    * @param southwestCoordinates the southwest coordinates of the bounding box in which the Tweets will be searched.
+    * @param southwestCoordinates the southwest coordinate of the selected area's bounding rectangle, as a "longitude,
+    *                             latitude" format.
+    * @param northeastCoordinates the northeast coordinate of the selected area's bounding rectangle, as a "longitude,
+    *                             latitude" format.
+    * @param language a English-written language used to filter Tweets; if this parameter is empty, there won't be a
+    *                 language filter.
     */
-  def streaming(out: ActorRef, sessionId: String, twitterStream: TwitterStream, query: String, northeastCoordinates: Array[Double], southwestCoordinates: Array[Double]) = {
-    println("Starting streaming...")
-    // Gets the cached Twitter object, which will be used to correctly configure the Twitter's stream object.
-    val getTwitter = cache.get[Twitter](sessionId + "-twitter")
+  def streaming(out: ActorRef, twitterStream: TwitterStream, keywordsSet: String, query: String,
+                southwestCoordinates: Array[Double], northeastCoordinates: Array[Double], language: String) = {
+    println("Starting " + keywordsSet + " streaming: \"" + query + "\" written in " + (if (language.isEmpty) "any language" else "\"" + language + "\"") + ".")
 
-    getTwitter match {
-      // If the Twitter object no longer exists, the session expired so the user has to be disconnected.
-      case None => {
-        out ! JsObject(Seq(
-          "messageType" -> JsString("sessionExpired")
-        ))
+    // Initializes a listener that will listen to the Twitter's streaming and react by the received type of message.
+    val listener: StatusListener = new StatusListener {
+      /**
+        * Occurs when the listener received a new Tweet from the Twitter's API.
+        * Checks if the received Tweet has a geolocation tag, and if so, sends a new web socket to the client in
+        * order to inform it.
+        *
+        * @param status the new Tweet's data
+        */
+      override def onStatus(status: twitter4j.Status): Unit = {
+        val geoLocation: GeoLocation = status.getGeoLocation
 
-        // Kills the actor in charge of the current client. This will also stop the current streaming process.
-        out ! PoisonPill
-      }
-      case Some(twitter) => {
-        // Initializes a listener that will listen to the Twitter's streaming and react by the received type of message.
-        val listener: StatusListener = new StatusListener {
-          /**
-            * Occurs when the listener received a new Tweet from the Twitter's API.
-            * Checks if the received Tweet has a geolocation tag, and if so, sends a new web socket to the client in
-            * order to inform it.
-            *
-            * @param status the new Tweet's data
-            */
-          override def onStatus(status: twitter4j.Status): Unit = {
-            val geoLocation: GeoLocation = status.getGeoLocation
+        if (geoLocation != null) {
+          val longitude: Double = geoLocation.getLongitude
+          val latitude: Double = geoLocation.getLatitude
 
-            if (geoLocation != null) {
-              val longitude: Double = geoLocation.getLongitude
-              val latitude: Double = geoLocation.getLatitude
+          // Sends a web socket to the client if the received Tweet is located into the given coordinates.
+          if (longitude >= southwestCoordinates(0) && longitude <= northeastCoordinates(0) &&
+            latitude >= southwestCoordinates(1) && latitude <= northeastCoordinates(1)) {
 
-              // Sends a web socket to the client if the received Tweet is located into the given coordinates.
-              if (longitude >= southwestCoordinates(0) && longitude <= northeastCoordinates(0) &&
-                  latitude >= southwestCoordinates(1) && latitude <= northeastCoordinates(1)) {
-                out ! JsObject(Seq(
-                  "messageType" -> JsString("newTweet"),
-                  "longitude"   -> JsNumber(longitude),
-                  "latitude"    -> JsNumber(latitude),
-                  "user"        -> JsString(status.getUser.getName),
-                  "content"     -> JsString(status.getText)
-                ))
-              }
-            }
-          }
-
-          override def onStallWarning(warning: StallWarning): Unit = {}
-
-          override def onDeletionNotice(statusDeletionNotice: StatusDeletionNotice): Unit = {}
-
-          override def onScrubGeo(userId: Long, upToStatusId: Long): Unit = {}
-
-          override def onTrackLimitationNotice(numberOfLimitedStatuses: Int): Unit = {}
-
-          override def onException(ex: Exception): Unit = {
-            ex.printStackTrace
+            out ! JsObject(Seq(
+              "messageType" -> JsString("newTweet"),
+              "keywordsSet" -> JsString(keywordsSet),
+              "longitude"   -> JsNumber(longitude),
+              "latitude"    -> JsNumber(latitude),
+              "user"        -> JsString(status.getUser.getName),
+              "content"     -> JsString(status.getText)
+            ))
           }
         }
+      }
 
-        // Sets the Twitter's Stream object with the Twitter object's configuration.
-        twitterStream.setOAuthConsumer(
-          config.getString("twitter4j.oauth.consumerKey"),
-          config.getString("twitter4j.oauth.consumerSecret")
-        )
-        twitterStream.setOAuthAccessToken(twitter.getOAuthAccessToken)
-        // Starts streaming with the given filter.
-        val fq: FilterQuery = new FilterQuery(query)
-        twitterStream.addListener(listener)
-        twitterStream.filter(fq)
+      override def onStallWarning(warning: StallWarning): Unit = {}
+
+      override def onDeletionNotice(statusDeletionNotice: StatusDeletionNotice): Unit = {}
+
+      override def onScrubGeo(userId: Long, upToStatusId: Long): Unit = {}
+
+      override def onTrackLimitationNotice(numberOfLimitedStatuses: Int): Unit = {}
+
+      override def onException(ex: Exception): Unit = {
+        ex.printStackTrace
       }
     }
+
+    // Starts streaming with the given filter.
+    val fq: FilterQuery = new FilterQuery(query)
+
+    // Add a language filter is the given parameter is not empty
+    if (!language.isEmpty) {
+      fq.language(language)
+    }
+
+    twitterStream.addListener(listener)
+    twitterStream.filter(fq)
   }
 
   /**

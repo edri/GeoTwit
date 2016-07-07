@@ -18,6 +18,8 @@
         routes.javascript.Assets.versioned
     )
 
+    <!-- Loads the shapefile-js library, which allows us to parse a Shapefile binary file and convert it into Json. -->
+    <script src="@routes.Assets.versioned("javascripts/shp.min.js")" type="text/javascript"></script>
     <!-- Loads the search pages' JavaScript code. -->
     <script src="@routes.Assets.versioned("javascripts/search-bundle.js")" type="text/javascript"></script>
 

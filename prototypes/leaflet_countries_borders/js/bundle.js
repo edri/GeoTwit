@@ -9,6 +9,8 @@ var wc = require('which-country');
 // Load the "world-countries" library, which allows us to have a country's english
 // name by its ISO.
 var countries = require('world-countries');
+// Will contain all the coordinates of the polygon representing the selected country.
+var polygonCoordinates = [];
 
 var byISO = {};
 
@@ -16,6 +18,31 @@ var byISO = {};
 countries.forEach(function (country) {
   byISO[country.cca3] = country;
 });
+
+/**
+* Indicates whether the given point is located (true) or not (false) in the polygon
+* representing the selected country.
+* This function is directly inspired by the substack's "point-in-polygon" MIT library,
+* available on GitHub right here: https://github.com/substack/point-in-polygon.
+* More explanations about this algorithm are available right here:
+* https://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
+*/
+function isPointInSelectedArea(lat, lng) {
+    var inside = false;
+
+    for (var i = 0; i < polygonCoordinates.length; ++i) {
+        for (var j = 0, k = polygonCoordinates[i].length - 1; j < polygonCoordinates[i].length; k = j++) {
+            var xi = polygonCoordinates[i][j][0], yi = polygonCoordinates[i][j][1];
+            var xj = polygonCoordinates[i][k][0], yj = polygonCoordinates[i][k][1];
+
+            var intersect = ((yi > lng) != (yj > lng))
+                && (lat < (xj - xi) * (lng - yi) / (yj - yi) + xi);
+            if (intersect) inside = !inside;
+        }
+    }
+
+    return inside;
+}
 
 window.onload = function() {
     // Set the default map's values (coordinates and zoom's value).
@@ -34,7 +61,9 @@ window.onload = function() {
     swissMap.on('click', function(e) {
         document.getElementById('circleCoordinatesX').value = e.latlng.lat;
         document.getElementById('circleCoordinatesY').value = e.latlng.lng;
-        //L.marker([e.latlng.lat, e.latlng.lng]).addTo(swissMap);
+        L.marker([e.latlng.lat, e.latlng.lng]).addTo(swissMap);
+
+        document.getElementById("isContained").innerText = (isPointInSelectedArea(e.latlng.lat, e.latlng.lng) ? "Yes!" : "No.");
     });
 
     // Catch a double-click on the map, get the clicked country and then add a polygon
@@ -71,8 +100,10 @@ window.onload = function() {
                                 })
 
                                 L.polygon(tmp).addTo(swissMap);
-                            } else if (obj.geometry.type == "MultiPolygon") {
 
+                                // Adds the coordinates of the new polygon in the array of polygons' coordinates.
+                                polygonCoordinates.push(tmp);
+                            } else if (obj.geometry.type == "MultiPolygon") {
                                 // Iterate over each country's territories.
                                 for (var i = 0; i < obj.geometry.coordinates.length; ++i) {
                                     // Add each territory one by one on the map.
@@ -81,6 +112,8 @@ window.onload = function() {
                                     }
 
                                     L.polygon(tmp).addTo(swissMap);
+                                        // Adds the coordinates of the new polygon in the array of polygons' coordinates.
+                                        polygonCoordinates.push(tmp);
                                     tmp = [];
                                 }
                             }
