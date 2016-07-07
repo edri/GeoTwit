@@ -6,6 +6,13 @@ var MAP_ATTRIBUTION = "&copy; <a href='http://www.openstreetmap.org/copyright'>O
 var SUCCESS_STATUS = "success";
 var FIRST_KEYWORD_NOT_SET = "firstKeywordNotSet";
 var LOCATION_NOT_SELECTED = "locationNotSelected";
+// The number of Tweets per minutes that can be considered as a good speed.
+var GOOD_SPEED = 60;
+// The values of the color of the good speed rate. You can find more information about HSL colors here:
+// http://www.w3schools.com/colors/colors_hsl.asp.
+var GOOD_SPEED_HUE_COLOR = 120;
+var BAD_SPEED_LIGHTNESS_COLOR = 50;
+var GOOD_SPEED_LIGHTNESS_COLOR = 25;
 // "require" code is normally only usable in Node.js, but we bundle it with the amazing "browserify" library!
 // If you update this file you have to install "browserify" (npm install -g browserify) and then just have
 // to type "browserify public/javascripts/search.js -o public/javascripts/search-bundle.js".
@@ -14,7 +21,7 @@ var drawControl = require('leaflet-draw-drag');
 // Loads the "Leaflet.markercluster" library, which is used to automatically group markers on the map.
 require('leaflet.markercluster');
 
-var socketConnection, dynamicMap, staticMap, streamingResultsMap, markers, drawControlEditOnly, drawControlFull;
+var socketConnection, dynamicMap, staticMap, streamingResultsMap, markers, drawControlEditOnly, drawControlFull, speedInterval;
 // Used as a locker when the user reconnects to the web socket's server. Since JavaScript is indeed
 // an asynchronous language, we need to wait for the disconnection before reconnect.
 var deferredWebSocketReconnection = $.Deferred();
@@ -54,6 +61,13 @@ var markersIcons = {
     "first":    new LeafResultsIcon({iconUrl: jsRoutes.controllers.Assets.versioned('images/marker-icon-first.png').url}),
     "second":   new LeafResultsIcon({iconUrl: jsRoutes.controllers.Assets.versioned('images/marker-icon-second.png').url})
 };
+// Contains the number of received Tweets since the beginning of the current streamings.
+var nbReceivedTweets = {
+    "first": 0,
+    "second": 0
+}
+// Contains the elapsed time in seconds since the beginning of the streaming(s).
+var elapsedTime = 0;
 
 /**
 * Returns the current time as a "[HH:MM:SS]" format.
@@ -329,6 +343,44 @@ function loadStreamingResultsMap() {
     // in order to automatically group markers with the Leaflet.markercluster library.
     markers = L.markerClusterGroup();
     streamingResultsMap.addLayer(markers);
+
+    // Displays and initializes GUI elements on the results page.
+    var firstKeywords = getAndFormatKeywords("first");
+    var secondKeywords = getAndFormatKeywords("second");
+
+    $("#firstStreamingSubject").text(firstKeywords);
+
+    if (secondKeywords) {
+        $("#firstStreamingSubjectText").html("<u>First</u> streaming's subject: ");
+        $("#firstStreamingNumberText").html("Number of received Tweets for the <u>first</u> streaming: ");
+        $("#firstStreamingSpeedText").html("<u>First</u> streaming's average speed: ");
+        $("#secondStreamingSubject").text(secondKeywords);
+        $(".second-streaming-text").show();
+    }
+
+    // Displays the receptions' speeds, each second.
+    speedInterval = setInterval(function() {
+        // Increments and display the elapsed time.
+        $("#elapsedTime").text(++elapsedTime);
+
+        // Display the average speeds and change their colors by their values (red => bad speed; green => good speed).
+        $.each(nbReceivedTweets, function(key, value) {
+            // Gets the speed value of received Tweets per minutes, with at most two decimals.
+            var speedPerMinutes = 60 * Math.round(value / elapsedTime * 100) / 100;
+            // We wants to switch the hue color between 0 (red - bad speed) and 120 (green - good speed), according to the average speed.
+            var hueColorLevel =
+                (speedPerMinutes * (GOOD_SPEED_HUE_COLOR / GOOD_SPEED) > GOOD_SPEED_HUE_COLOR) ?
+                    GOOD_SPEED_HUE_COLOR : speedPerMinutes * (GOOD_SPEED_HUE_COLOR / GOOD_SPEED);
+            // We want to switch the lightness color level from 50% (bad speed) to 25% (good speed).
+            var lightnessColorLevel =
+                (BAD_SPEED_LIGHTNESS_COLOR - speedPerMinutes / (GOOD_SPEED / GOOD_SPEED_LIGHTNESS_COLOR) < GOOD_SPEED_LIGHTNESS_COLOR) ?
+                    GOOD_SPEED_LIGHTNESS_COLOR : BAD_SPEED_LIGHTNESS_COLOR - speedPerMinutes / (GOOD_SPEED / GOOD_SPEED_LIGHTNESS_COLOR);
+
+            // Displays the speed value with at most two decimal, only for the displayed elements.
+            $("#" + key + "StreamingSpeed:visible").text(speedPerMinutes + " Tweet(s) / minute");
+            $("#" + key + "StreamingSpeed:visible").css("color", "hsl(" + hueColorLevel + ", 100%, " + lightnessColorLevel + "%)")
+        })
+    }, 1000)
 }
 
 /**
@@ -548,20 +600,25 @@ function initWebSocket() {
                             break;
                         // Occurs when new Tweet's data are coming from the server.
                         case "newTweet":
-                            // Shows the reveived tweets panel if not already done.
-                            if ($("#noTweetReceivedText").is(":visible")) {
-                                $("#noTweetReceivedText").hide();
-                                $("#tweetsContent").fadeIn();
-                            }
-
                             // Adds the new Tweet on the map if the user manually selected the rectangle on the map or if the
                             // Tweet belongs to the selected country's territory (since it wasn't possible to send the entire
                             // massive coordinates array through the network).
                             if (rectangleManuallyDrawn || isPointInSelectedArea(data.latitude, data.longitude, selectedCountryCoordinates)) {
+                                // Increments the number of received Tweets for the given dataset, in order to calculate the speed value.
+                                ++nbReceivedTweets[data.keywordsSet];
+
+                                // Shows the reveived tweets panel if not already done.
+                                if ($("#noTweetReceivedText").is(":visible")) {
+                                    $("#noTweetReceivedText").hide();
+                                    $("#tweetsContent").fadeIn();
+                                }
+
                                 // Adds the new Tweet on the map and displays it in the results panel.
                                 // The Leaflet.markercluster library will automatically group Tweets on the map.
                                 markers.addLayer(L.marker([data.latitude, data.longitude], {icon: markersIcons[data.keywordsSet]}));
-                                $("#tweetsContent").prepend("<div><strong>" + getCurrentTime() + " " + data.user + "</strong>: " + data.content + "<br/></div>")
+                                $("#tweetsContent").prepend("<div class='" + data.keywordsSet + "-streaming-text'><strong>" + getCurrentTime() + " " + data.user + "</strong>: " + data.content + "<br/></div>")
+
+                                $("#" + data.keywordsSet + "StreamingNumber").text(parseInt($("#" + data.keywordsSet + "StreamingNumber").text()) + 1)
                             }
 
                             break;
@@ -606,6 +663,8 @@ function stopStreaming(sendSocket) {
             }));
         }
 
+        // Stops the speed's calculation.
+        clearInterval(speedInterval);
         $("#btnStopStreaming").hide();
         $("#btnNewSearch").show();
         $("#streamingResultsTitle").html("This streaming was <strong><u>stopped</u></strong>!")

@@ -19,35 +19,59 @@
         </tr>
     </table>
 
-    <!-- Nav tabs -->
-    <ul class="nav nav-tabs" id="streamingResultsTabs" role="tablist">
-        <li role="presentation" class="active"><a href="#map" aria-controls="map" role="tab" data-toggle="tab">Map</a></li>
-        <li role="presentation"><a href="#charts" aria-controls="charts" role="tab" data-toggle="tab">Charts</a></li>
-    </ul>
-
-    <!-- Tab panes -->
-    <div class="tab-content">
-        <div role="tabpanel" class="tab-pane fade in active" id="map">
-            <!-- This div will contain the map of the streaming's results. -->
-            <div class="search-map" id="streamingResultsMap"></div>
+    <p>
+        <div class="elapsed-time">
+            Elapsed time: <strong id="elapsedTime">0</strong> second(s)
         </div>
+        <table class="streaming-subjects">
+            <tr class="first-streaming-text">
+                <td class="streaming-subjects-first-td" id="firstStreamingSubjectText">Streaming's subject: </td>
+                <td class="streaming-subjects-second-td" id="firstStreamingSubject"></td>
+            </tr>
+            <tr class="second-streaming-text second-streaming-element">
+                <td class="streaming-subjects-first-td"><u>Second</u> streaming's subject: </td>
+                <td class="streaming-subjects-second-td" id="secondStreamingSubject"></td>
+            </tr>
+        </table>
+    </p>
+    <br/>
 
-        <div role="tabpanel" class="tab-pane fade" id="charts">
-            CHARTS
+    <p>
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" id="streamingResultsTabs" role="tablist">
+            <li role="presentation" class="active"><a href="#map" aria-controls="map" role="tab" data-toggle="tab">Map</a></li>
+            <li role="presentation"><a href="#charts" aria-controls="charts" role="tab" data-toggle="tab">Charts</a></li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade in active" id="map">
+                <!-- This div will contain the map of the streaming's results. -->
+                <div class="search-map" id="streamingResultsMap"></div>
+            </div>
+
+            <div role="tabpanel" class="tab-pane fade" id="charts">
+                CHARTS
+            </div>
         </div>
-    </div>
+    </p>
 
     <table class="tweets-content-results">
         <tr>
             <td>
                 <h3 class="received-tweets-title">Received Tweets</h3>
             </td>
+            <td class="number-of-received-tweets">
+                <span class="first-streaming-text"><span id="firstStreamingNumberText">Number of received Tweets: </span><strong id="firstStreamingNumber">0</strong></span><br/>
+                <span class="second-streaming-text second-streaming-element">Number of received Tweets for the <u>second</u> streaming: <strong id="secondStreamingNumber">0</strong></span>
+            </td>
             <td class="tweets-reception-speed">
-                Speed: 10 Tweets / second
+                <span class="first-streaming-text"><span id="firstStreamingSpeedText">Average speed speed: </span><span class="first-streaming-speed" id="firstStreamingSpeed">0 Tweet(s) / minute</span></span><br/>
+                <span class="second-streaming-text second-streaming-element"><u>Second</u> streaming's average speed: <span class="second-streaming-speed" id="secondStreamingSpeed">0 Tweet(s) / minute</span></span>
             </td>
         </tr>
     </table>
 
-    <div class="no-tweet-received" id="noTweetReceivedText">No Tweet received yet.</div>
+    <div class="no-tweet-received" id="noTweetReceivedText">No received Tweet yet.</div>
     <div class="tweets-content" id="tweetsContent"></div>
 </div>
