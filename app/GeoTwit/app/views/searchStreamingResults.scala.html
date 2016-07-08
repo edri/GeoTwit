@@ -26,11 +26,11 @@
         <table class="streaming-subjects">
             <tr class="first-streaming-text">
                 <td class="streaming-subjects-first-td" id="firstStreamingSubjectText">Streaming's subject: </td>
-                <td class="streaming-subjects-second-td" id="firstStreamingSubject"></td>
+                <td class="streaming-subjects-second-td" data-container="body" data-html="true" data-placement="bottom" data-toggle="tooltip" data-trigger="manual" id="firstStreamingSubject"></td>
             </tr>
             <tr class="second-streaming-text second-streaming-element">
                 <td class="streaming-subjects-first-td"><u>Second</u> streaming's subject: </td>
-                <td class="streaming-subjects-second-td" id="secondStreamingSubject"></td>
+                <td class="streaming-subjects-second-td" data-container="body" data-html="true" data-placement="bottom" data-toggle="tooltip" data-trigger="manual" id="secondStreamingSubject"></td>
             </tr>
         </table>
     </p>
@@ -51,7 +51,31 @@
             </div>
 
             <div role="tabpanel" class="tab-pane fade" id="charts">
-                CHARTS
+                <div>Charts related to <strong>Tweets <u>having</u> geolocation tags</strong>:</div>
+                <div class="charts-container">
+                    <div class="chart-container">
+                        <canvas id="chartTotalReceivedTweets" height="300"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="chartTweetsReception" height="300"></canvas>
+                    </div>
+                    <div class="chart-container only-multiple-streamings" id="chartPartsOfReceivedTweetsContainer">
+                        <canvas id="chartPartsOfReceivedTweets" height="300"></canvas>
+                    </div>
+                </div>
+                <hr/>
+                <div>Charts related to all kinds of Tweets (<strong>with or <u>without</u> geolocation tags</strong>):</div>
+                <div class="charts-container">
+                    <div class="chart-container">
+                        <canvas id="chartWithoutGeolocation" height="300"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="chartWithoutGeolocationCurrent" height="300"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="chartDoughnutWithoutGeolocation" height="300"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
     </p>

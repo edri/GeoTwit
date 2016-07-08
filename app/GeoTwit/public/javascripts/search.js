@@ -6,6 +6,12 @@ var MAP_ATTRIBUTION = "&copy; <a href='http://www.openstreetmap.org/copyright'>O
 var SUCCESS_STATUS = "success";
 var FIRST_KEYWORD_NOT_SET = "firstKeywordNotSet";
 var LOCATION_NOT_SELECTED = "locationNotSelected";
+var FIRST_SUBJECT_LABEL = "First Subject";
+var SECOND_SUBJECT_LABEL = "Second Subject";
+var FIRST_SUBJECT_COLOR = "rgba(41, 129, 202, 1)";
+var FIRST_SUBJECT_TRANSPARENT_COLOR = "rgba(41, 129, 202, 0.4)";
+var SECOND_SUBJECT_COLOR = "rgba(255, 111, 39, 1)";
+var SECOND_SUBJECT_TRANSPARENT_COLOR = "rgba(255, 111, 39, 0.4)";
 // The number of Tweets per minutes that can be considered as a good speed.
 var GOOD_SPEED = 30;
 // The values of the color of the good speed rate. You can find more information about HSL colors here:
@@ -13,6 +19,8 @@ var GOOD_SPEED = 30;
 var GOOD_SPEED_HUE_COLOR = 120;
 var BAD_SPEED_LIGHTNESS_COLOR = 50;
 var GOOD_SPEED_LIGHTNESS_COLOR = 25;
+var MAX_DISPLAYED_TWEETS = 100;
+
 // "require" code is normally only usable in Node.js, but we bundle it with the amazing "browserify" library!
 // If you update this file you have to install "browserify" (npm install -g browserify) and then just have
 // to type "browserify public/javascripts/search.js -o public/javascripts/search-bundle.js".
@@ -20,8 +28,11 @@ var GOOD_SPEED_LIGHTNESS_COLOR = 25;
 var drawControl = require('leaflet-draw-drag');
 // Loads the "Leaflet.markercluster" library, which is used to automatically group markers on the map.
 require('leaflet.markercluster');
+// Loads the Chart.js library, in order to be able to build charts during the streaming process.
+var Chart = require('chart.js');
 
-var socketConnection, dynamicMap, staticMap, streamingResultsMap, markers, drawControlEditOnly, drawControlFull, speedInterval;
+var socketConnection, dynamicMap, staticMap, streamingResultsMap, markers, drawControlEditOnly, drawControlFull,
+    speedInterval, lineChartsUpdateInterval, doughnutChartsUpdateInterval;
 // Used as a locker when the user reconnects to the web socket's server. Since JavaScript is indeed
 // an asynchronous language, we need to wait for the disconnection before reconnect.
 var deferredWebSocketReconnection = $.Deferred();
@@ -68,9 +79,13 @@ var humanQueryString = {
     "second": ""
 }
 // Contains the number of received Tweets since the beginning of the current streamings.
+// The first elements contain the number of Tweets with geolocation tags, while the
+// last ones contain the total number of Tweets (with and without geolocation tag).
 var nbReceivedTweets = {
     "first": 0,
-    "second": 0
+    "second": 0,
+    "firstTotal": 0,
+    "secondTotal": 0
 }
 // Contains the elapsed time in seconds since the beginning of the streaming(s).
 var elapsedTime = 0;
@@ -104,6 +119,24 @@ function secondsToHhMmSs(seconds) {
     if (s < 10) s = "0" + s;
 
     return h + ":" + m + ":" + s;
+}
+
+/**
+* Recursively clones the given object and return the clone. If a non-object value is passed in, that value is returned.
+* I found this function here: http://heyjavascript.com/4-creative-ways-to-clone-objects/.
+*/
+function cloneObject(obj) {
+    if (obj === null || typeof obj !== 'object') {
+        return obj;
+    }
+
+    // Gives "temp" the original obj's constructor.
+    var temp = obj.constructor();
+    for (var key in obj) {
+        temp[key] = cloneObject(obj[key]);
+    }
+
+    return temp;
 }
 
 /*
@@ -364,10 +397,482 @@ function loadStreamingResultsMap() {
     // in order to automatically group markers with the Leaflet.markercluster library.
     markers = L.markerClusterGroup();
     streamingResultsMap.addLayer(markers);
+}
 
+/**
+* Loads all elements related to the charts of the streaming's results.
+*
+* Parameters:
+*   - hasSecondStream: boolean value indicating if the user filled a second keywords
+*                      set, in order to show/hide graphs according to the value.
+*/
+function loadStreamingResultsCharts(hasSecondStream) {
+    // Sets global charts' parameters.
+    Chart.defaults.global.title.display = true
+    Chart.defaults.global.title.fontSize = 15
+
+    // Initializes charts' contexes.
+    var ctxTotalReceivedTweets = $("#chartTotalReceivedTweets");
+    var ctxTweetsReception = $("#chartTweetsReception");
+    var ctxPartsOfReceivedTweets;
+    var ctxWithoutGeolocation = $("#chartWithoutGeolocation");
+    var ctxWithoutGeolocationCurrent = $("#chartWithoutGeolocationCurrent");
+    var ctxDoughnutWithoutGeolocation = $("#chartDoughnutWithoutGeolocation");
+
+    if (hasSecondStream) {
+        $("#chartPartsOfReceivedTweetsContainer").show();
+        ctxPartsOfReceivedTweets = $("#chartPartsOfReceivedTweets");
+    }
+
+    // Contains data of a empty graph of type "line"; this object will be cloned
+    // for each graph, in order to avoid shared data and bugs between graphs.
+    var emptyLinedGraphData = {
+        labels: [0],
+        datasets: [
+            {
+                label: FIRST_SUBJECT_LABEL,
+                fill: false,
+                lineTension: 0.1,
+                backgroundColor: FIRST_SUBJECT_TRANSPARENT_COLOR,
+                borderColor: FIRST_SUBJECT_COLOR,
+                borderCapStyle: 'butt',
+                borderDash: [],
+                borderDashOffset: 0.0,
+                borderJoinStyle: 'miter',
+                pointBorderColor: FIRST_SUBJECT_COLOR,
+                pointBackgroundColor: "#fff",
+                pointBorderWidth: 1,
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: FIRST_SUBJECT_COLOR,
+                pointHoverBorderColor: "rgba(220, 220, 220, 1)",
+                pointHoverBorderWidth: 2,
+                pointRadius: 1,
+                pointHitRadius: 10,
+                data: [0]
+            }
+        ]
+    }
+
+    // Adds a second dataset to the default data of lined graphs if there is more
+    // than one keyword set.
+    if (hasSecondStream) {
+        emptyLinedGraphData.datasets.push({
+            label: SECOND_SUBJECT_LABEL,
+            fill: false,
+            lineTension: 0.1,
+            backgroundColor: SECOND_SUBJECT_TRANSPARENT_COLOR,
+            borderColor: SECOND_SUBJECT_COLOR,
+            borderCapStyle: 'butt',
+            borderDash: [],
+            borderDashOffset: 0.0,
+            borderJoinStyle: 'miter',
+            pointBorderColor: SECOND_SUBJECT_COLOR,
+            pointBackgroundColor: "#fff",
+            pointBorderWidth: 1,
+            pointHoverRadius: 5,
+            pointHoverBackgroundColor: SECOND_SUBJECT_COLOR,
+            pointHoverBorderColor: "rgba(220, 220, 220, 1)",
+            pointHoverBorderWidth: 2,
+            pointRadius: 1,
+            pointHitRadius: 10,
+            data: [0]
+        });
+    }
+
+    // Contains data of a empty graph of type "doughnut"; this object will be cloned
+    // for each graph, in order to avoid shared data and bugs between graphs.
+    var emptyDoughnutGraphData = {
+        labels: [FIRST_SUBJECT_LABEL, SECOND_SUBJECT_LABEL],
+        datasets: [
+            {
+                data: [0, 0],
+                backgroundColor: [
+                    FIRST_SUBJECT_COLOR,
+                    SECOND_SUBJECT_COLOR
+                ],
+                hoverBackgroundColor: [
+                    FIRST_SUBJECT_COLOR,
+                    SECOND_SUBJECT_COLOR
+                ]
+            }
+        ]
+    }
+
+    // Contains data of a empty graph of type "piw"; this object will be cloned
+    // for each graph, in order to avoid shared data and bugs between graphs.
+    var emptyPieGraphData = {
+        labels: [
+            "Tweets WITH geolocation",
+            "Tweets WITHOUT geolocation"
+        ],
+        datasets: [
+            {
+                data: [0, 0],
+                backgroundColor: [
+                    FIRST_SUBJECT_COLOR,
+                    FIRST_SUBJECT_TRANSPARENT_COLOR
+                ],
+                hoverBackgroundColor: [
+                    FIRST_SUBJECT_COLOR,
+                    FIRST_SUBJECT_TRANSPARENT_COLOR
+                ]
+            }
+        ]
+    }
+
+    // Adds a second dataset type to the default data of pie graphs if there is more
+    // than one keyword set.
+    if (hasSecondStream) {
+        emptyPieGraphData.labels = [
+            "First subject's Tweets WITH geolocation",
+            "First subject's Tweets WITHOUT geolocation",
+            "Second subject's Tweets WITH geolocation",
+            "Second subject's Tweets WITHOUT geolocation",
+        ];
+        emptyPieGraphData.datasets[0].data = [0, 0, 0, 0];
+        emptyPieGraphData.datasets[0].backgroundColor = [
+            FIRST_SUBJECT_COLOR,
+            FIRST_SUBJECT_TRANSPARENT_COLOR,
+            SECOND_SUBJECT_COLOR,
+            SECOND_SUBJECT_TRANSPARENT_COLOR
+        ];
+        emptyPieGraphData.datasets[0].hoverBackgroundColor = [
+            FIRST_SUBJECT_COLOR,
+            FIRST_SUBJECT_TRANSPARENT_COLOR,
+            SECOND_SUBJECT_COLOR,
+            SECOND_SUBJECT_TRANSPARENT_COLOR
+        ];
+    }
+
+    // Creates the lined graph that displays the total of received Tweets since the
+    // beginning of the streaming process. There can only be 10 labels per axe, to
+    // avoid display's bugs.
+    var chartTotalReceivedTweets = new Chart(ctxTotalReceivedTweets, {
+        type: 'line',
+        data: cloneObject(emptyLinedGraphData),
+        options: {
+            legend: {
+                display: hasSecondStream
+            },
+            scales: {
+                xAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Time [seconds]',
+                        fontStyle: "bold"
+                    },
+                    ticks: {
+                        beginAtZero: true,
+                        maxTicksLimit: 10,
+                        stepSize: 1
+                    }
+                }],
+                yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Nb. of received Tweets',
+                        fontStyle: "bold"
+                    },
+                    ticks: {
+                        beginAtZero: true,
+                        maxTicksLimit: 10
+                    }
+                }]
+            },
+            title: {
+                text: "Total of received Tweets, by time"
+            }
+        }
+    });
+
+    // Creates the lined graph that displays the current's Tweets reception rate since
+    // the beginning of the streaming process.
+    var chartTweetsReception = new Chart(ctxTweetsReception, {
+        type: 'line',
+        data: cloneObject(emptyLinedGraphData),
+        options: {
+            legend: {
+                display: hasSecondStream
+            },
+            scales: {
+                xAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Time [seconds]',
+                        fontStyle: "bold"
+                    },
+                    ticks: {
+                        beginAtZero: true,
+                        maxTicksLimit: 10,
+                        stepSize: 1
+                    }
+                }],
+                yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Nb. of received Tweets',
+                        fontStyle: "bold"
+                    },
+                    ticks: {
+                        beginAtZero: true,
+                        maxTicksLimit: 10
+                    }
+                }]
+            },
+            title: {
+                text: "Reception of Tweets, by time"
+            }
+        }
+    });
+
+    // Creates the doughnut graph that displays the parts of each subjects for the
+    // current streaming process, only if there are several subjects.
+    var chartPartsOfReceivedTweets;
+    if (hasSecondStream) {
+        chartPartsOfReceivedTweets = new Chart(ctxPartsOfReceivedTweets, {
+            type: 'doughnut',
+            data: cloneObject(emptyDoughnutGraphData),
+            options: {
+                title: {
+                    text: "Parts of the received Tweets by subject"
+                }
+            }
+        });
+    }
+
+    // Creates the lined graph that displays the total of received Tweets (with and
+    // WITHOUT geolocation) since the beginning of the streaming process. There can
+    // only be 10 labels per axe, to avoid display's bugs.
+    var chartWithoutGeolocation = new Chart(ctxWithoutGeolocation, {
+        type: 'line',
+        data: cloneObject(emptyLinedGraphData),
+        options: {
+            legend: {
+                display: hasSecondStream
+            },
+            scales: {
+                xAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Time [seconds]',
+                        fontStyle: "bold"
+                    },
+                    ticks: {
+                        beginAtZero: true,
+                        maxTicksLimit: 10,
+                        stepSize: 1
+                    }
+                }],
+                yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Nb. of received Tweets',
+                        fontStyle: "bold"
+                    },
+                    ticks: {
+                        beginAtZero: true,
+                        maxTicksLimit: 10
+                    }
+                }]
+            },
+            title: {
+                text: "Total of received Tweets, by time"
+            }
+        }
+    });
+
+    // Creates the lined graph that displays the current's Tweets reception rate since
+    // the beginning of the streaming process.
+    var chartWithoutGeolocationCurrent = new Chart(ctxWithoutGeolocationCurrent, {
+        type: 'line',
+        data: cloneObject(emptyLinedGraphData),
+        options: {
+            legend: {
+                display: hasSecondStream
+            },
+            scales: {
+                xAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Time [seconds]',
+                        fontStyle: "bold"
+                    },
+                    ticks: {
+                        beginAtZero: true,
+                        maxTicksLimit: 10,
+                        stepSize: 1
+                    }
+                }],
+                yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Nb. of received Tweets',
+                        fontStyle: "bold"
+                    },
+                    ticks: {
+                        beginAtZero: true,
+                        maxTicksLimit: 10
+                    }
+                }]
+            },
+            title: {
+                text: "Reception of Tweets, by time"
+            }
+        }
+    });
+
+    // Creates the pie graph that displays the parts of each subjects for the
+    // current streaming process, only if there are several subjects.
+    var chartDoughnutWithoutGeolocation = new Chart(ctxDoughnutWithoutGeolocation, {
+        type: 'pie',
+        data: cloneObject(emptyPieGraphData),
+        options: {
+            title: {
+                text: "Tweets with geolocation vs. Tweets without"
+            }
+        }
+    });
+
+    var index = 0;
+    // Will contain the last number of received Tweet for each interval's tick, in
+    // order to do calculations.
+    // The total attributes will contain the last number of received Tweets that
+    // have or not geolocation tags.
+    var lastNbReceivedTweets = {
+        "first": 0,
+        "second": 0,
+        "firstTotal": 0,
+        "secondTotal": 0
+    };
+    // Indicates if the lined graphs still display results by seconds or not.
+    // These graphs indeed display results by seconds until 60 seconds, from where
+    // they will display them by minutes.
+    var stillSeconds = true;
+
+    /**
+    * Refresh the lined charts.
+    * This function is executed at each tick of the lined charts' interval.
+    */
+    function lineChartsInterval() {
+        index += 1;
+
+        // When 60 seconds elapsed since the beginning of the streaming process, the lined
+        // graph will display their results by minutes and not by seconds anymore.
+        if (stillSeconds && index >= 60) {
+            stillSeconds = false;
+            index = 1;
+
+            // Change the graphs' time system by erasing all the x-axes' labels and by
+            // displaying the last result (the ones from the 60th second) in the first minutes.
+            chartTotalReceivedTweets.options.scales.xAxes[0].scaleLabel.labelString =
+                chartTweetsReception.options.scales.xAxes[0].scaleLabel.labelString =
+                chartWithoutGeolocation.options.scales.xAxes[0].scaleLabel.labelString =
+                chartWithoutGeolocationCurrent.options.scales.xAxes[0].scaleLabel.labelString =
+                "Time [minutes]";
+            chartTotalReceivedTweets.data.labels = [0, index];
+            chartTotalReceivedTweets.data.datasets[0].data = [0, nbReceivedTweets.first];
+            if (hasSecondStream) {
+                chartTotalReceivedTweets.data.datasets[1].data = [0, nbReceivedTweets.second];
+            }
+
+            chartTweetsReception.data.labels = [0, index];
+            chartTweetsReception.data.datasets[0].data = [0, nbReceivedTweets.first];
+            if (hasSecondStream) {
+                chartTweetsReception.data.datasets[1].data = [0, nbReceivedTweets.second];
+            }
+
+            chartWithoutGeolocation.data.labels = [0, index];
+            chartWithoutGeolocation.data.datasets[0].data = [0, nbReceivedTweets.firstTotal];
+            if (hasSecondStream) {
+                chartWithoutGeolocation.data.datasets[1].data = [0, nbReceivedTweets.secondTotal];
+            }
+
+            chartWithoutGeolocationCurrent.data.labels = [0, index];
+            chartWithoutGeolocationCurrent.data.datasets[0].data = [0, nbReceivedTweets.firstTotal];
+            if (hasSecondStream) {
+                chartWithoutGeolocationCurrent.data.datasets[1].data = [0, nbReceivedTweets.secondTotal];
+            }
+
+            // Clears the current interval and change its refreshment rate to 60 seconds.
+            clearInterval(lineChartsUpdateInterval);
+            lineChartsUpdateInterval = setInterval(lineChartsInterval, 60 * 1000);
+        } else {
+            // Inserts new data in the graphs.
+            chartTotalReceivedTweets.data.labels.push(index);
+            chartTotalReceivedTweets.data.datasets[0].data.push(nbReceivedTweets.first);
+            if (hasSecondStream) {
+                chartTotalReceivedTweets.data.datasets[1].data.push(nbReceivedTweets.second);
+            }
+
+            chartTweetsReception.data.labels.push(index);
+            chartTweetsReception.data.datasets[0].data.push(nbReceivedTweets.first - lastNbReceivedTweets.first);
+            if (hasSecondStream) {
+                chartTweetsReception.data.datasets[1].data.push(nbReceivedTweets.second - lastNbReceivedTweets.second);
+            }
+
+            chartWithoutGeolocation.data.labels.push(index);
+            chartWithoutGeolocation.data.datasets[0].data.push(nbReceivedTweets.firstTotal);
+            if (hasSecondStream) {
+                chartWithoutGeolocation.data.datasets[1].data.push(nbReceivedTweets.secondTotal);
+            }
+
+            chartWithoutGeolocationCurrent.data.labels.push(index);
+            chartWithoutGeolocationCurrent.data.datasets[0].data.push(nbReceivedTweets.firstTotal - lastNbReceivedTweets.firstTotal);
+            if (hasSecondStream) {
+                chartWithoutGeolocationCurrent.data.datasets[1].data.push(nbReceivedTweets.secondTotal - lastNbReceivedTweets.secondTotal);
+            }
+        }
+
+        // Saves the current number of received tweets.
+        lastNbReceivedTweets.first = nbReceivedTweets.first;
+        lastNbReceivedTweets.second = nbReceivedTweets.second;
+        lastNbReceivedTweets.firstTotal = nbReceivedTweets.firstTotal;
+        lastNbReceivedTweets.secondTotal = nbReceivedTweets.secondTotal;
+
+        // Updates the graphs to animate them with the new data.
+        chartTotalReceivedTweets.update();
+        chartTweetsReception.update();
+        chartWithoutGeolocation.update();
+        chartWithoutGeolocationCurrent.update();
+    }
+
+    // Starts the lined charts' refreshment process, which ticks every second until 60 seconds,
+    // and then every minute.
+    lineChartsUpdateInterval = setInterval(lineChartsInterval, 1000);
+
+    // Starts the doughnut/pie charts' refreshment process, which ticks every second.
+    doughnutChartsUpdateInterval = setInterval(function() {
+        // Refreshs the chart displaying the parts of received Tweets for each subject,
+        // only if the user filled several keywords sets.
+        if (hasSecondStream) {
+            chartPartsOfReceivedTweets.data.datasets[0].data = [nbReceivedTweets.first, nbReceivedTweets.second];
+            chartPartsOfReceivedTweets.update();
+
+            chartDoughnutWithoutGeolocation.data.datasets[0].data = [
+                nbReceivedTweets.first,
+                nbReceivedTweets.firstTotal - nbReceivedTweets.first,
+                nbReceivedTweets.second,
+                nbReceivedTweets.secondTotal - nbReceivedTweets.second
+            ];
+        } else {
+            chartDoughnutWithoutGeolocation.data.datasets[0].data = [nbReceivedTweets.first, nbReceivedTweets.firstTotal - nbReceivedTweets.first];
+        }
+
+        chartDoughnutWithoutGeolocation.update();
+    }, 1000);
+}
+
+/**
+* Loads all elements related to the components, map and charts of the streaming's results.
+*/
+function loadStreamingResultsComponents() {
     // Displays and initializes GUI elements on the results page.
     var firstKeywords = getAndFormatKeywords("first");
     var secondKeywords = getAndFormatKeywords("second");
+
+    // Loads the map and charts components.
+    loadStreamingResultsMap();
+    loadStreamingResultsCharts(secondKeywords.length != 0);
 
     $("#firstStreamingSubject").html(humanQueryString["first"]);
 
@@ -378,6 +883,20 @@ function loadStreamingResultsMap() {
         $("#secondStreamingSubject").html(humanQueryString["second"]);
         $(".second-streaming-text").show();
     }
+
+    // Adds a tooltip on the streaming's subject when the user moves the mouse hover it
+    // and if it is too big to fill the entire cell.
+    $("#firstStreamingSubject, #secondStreamingSubject").mouseenter(function() {
+        if (this.offsetWidth < this.scrollWidth) {
+            $(this).attr("data-original-title", $(this).html());
+            $(this).tooltip("show");
+        }
+    })
+
+    // Removes the tooltip when the user moves the mouse out of the streaming's subject.
+    $("#firstStreamingSubject, #secondStreamingSubject").mouseleave(function() {
+        $(this).tooltip("hide");
+    })
 
     // Displays the receptions' speeds, each second.
     speedInterval = setInterval(function() {
@@ -583,12 +1102,12 @@ function initWebSocket() {
                     // Do some actions, depending on the received data message's type.
                     switch (data.messageType) {
                         // Received if the streaming process has been successfully
-                        // opened; displays the result components and asks the server
+                        // opened; loads the result components and asks the server
                         // to begin the stream.
                         case "successfulInit":
                             $("#searchContent").hide();
                             $("#streamingResults").fadeIn();
-                            loadStreamingResultsMap();
+                            loadStreamingResultsComponents();
 
                             // Draws the manually drawn rectangle on the map of the streaming's results if the user
                             // manually drew the rectangle.
@@ -621,6 +1140,9 @@ function initWebSocket() {
                             break;
                         // Occurs when new Tweet's data are coming from the server.
                         case "newTweet":
+                            // Updates the total number of received Tweets (with and without geolocation tags).
+                            nbReceivedTweets[data.keywordsSet + "Total"] = data.nbReceivedTweets;
+
                             // Adds the new Tweet on the map if the user manually selected the rectangle on the map or if the
                             // Tweet belongs to the selected country's territory (since it wasn't possible to send the entire
                             // massive coordinates array through the network).
@@ -637,9 +1159,19 @@ function initWebSocket() {
                                 // Adds the new Tweet on the map and displays it in the results panel.
                                 // The Leaflet.markercluster library will automatically group Tweets on the map.
                                 markers.addLayer(L.marker([data.latitude, data.longitude], {icon: markersIcons[data.keywordsSet]}));
-                                $("#tweetsContent").prepend("<div class='" + data.keywordsSet + "-streaming-text'><strong>" + getCurrentTime() + " " + data.user + "</strong>: " + data.content + "<br/></div>")
+                                $("#tweetsContent").prepend(
+                                    "<div class='" + data.keywordsSet + "-streaming-text'>\
+                                        <strong>" + getCurrentTime() + " " + data.user + "</strong>: " + data.content + "<br/>\
+                                    </div>"
+                                );
                                 // Updates the Tweets' counters.
-                                $("#" + data.keywordsSet + "StreamingNumber").text(parseInt($("#" + data.keywordsSet + "StreamingNumber").text()) + 1)
+                                $("#" + data.keywordsSet + "StreamingNumber").text(parseInt($("#" + data.keywordsSet + "StreamingNumber").text()) + 1);
+
+                                // Removes the old received Tweets it there is too many of theme (in order to avoid
+                                // the web browser to lag).
+                                if ($("#tweetsContent div").length > MAX_DISPLAYED_TWEETS) {
+                                    $("#tweetsContent div").last().remove();
+                                }
                             }
 
                             break;
@@ -677,19 +1209,21 @@ function initWebSocket() {
 *                 is false, it means the server already stopped its process.
 */
 function stopStreaming(sendSocket) {
-    if (socketConnection) {
-        if (sendSocket) {
-            socketConnection.send(JSON.stringify({
-                "messageType": "stopStreaming"
-            }));
-        }
-
-        // Stops the speed's calculation.
-        clearInterval(speedInterval);
-        $("#btnStopStreaming").hide();
-        $("#btnNewSearch").show();
-        $("#streamingResultsTitle").html("This streaming was <strong><u>stopped</u></strong>!")
+    if (socketConnection && sendSocket) {
+        socketConnection.send(JSON.stringify({
+            "messageType": "stopStreaming"
+        }));
     }
+
+    // Stops the speed's calculation and the graphs refreshment processes.
+    clearInterval(speedInterval);
+    clearInterval(lineChartsUpdateInterval);
+    if (doughnutChartsUpdateInterval) {
+        clearInterval(doughnutChartsUpdateInterval);
+    }
+    $("#btnStopStreaming").hide();
+    $("#btnNewSearch").show();
+    $("#streamingResultsTitle").html("This streaming was <strong><u>stopped</u></strong>!")
 }
 
 /**
@@ -796,12 +1330,19 @@ $(document).ready(function() {
         $(this).tab('show');
     })
 
-    // This event is triggered when the user presses the "Static Mode" tab in
-    // order to avoid a map's display bug (since the map of this tab is hidden
-    // by default, the system does not know how to react).
-    // It simply refresh the static map.
+    // This event is triggered when the user click on a new Bootstrap's tab, in
+    // order to avoid a map's display bug (since the map of this tab is either hidden
+    // by default or received a lot of changes since the last display, the system
+    // does not know how to react).
+    // It simply refresh the concerned map.
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-        staticMap.invalidateSize(false);
+        if (staticMap) {
+            staticMap.invalidateSize(false);
+        }
+
+        if (streamingResultsMap) {
+            streamingResultsMap.invalidateSize(false);
+        }
     })
 
     // Loads the counties list.

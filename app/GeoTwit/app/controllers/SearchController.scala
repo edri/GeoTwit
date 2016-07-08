@@ -197,6 +197,8 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
   def streaming(out: ActorRef, twitterStream: TwitterStream, keywordsSet: String, query: String,
                 southwestCoordinates: Array[Double], northeastCoordinates: Array[Double], language: String) = {
     println("Starting " + keywordsSet + " streaming: \"" + query + "\" written in " + (if (language.isEmpty) "any language" else "\"" + language + "\"") + ".")
+    // Contains the total number of received Tweets (with or without geolocation tags.)
+    var numberOfReceivedTweets = 0
 
     // Initializes a listener that will listen to the Twitter's streaming and react by the received type of message.
     val listener: StatusListener = new StatusListener {
@@ -209,6 +211,7 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
         */
       override def onStatus(status: twitter4j.Status): Unit = {
         val geoLocation: GeoLocation = status.getGeoLocation
+        numberOfReceivedTweets += 1
 
         if (geoLocation != null) {
           val longitude: Double = geoLocation.getLongitude
@@ -219,12 +222,13 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
             latitude >= southwestCoordinates(1) && latitude <= northeastCoordinates(1)) {
 
             out ! JsObject(Seq(
-              "messageType" -> JsString("newTweet"),
-              "keywordsSet" -> JsString(keywordsSet),
-              "longitude"   -> JsNumber(longitude),
-              "latitude"    -> JsNumber(latitude),
-              "user"        -> JsString(status.getUser.getName),
-              "content"     -> JsString(status.getText)
+              "messageType"       -> JsString("newTweet"),
+              "keywordsSet"       -> JsString(keywordsSet),
+              "longitude"         -> JsNumber(longitude),
+              "latitude"          -> JsNumber(latitude),
+              "user"              -> JsString(status.getUser.getName),
+              "content"           -> JsString(status.getText),
+              "nbReceivedTweets"  -> JsNumber(numberOfReceivedTweets)
             ))
           }
         }
