@@ -103,7 +103,7 @@ public class Streaming {
       WebsocketServer.sendMessage(jsonMessage.toString());
             
       // Start streaming's reading.
-      readStreaming("job nursing,job engineer", true);
+      readStreaming("euro2016", true);
    }
    
    /**
@@ -176,11 +176,11 @@ public class Streaming {
       //double[] southwestCoordinates = {5.956085, 45.817851};
       //double[] northeastCoordinates = {10.489254, 47.808454};
       // France's coordinates
-      //double[] southwestCoordinates = {-4.805145263671875, 42.34528267746347};
-      //double[] northeastCoordinates = {8.232879638671875, 51.09052797518529};
+      double[] southwestCoordinates = {-4.805145263671875, 42.34528267746347};
+      double[] northeastCoordinates = {8.232879638671875, 51.09052797518529};
       // USA's coordinates
-      double[] southwestCoordinates = {-124.411668, 24.957884};
-      double[] northeastCoordinates = {-66.888435, 49.001895};
+      //double[] southwestCoordinates = {-124.411668, 24.957884};
+      //double[] northeastCoordinates = {-66.888435, 49.001895};
       // UK's coordinates
       //double[] southwestCoordinates = {-8.306947, 49.696022};
       //double[] northeastCoordinates = {1.801128, 59.258967};

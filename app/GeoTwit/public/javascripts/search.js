@@ -7,7 +7,7 @@ var SUCCESS_STATUS = "success";
 var FIRST_KEYWORD_NOT_SET = "firstKeywordNotSet";
 var LOCATION_NOT_SELECTED = "locationNotSelected";
 // The number of Tweets per minutes that can be considered as a good speed.
-var GOOD_SPEED = 60;
+var GOOD_SPEED = 30;
 // The values of the color of the good speed rate. You can find more information about HSL colors here:
 // http://www.w3schools.com/colors/colors_hsl.asp.
 var GOOD_SPEED_HUE_COLOR = 120;
@@ -61,6 +61,12 @@ var markersIcons = {
     "first":    new LeafResultsIcon({iconUrl: jsRoutes.controllers.Assets.versioned('images/marker-icon-first.png').url}),
     "second":   new LeafResultsIcon({iconUrl: jsRoutes.controllers.Assets.versioned('images/marker-icon-second.png').url})
 };
+// Contains human-understandable queries string of the searchs (for example "dog AND (food OR drink)"),
+// in order to display them in the results' page.
+var humanQueryString = {
+    "first": "",
+    "second": ""
+}
 // Contains the number of received Tweets since the beginning of the current streamings.
 var nbReceivedTweets = {
     "first": 0,
@@ -83,6 +89,21 @@ function getCurrentTime() {
     if (s < 10) s = "0" + s;
 
     return "[" + h + ":" + m + ":" + s + "]";
+}
+
+/**
+* Converts the given seconds into a "HH:MM:SS" time format.
+*/
+function secondsToHhMmSs(seconds) {
+    var h = Math.floor(seconds / 3600);
+    var m = Math.floor((seconds - h * 3600) / 60);
+    var s = seconds - m * 60 - h * 3600;
+
+    if (h < 10) h = "0" + h;
+    if (m < 10) m = "0" + m;
+    if (s < 10) s = "0" + s;
+
+    return h + ":" + m + ":" + s;
 }
 
 /*
@@ -348,25 +369,25 @@ function loadStreamingResultsMap() {
     var firstKeywords = getAndFormatKeywords("first");
     var secondKeywords = getAndFormatKeywords("second");
 
-    $("#firstStreamingSubject").text(firstKeywords);
+    $("#firstStreamingSubject").html(humanQueryString["first"]);
 
     if (secondKeywords) {
         $("#firstStreamingSubjectText").html("<u>First</u> streaming's subject: ");
         $("#firstStreamingNumberText").html("Number of received Tweets for the <u>first</u> streaming: ");
         $("#firstStreamingSpeedText").html("<u>First</u> streaming's average speed: ");
-        $("#secondStreamingSubject").text(secondKeywords);
+        $("#secondStreamingSubject").html(humanQueryString["second"]);
         $(".second-streaming-text").show();
     }
 
     // Displays the receptions' speeds, each second.
     speedInterval = setInterval(function() {
-        // Increments and display the elapsed time.
-        $("#elapsedTime").text(++elapsedTime);
+        // Increments and display the elapsed time as a HH:MM:SS format.
+        $("#elapsedTime").text(secondsToHhMmSs(++elapsedTime));
 
         // Display the average speeds and change their colors by their values (red => bad speed; green => good speed).
         $.each(nbReceivedTweets, function(key, value) {
             // Gets the speed value of received Tweets per minutes, with at most two decimals.
-            var speedPerMinutes = 60 * Math.round(value / elapsedTime * 100) / 100;
+            var speedPerMinutes = Math.round(60 * (value / elapsedTime) * 100) / 100;
             // We wants to switch the hue color between 0 (red - bad speed) and 120 (green - good speed), according to the average speed.
             var hueColorLevel =
                 (speedPerMinutes * (GOOD_SPEED_HUE_COLOR / GOOD_SPEED) > GOOD_SPEED_HUE_COLOR) ?
@@ -617,7 +638,7 @@ function initWebSocket() {
                                 // The Leaflet.markercluster library will automatically group Tweets on the map.
                                 markers.addLayer(L.marker([data.latitude, data.longitude], {icon: markersIcons[data.keywordsSet]}));
                                 $("#tweetsContent").prepend("<div class='" + data.keywordsSet + "-streaming-text'><strong>" + getCurrentTime() + " " + data.user + "</strong>: " + data.content + "<br/></div>")
-
+                                // Updates the Tweets' counters.
                                 $("#" + data.keywordsSet + "StreamingNumber").text(parseInt($("#" + data.keywordsSet + "StreamingNumber").text()) + 1)
                             }
 
@@ -743,14 +764,19 @@ function getAndFormatKeywords(keywordsSetNumber) {
             resultString += andField + " " + orWords[i];
             if (i < len - 1) resultString += ",";
         }
+
+        // Updates the human-understandable query's string.
+        humanQueryString[keywordsSetNumber] = andField.split(" ").join(" <u>AND</u> ") + " <u>AND</u> (" + orWords.join(" <u>OR</u> ") + ")";
     // 2. Only the OR field is set => returns a comma-separated string.
     } else if (orField) {
         // Adds each comma-separated OR word to the query.
-        var resultString = orField.split(" ").join(",");
+        resultString = orField.split(" ").join(",");
+        humanQueryString[keywordsSetNumber] = orField.split(" ").join(" <u>OR</u> ");
     // 3. Only the AND field is set => returns a space-separated string.
     } else if (andField) {
         // Just gets the AND field value, since words are already space-separated.
         resultString = andField;
+        humanQueryString[keywordsSetNumber] = andField.split(" ").join(" <u>AND</u> ");
     }
 
     return resultString;

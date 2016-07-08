@@ -259,16 +259,22 @@ body {
 
 .streaming-subjects {
     float: right;
+    width: 75%;
 }
 
 .streaming-subjects-first-td {
+    max-width: 0;
     padding-right: 0.5em;
     text-align: right;
 }
 
 .streaming-subjects-second-td {
     font-weight: bold;
+    max-width: 0;
+    overflow: hidden;
     text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .tweets-content-results {
