@@ -64,7 +64,7 @@
                     </div>
                 </div>
                 <hr/>
-                <div>Charts related to all kinds of Tweets (<strong>with or <u>without</u> geolocation tags</strong>):</div>
+                <div>Charts related to all kinds of Tweets (<strong>with and <u>without</u> geolocation tags</strong>):</div>
                 <div class="charts-container">
                     <div class="chart-container">
                         <canvas id="chartWithoutGeolocation" height="300"></canvas>
@@ -73,7 +73,7 @@
                         <canvas id="chartWithoutGeolocationCurrent" height="300"></canvas>
                     </div>
                     <div class="chart-container">
-                        <canvas id="chartDoughnutWithoutGeolocation" height="300"></canvas>
+                        <canvas id="chartGeolocationComparison" height="300"></canvas>
                     </div>
                 </div>
             </div>
@@ -83,7 +83,7 @@
     <table class="tweets-content-results">
         <tr>
             <td>
-                <h3 class="received-tweets-title">Received Tweets</h3>
+                <h4 class="received-tweets-title">Received Geolocated Tweets</h4>
             </td>
             <td class="number-of-received-tweets">
                 <span class="first-streaming-text"><span id="firstStreamingNumberText">Number of received Tweets: </span><strong id="firstStreamingNumber">0</strong></span><br/>
@@ -97,5 +97,6 @@
     </table>
 
     <div class="no-tweet-received" id="noTweetReceivedText">No received Tweet yet.</div>
+    <div class="max-number-displayed-tweets" id="maxNumberDisplayedTweets">You can see the <span id="numberTweetsMax"></span> last received Tweets below:</div>
     <div class="tweets-content" id="tweetsContent"></div>
 </div>

@@ -103,7 +103,8 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
                   // If the Twitter object no longer exists, the session expired so the user has to be disconnected.
                   case None => {
                     out ! JsObject(Seq(
-                      "messageType" -> JsString("sessionExpired")
+                      "messageType" -> JsString("stopStreaming"),
+                      "reason"      -> JsString("sessionExpired")
                     ))
 
                     // Kills the actor in charge of the current client. This will also stop the current streaming process.
@@ -138,7 +139,7 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
               case _ => println("I received a bad-formatted socket.")
             }
           }
-          // Stops streaming when the user clicked on the well-named button.
+          // Stops streaming when the user clicked on the well-named button. 
           case JsSuccess("stopStreaming", _) => out ! PoisonPill
           case _ => println("I received a bad-formatted socket.")
         }
@@ -149,7 +150,6 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
       */
     override def postStop() = {
       println("Got it, I am stopping the streaming process...")
-      out ! JsObject(Seq("messageType" -> JsString("stopStreaming")))
 
       // Clears and stops each existing streaming.
       for (ts <- twitterStreams) {
@@ -244,6 +244,35 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
 
       override def onException(ex: Exception): Unit = {
         ex.printStackTrace
+
+        try {
+          val twitterException = ex.asInstanceOf[TwitterException].getStatusCode
+
+          // The user ran too many copies of the same application authenticating with the same account name.
+          if (twitterException == 420) {
+            out ! JsObject(Seq(
+              "messageType" -> JsString("stopStreaming"),
+              "reason"      -> JsString("statusCode420")
+            ))
+          } else {
+            out ! JsObject(Seq(
+              "messageType" -> JsString("stopStreaming"),
+              "reason"      -> JsString("exception")
+            ))
+          }
+        }
+        catch {
+          case e: Exception => {
+            out ! JsObject(Seq(
+              "messageType" -> JsString("stopStreaming"),
+              "reason"      -> JsString("exception")
+            ))
+          }
+        }
+        finally {
+          // Stops the streaming process.
+          out ! PoisonPill
+        }
       }
     }
 

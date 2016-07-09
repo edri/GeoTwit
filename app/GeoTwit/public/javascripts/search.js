@@ -408,8 +408,8 @@ function loadStreamingResultsMap() {
 */
 function loadStreamingResultsCharts(hasSecondStream) {
     // Sets global charts' parameters.
-    Chart.defaults.global.title.display = true
-    Chart.defaults.global.title.fontSize = 15
+    Chart.defaults.global.title.display = true;
+    Chart.defaults.global.title.fontSize = 15;
 
     // Initializes charts' contexes.
     var ctxTotalReceivedTweets = $("#chartTotalReceivedTweets");
@@ -417,8 +417,10 @@ function loadStreamingResultsCharts(hasSecondStream) {
     var ctxPartsOfReceivedTweets;
     var ctxWithoutGeolocation = $("#chartWithoutGeolocation");
     var ctxWithoutGeolocationCurrent = $("#chartWithoutGeolocationCurrent");
-    var ctxDoughnutWithoutGeolocation = $("#chartDoughnutWithoutGeolocation");
+    var ctxGeolocationComparison = $("#chartGeolocationComparison");
 
+    // Shows graphs that can be only shown if there is more than one keywords
+    // set, if so.
     if (hasSecondStream) {
         $("#chartPartsOfReceivedTweetsContainer").show();
         ctxPartsOfReceivedTweets = $("#chartPartsOfReceivedTweets");
@@ -451,8 +453,7 @@ function loadStreamingResultsCharts(hasSecondStream) {
                 data: [0]
             }
         ]
-    }
-
+    };
     // Adds a second dataset to the default data of lined graphs if there is more
     // than one keyword set.
     if (hasSecondStream) {
@@ -479,69 +480,47 @@ function loadStreamingResultsCharts(hasSecondStream) {
         });
     }
 
-    // Contains data of a empty graph of type "doughnut"; this object will be cloned
-    // for each graph, in order to avoid shared data and bugs between graphs.
-    var emptyDoughnutGraphData = {
-        labels: [FIRST_SUBJECT_LABEL, SECOND_SUBJECT_LABEL],
+    // Contains data of the empty graph of type "bar", which compare Tweets with
+    // geolocation vs. Tweets without; this object will be cloned for each graph
+    // (there could be more than one in the future), in order to avoid shared
+    // data and bugs between graphs.
+    var geolocationComparisonGraphData = {
+        labels: ["WITH geolocation", "WITHOUT geolocation"],
         datasets: [
             {
+                label: "Percentage",
+                backgroundColor: FIRST_SUBJECT_TRANSPARENT_COLOR,
+                borderColor: FIRST_SUBJECT_COLOR,
+                borderWidth: 1,
+                hoverBackgroundColor: FIRST_SUBJECT_TRANSPARENT_COLOR,
+                hoverBorderColor: FIRST_SUBJECT_COLOR,
                 data: [0, 0],
-                backgroundColor: [
-                    FIRST_SUBJECT_COLOR,
-                    SECOND_SUBJECT_COLOR
-                ],
-                hoverBackgroundColor: [
-                    FIRST_SUBJECT_COLOR,
-                    SECOND_SUBJECT_COLOR
-                ]
             }
         ]
-    }
-
-    // Contains data of a empty graph of type "piw"; this object will be cloned
-    // for each graph, in order to avoid shared data and bugs between graphs.
-    var emptyPieGraphData = {
-        labels: [
-            "Tweets WITH geolocation",
-            "Tweets WITHOUT geolocation"
-        ],
-        datasets: [
-            {
-                data: [0, 0],
-                backgroundColor: [
-                    FIRST_SUBJECT_COLOR,
-                    FIRST_SUBJECT_TRANSPARENT_COLOR
-                ],
-                hoverBackgroundColor: [
-                    FIRST_SUBJECT_COLOR,
-                    FIRST_SUBJECT_TRANSPARENT_COLOR
-                ]
-            }
-        ]
-    }
-
-    // Adds a second dataset type to the default data of pie graphs if there is more
-    // than one keyword set.
+    };
+    // Adds a second dataset to the data of the bar graphs if there is more than
+    // one keyword set.
     if (hasSecondStream) {
-        emptyPieGraphData.labels = [
-            "First subject's Tweets WITH geolocation",
-            "First subject's Tweets WITHOUT geolocation",
-            "Second subject's Tweets WITH geolocation",
-            "Second subject's Tweets WITHOUT geolocation",
+        geolocationComparisonGraphData.labels = [
+            "1st sub. WITH geolocation",
+            "1st sub. WITHOUT geolocation",
+            "2nd sub. WITH geolocation",
+            "2nd sub. WITHOUT geolocation",
         ];
-        emptyPieGraphData.datasets[0].data = [0, 0, 0, 0];
-        emptyPieGraphData.datasets[0].backgroundColor = [
-            FIRST_SUBJECT_COLOR,
-            FIRST_SUBJECT_TRANSPARENT_COLOR,
-            SECOND_SUBJECT_COLOR,
-            SECOND_SUBJECT_TRANSPARENT_COLOR
-        ];
-        emptyPieGraphData.datasets[0].hoverBackgroundColor = [
-            FIRST_SUBJECT_COLOR,
-            FIRST_SUBJECT_TRANSPARENT_COLOR,
-            SECOND_SUBJECT_COLOR,
-            SECOND_SUBJECT_TRANSPARENT_COLOR
-        ];
+        // There is two datasets (in order to differenciate subjects by colors),
+        // but each dataset share the same graph's labels, so we have to set
+        // some data to null in order to avoid a display in the wrong part of
+        // the graph.
+        geolocationComparisonGraphData.datasets[0].data = [0, 0, null, null];
+        geolocationComparisonGraphData.datasets.push({
+            label: "Percentage",
+            backgroundColor: SECOND_SUBJECT_TRANSPARENT_COLOR,
+            borderColor: SECOND_SUBJECT_COLOR,
+            borderWidth: 1,
+            hoverBackgroundColor: SECOND_SUBJECT_TRANSPARENT_COLOR,
+            hoverBorderColor: SECOND_SUBJECT_COLOR,
+            data: [null, null, 0, 0],
+        });
     }
 
     // Creates the lined graph that displays the total of received Tweets since the
@@ -631,7 +610,22 @@ function loadStreamingResultsCharts(hasSecondStream) {
     if (hasSecondStream) {
         chartPartsOfReceivedTweets = new Chart(ctxPartsOfReceivedTweets, {
             type: 'doughnut',
-            data: cloneObject(emptyDoughnutGraphData),
+            data: {
+                labels: [FIRST_SUBJECT_LABEL, SECOND_SUBJECT_LABEL],
+                datasets: [
+                    {
+                        data: [0, 0],
+                        backgroundColor: [
+                            FIRST_SUBJECT_COLOR,
+                            SECOND_SUBJECT_COLOR
+                        ],
+                        hoverBackgroundColor: [
+                            FIRST_SUBJECT_COLOR,
+                            SECOND_SUBJECT_COLOR
+                        ]
+                    }
+                ]
+            },
             options: {
                 title: {
                     text: "Parts of the received Tweets by subject"
@@ -721,12 +715,33 @@ function loadStreamingResultsCharts(hasSecondStream) {
         }
     });
 
-    // Creates the pie graph that displays the parts of each subjects for the
-    // current streaming process, only if there are several subjects.
-    var chartDoughnutWithoutGeolocation = new Chart(ctxDoughnutWithoutGeolocation, {
-        type: 'pie',
-        data: cloneObject(emptyPieGraphData),
+    // Creates the bar graph that displays the parts of Tweets with and without
+    // geolocation, for each subject.
+    var chartGeolocationComparison = new Chart(ctxGeolocationComparison, {
+        type: 'bar',
+        data: geolocationComparisonGraphData,
         options: {
+            legend: {
+                display: false
+            },
+            scales: {
+                xAxes: [{
+                    stacked: true
+                }],
+                yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: "Percentage of Tweets",
+                        fontStyle: "bold"
+                    },
+                    ticks: {
+                        beginAtZero: true,
+                        max: 100,
+                        maxTicksLimit: 10,
+                        min: 0
+                    }
+                }]
+            },
             title: {
                 text: "Tweets with geolocation vs. Tweets without"
             }
@@ -840,25 +855,35 @@ function loadStreamingResultsCharts(hasSecondStream) {
     // and then every minute.
     lineChartsUpdateInterval = setInterval(lineChartsInterval, 1000);
 
-    // Starts the doughnut/pie charts' refreshment process, which ticks every second.
+    // Starts the pie/bar charts' refreshment process, which ticks every second.
     doughnutChartsUpdateInterval = setInterval(function() {
         // Refreshs the chart displaying the parts of received Tweets for each subject,
         // only if the user filled several keywords sets.
+        // Refreshs each dataset of the bar chart, depending on the number of subjects.
         if (hasSecondStream) {
             chartPartsOfReceivedTweets.data.datasets[0].data = [nbReceivedTweets.first, nbReceivedTweets.second];
             chartPartsOfReceivedTweets.update();
 
-            chartDoughnutWithoutGeolocation.data.datasets[0].data = [
-                nbReceivedTweets.first,
-                nbReceivedTweets.firstTotal - nbReceivedTweets.first,
-                nbReceivedTweets.second,
-                nbReceivedTweets.secondTotal - nbReceivedTweets.second
+            chartGeolocationComparison.data.datasets[0].data = [
+                Math.round(nbReceivedTweets.first / (nbReceivedTweets.firstTotal / 100) * 100) / 100,
+                Math.round((nbReceivedTweets.firstTotal - nbReceivedTweets.first) / (nbReceivedTweets.firstTotal / 100) * 100) / 100,
+                null,
+                null
+            ];
+            chartGeolocationComparison.data.datasets[1].data = [
+                null,
+                null,
+                Math.round(nbReceivedTweets.second / (nbReceivedTweets.secondTotal / 100) * 100) / 100,
+                Math.round((nbReceivedTweets.secondTotal - nbReceivedTweets.second) / (nbReceivedTweets.secondTotal / 100) * 100) / 100
             ];
         } else {
-            chartDoughnutWithoutGeolocation.data.datasets[0].data = [nbReceivedTweets.first, nbReceivedTweets.firstTotal - nbReceivedTweets.first];
+            chartGeolocationComparison.data.datasets[0].data = [
+                Math.round(nbReceivedTweets.first / (nbReceivedTweets.firstTotal / 100) * 100) / 100,
+                Math.round((nbReceivedTweets.firstTotal - nbReceivedTweets.first) / (nbReceivedTweets.firstTotal / 100) * 100) / 100
+            ];
         }
 
-        chartDoughnutWithoutGeolocation.update();
+        chartGeolocationComparison.update();
     }, 1000);
 }
 
@@ -921,6 +946,8 @@ function loadStreamingResultsComponents() {
             $("#" + key + "StreamingSpeed:visible").css("color", "hsl(" + hueColorLevel + ", 100%, " + lightnessColorLevel + "%)")
         })
     }, 1000)
+
+    $("#numberTweetsMax").text(MAX_DISPLAYED_TWEETS);
 }
 
 /**
@@ -1132,12 +1159,6 @@ function initWebSocket() {
                                 "language": $("#language option:selected").val()
                             }));
                             break;
-                        // Occurs if the user's session expired during the streaming
-                        // process.
-                        case "sessionExpired":
-                            alert("Your session expired, you are going to be disconnected.");
-                            window.location.replace(jsRoutes.controllers.HomeController.logout().url);
-                            break;
                         // Occurs when new Tweet's data are coming from the server.
                         case "newTweet":
                             // Updates the total number of received Tweets (with and without geolocation tags).
@@ -1153,6 +1174,7 @@ function initWebSocket() {
                                 // Shows the reveived tweets panel if not already done.
                                 if ($("#noTweetReceivedText").is(":visible")) {
                                     $("#noTweetReceivedText").hide();
+                                    $("#maxNumberDisplayedTweets").fadeIn();
                                     $("#tweetsContent").fadeIn();
                                 }
 
@@ -1180,6 +1202,26 @@ function initWebSocket() {
                             // Stops the streaming process without indicating it to the server (since it is the one which
                             // ask us to stop the process).
                             stopStreaming(false);
+
+                            // Displays an alert, depending on the reason, if set.
+                            if (data.reason) {
+                                switch (data.reason) {
+                                    // Occurs if the user's session expired during the streaming process.
+                                    case "sessionExpired":
+                                        alert("Your session expired, you are going to be disconnected.");
+                                        window.location.replace(jsRoutes.controllers.HomeController.logout().url);
+                                        break;
+                                    case "statusCode420":
+                                        alert("You ran too many copies of the same application authenticating with the same account name, please stop the already-running streaming instances.");
+                                        break;
+                                    // Occurs in case of unknown exception.
+                                    case "exception":
+                                    default:
+                                        alert("An exception occured, please retry in a while.");
+                                        break;
+                                }
+                            }
+
                             break;
                     }
                 } catch (e) {
