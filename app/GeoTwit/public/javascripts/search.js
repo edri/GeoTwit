@@ -4,8 +4,9 @@ var MAP_LAYER_URL = "http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png";
 var MAP_MAX_ZOOM = 20;
 var MAP_ATTRIBUTION = "&copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>, Tiles courtesy of <a href='http://hot.openstreetmap.org/' target='_blank'>Humanitarian OpenStreetMap Team</a>";
 var SUCCESS_STATUS = "success";
-var FIRST_KEYWORD_NOT_SET = "firstKeywordNotSet";
-var LOCATION_NOT_SELECTED = "locationNotSelected";
+var FIRST_KEYWORD_NOT_SET = "Please fill at least one keyword of the first set.";
+var DATE_NOT_SET = "Please fill the range of dates.";
+var LOCATION_NOT_SELECTED = "Please select a location on the map.";
 var FIRST_SUBJECT_LABEL = "First Subject";
 var SECOND_SUBJECT_LABEL = "Second Subject";
 var FIRST_SUBJECT_COLOR = "rgba(41, 129, 202, 1)";
@@ -28,18 +29,32 @@ var MAX_DISPLAYED_TWEETS = 100;
 var drawControl = require('leaflet-draw-drag');
 // Loads the "Leaflet.markercluster" library, which is used to automatically group markers on the map.
 require('leaflet.markercluster');
-// Loads the Chart.js library, in order to be able to build charts during the streaming process.
+// Loads the "Chart.js" library, in order to be able to build charts during the streaming process.
 var Chart = require('chart.js');
+// Loads the "Moment.js" library, which is used to easily format dates.
+var moment = require("moment");
 
-var socketConnection, dynamicMap, staticMap, streamingResultsMap, markers, drawControlEditOnly, drawControlFull,
-    speedInterval, lineChartsUpdateInterval, doughnutChartsUpdateInterval;
+var circleLatLngRad, socketConnection, streamingResultsMap, markers, speedInterval, lineChartsUpdateInterval, doughnutBarChartsUpdateInterval;
+// Will contain the element of the search's maps.
+var searchMaps = {
+    "dynamicMap": null,
+    "staticMap": null
+};
+var drawControlFull = {
+    "dynamicMap": null,
+    "staticMap": null
+};
+var drawControlEditOnly = {
+    "dynamicMap": null,
+    "staticMap": null
+};
 // Used as a locker when the user reconnects to the web socket's server. Since JavaScript is indeed
 // an asynchronous language, we need to wait for the disconnection before reconnect.
 var deferredWebSocketReconnection = $.Deferred();
 // Used as a locker at the initialization of the countries list, because we want to order countries
 // by their name before adding them in the select list.
 var deferredCountriesLoading = $.Deferred();
-// Will containt the "latitude, longitude" coordinates of the rectangle bounding the selected
+// Will contain the "latitude, longitude" coordinates of the rectangle bounding the selected
 // country (with all its territories, since a country can have many) or the coordinates of
 // the drawn rectangle. The first coordinates is the southwest one, followed by the northwest,
 // the northeast and finally the southeast ones.
@@ -77,7 +92,7 @@ var markersIcons = {
 var humanQueryString = {
     "first": "",
     "second": ""
-}
+};
 // Contains the number of received Tweets since the beginning of the current streamings.
 // The first elements contain the number of Tweets with geolocation tags, while the
 // last ones contain the total number of Tweets (with and without geolocation tag).
@@ -86,39 +101,15 @@ var nbReceivedTweets = {
     "second": 0,
     "firstTotal": 0,
     "secondTotal": 0
-}
+};
 // Contains the elapsed time in seconds since the beginning of the streaming(s).
 var elapsedTime = 0;
 
 /**
-* Returns the current time as a "[HH:MM:SS]" format.
-*/
-function getCurrentTime() {
-    var d = new Date();
-    var h = d.getHours();
-    var m = d.getMinutes();
-    var s = d.getSeconds();
-
-    if (h < 10) h = "0" + h;
-    if (m < 10) m = "0" + m;
-    if (s < 10) s = "0" + s;
-
-    return "[" + h + ":" + m + ":" + s + "]";
-}
-
-/**
-* Converts the given seconds into a "HH:MM:SS" time format.
+* Converts the given seconds into a "HH:MM:SS" time format with the Moment.js library.
 */
 function secondsToHhMmSs(seconds) {
-    var h = Math.floor(seconds / 3600);
-    var m = Math.floor((seconds - h * 3600) / 60);
-    var s = seconds - m * 60 - h * 3600;
-
-    if (h < 10) h = "0" + h;
-    if (m < 10) m = "0" + m;
-    if (s < 10) s = "0" + s;
-
-    return h + ":" + m + ":" + s;
+    return moment().startOf('day').seconds(seconds).format('HH:mm:ss');
 }
 
 /**
@@ -247,12 +238,12 @@ function isPointInSelectedArea(latitude, longitude, polygonsCoordinates) {
 }
 
 /**
-* Loads all countries contained in the geodata file and appends them in the select list
+* Loads all countries contained in the geodata file and appends them to the drop-down list
 * of countries of the Search page.
 */
 function loadCountriesList() {
     // First converts the shapefile file is GeoJSON and gets the data.
-    shp(jsRoutes.controllers.Assets.versioned('geodata/TM_WORLD_BORDERS-0.3').url).then(function(geojson) {
+    shp(jsRoutes.controllers.Assets.versioned('data/geodata/TM_WORLD_BORDERS-0.3').url).then(function(geojson) {
         // Then alphabetically sorts the GeoJSON data by the countries' names.
         geojson.features.sort(function(a, b) {
             var nameA = a.properties.NAME;
@@ -261,7 +252,7 @@ function loadCountriesList() {
             if (nameA < nameB) return -1;
             else if (nameA > nameB) return 1;
             else return 0;
-        })
+        });
 
         // Finally adds each country in the select list.
         geojson.features.forEach(function(obj) {
@@ -274,16 +265,45 @@ function loadCountriesList() {
 }
 
 /**
-* Loads all elements related to the dynamic map.
+* Loads all languages contained in the Json file and appends them to the drop-down list
+* of languages in the Search page.
 */
-function loadDynamicMap() {
+function loadLanguagesList() {
+    // Reads the JSON file containing all languages.
+    $.getJSON(jsRoutes.controllers.Assets.versioned('data/languages.json').url, function(data) {
+        // Then ensures the languages are correctly ordered by their text values.
+        data.languages.sort(function(a, b) {
+            if (a.text < b.text) return -1;
+            else if (a.text > b.text) return 1;
+            else return 0;
+        });
+
+        // Finally adds each language in the languages' drop-down lists.
+        $.each(data.languages, function(index, language) {
+            $("#staticLanguage, #dynamicLanguage").append($('<option>', {
+                value: language.value,
+                text: language.text
+            }));
+        });
+    })
+}
+
+/**
+* Loads all elements related to the given search map's ID.
+*
+* Parameters:
+*   - mapId: the string ID (corresponding to the HTML id of the element) of the map to load.
+*   - hasRectangle: indicates whether the user can draw a rectangle on the map (true) or not (false); the user cannot draw rectangles AND circles.
+*   - hasCircle: indicates whether the user can draw a circle on the map (true) or not (false); the user cannot draw rectangles AND circles.
+*/
+function loadSearchMap(mapId, hasRectangle, hasCircle) {
     // Changes a Loaflet.draw's default text.
     L.drawLocal.edit.handlers.edit.tooltip.text = 'Drag handles, or marker to edit feature, then press the <strong><u>SAVE</u></strong> button.';
 
-    // Set dynamic map's values (coordinates and zoom's value).
+    // Set search map's values (coordinates and zoom's value).
     // Also load the maps' imagery with OpenStreetMap's hot imagery.
     // You can find a list of imagery providers right here: https://leaflet-extras.github.io/leaflet-providers/preview/.
-    dynamicMap = new L.Map("dynamicMap", {center: INIT_MAP_CENTER, zoom: INIT_MAP_ZOOM})
+    searchMaps[mapId] = new L.Map(mapId, {center: INIT_MAP_CENTER, zoom: INIT_MAP_ZOOM})
         .addLayer(new L.tileLayer(MAP_LAYER_URL, {
             maxZoom: MAP_MAX_ZOOM,
             attribution: MAP_ATTRIBUTION
@@ -291,85 +311,125 @@ function loadDynamicMap() {
 
     // Initializes the drawn item in order to store the shapes drawn by the user
     // with the Leaflet.draw library.
-    var drawnItems = new L.FeatureGroup().addTo(dynamicMap);
+    var drawnItems = new L.FeatureGroup().addTo(searchMaps[mapId]);
     // The map can have one of the two following draw controls:
-    //  - drawControlFull: allows the user to draw a rectangle on the map.
-    //  - drawControlEditOnly: allows the user to update the drawn rectangle.
-    // Initializes first the draw control, by only allowing the user to draw rectangles.
-    drawControlFull = new L.Control.Draw({
+    //  - drawControlFull: allows the user to draw a polygon on the map.
+    //  - drawControlEditOnly: allows the user to update the drawn polygon.
+    // Initializes first the draw control, by only allowing the user to draw rectangles and/or circles.
+    drawControlFull[mapId] = new L.Control.Draw({
         draw: {
             polyline: false,
             polygon: false,
-            circle: false,
-            marker: false,
-            rectangle: {
+            circle: (hasCircle ? {
                 shapeOptions: {
                     color: '#0033ff'
                 }
-            }
+            } : false),
+            marker: false,
+            rectangle: (hasRectangle ? {
+                shapeOptions: {
+                    color: '#0033ff'
+                }
+            } : false),
         },
         edit: false
     });
-    // Initializes the second draw control, by only allowing the user to update the rectangle.
-    drawControlEditOnly = new L.Control.Draw({
+    // Initializes the second draw control, by only allowing the user to update the polygon.
+    drawControlEditOnly[mapId] = new L.Control.Draw({
         edit: {
             featureGroup: drawnItems,
             remove: false
         },
         draw: false
     });
-    // Adds the first draw control to the map so the user can draw a rectangle.
-    dynamicMap.addControl(drawControlFull);
+    // Adds the first draw control to the map so the user can draw a polygon.
+    searchMaps[mapId].addControl(drawControlFull[mapId]);
 
-    // Occurs when the user drew a new rectangle.
-    // Saves the coordinates, removes the first draw control and adds the second one to the map, so the user can update the drawn rectangle.
-    dynamicMap.on('draw:created', function(e) {
+    // Occurs when the user drew a new polygon.
+    // Saves the coordinates, removes the first draw control and adds the second one to the map, so the user can update the drawn polygon.
+    searchMaps[mapId].on('draw:created', function(e) {
         // Erases each potential other drawn polygons of the map before drawing the
-        // current rectangle.
-        erasePolygons(dynamicMap);
+        // current one.
+        erasePolygons(searchMaps[mapId]);
 
-        // Saves the rectangle's coordinates.
-        boundingRectangleLatLngs = [
-            [e.layer._latlngs[0].lat, e.layer._latlngs[0].lng],
-            [e.layer._latlngs[1].lat, e.layer._latlngs[1].lng],
-            [e.layer._latlngs[2].lat, e.layer._latlngs[2].lng],
-            [e.layer._latlngs[3].lat, e.layer._latlngs[3].lng],
-        ];
+        // Saves the rectangle's coordinates if the user can draw a rectangle.
+        if (hasRectangle) {
+            boundingRectangleLatLngs = [
+                [e.layer._latlngs[0].lat, e.layer._latlngs[0].lng],
+                [e.layer._latlngs[1].lat, e.layer._latlngs[1].lng],
+                [e.layer._latlngs[2].lat, e.layer._latlngs[2].lng],
+                [e.layer._latlngs[3].lat, e.layer._latlngs[3].lng],
+            ];
 
-        // Unselect the potential selected country in the countries' list.
-        $('#streamingDefaultArea option[value=""]').prop('selected', true);
+            // Unselect the potential selected country in the countries' list.
+            $('#streamingDefaultArea option[value=""]').prop('selected', true);
+
+            // Indicates that the user manully drew a rectangle.
+            rectangleManuallyDrawn = true;
+        // Otherwise saves the circle's latitude, longitude and radius.
+        } else {
+            circleLatLngRad = {
+                "latitude": e.layer._latlng.lat,
+                "longitude": e.layer._latlng.lng,
+                "radius": (e.layer._mRadius / 1000)
+            }
+
+            console.log(circleLatLngRad);
+        }
 
         drawnItems.addLayer(e.layer);
-        drawControlFull.removeFrom(dynamicMap);
-        drawControlEditOnly.addTo(dynamicMap);
-
-        // Indicates that the user manully drew a rectangle.
-        rectangleManuallyDrawn = true;
+        drawControlFull[mapId].removeFrom(searchMaps[mapId]);
+        drawControlEditOnly[mapId].addTo(searchMaps[mapId]);
     });
 
-    // Occurs when the user updated a rectangle.
-    // Saves the rectangle's coordinates.
-    dynamicMap.on('draw:edited', function(e) {
-        boundingRectangleLatLngs = [
-            [e.layers._layers[Object.keys(e.layers._layers)[0]]._latlngs[0].lat, e.layers._layers[Object.keys(e.layers._layers)[0]]._latlngs[0].lng],
-            [e.layers._layers[Object.keys(e.layers._layers)[0]]._latlngs[1].lat, e.layers._layers[Object.keys(e.layers._layers)[0]]._latlngs[1].lng],
-            [e.layers._layers[Object.keys(e.layers._layers)[0]]._latlngs[2].lat, e.layers._layers[Object.keys(e.layers._layers)[0]]._latlngs[2].lng],
-            [e.layers._layers[Object.keys(e.layers._layers)[0]]._latlngs[3].lat, e.layers._layers[Object.keys(e.layers._layers)[0]]._latlngs[3].lng],
-        ];
+    // Occurs when the user updated a polygon.
+    // Saves the polygon's coordinates.
+    searchMaps[mapId].on('draw:edited', function(e) {
+        if (hasRectangle) {
+            boundingRectangleLatLngs = [
+                [e.layers._layers[Object.keys(e.layers._layers)[0]]._latlngs[0].lat, e.layers._layers[Object.keys(e.layers._layers)[0]]._latlngs[0].lng],
+                [e.layers._layers[Object.keys(e.layers._layers)[0]]._latlngs[1].lat, e.layers._layers[Object.keys(e.layers._layers)[0]]._latlngs[1].lng],
+                [e.layers._layers[Object.keys(e.layers._layers)[0]]._latlngs[2].lat, e.layers._layers[Object.keys(e.layers._layers)[0]]._latlngs[2].lng],
+                [e.layers._layers[Object.keys(e.layers._layers)[0]]._latlngs[3].lat, e.layers._layers[Object.keys(e.layers._layers)[0]]._latlngs[3].lng],
+            ];
+        } else {
+            circleLatLngRad = {
+                "latitude": e.layers._layers[Object.keys(e.layers._layers)[0]]._latlng.lat,
+                "longitude": e.layers._layers[Object.keys(e.layers._layers)[0]]._latlng.lng,
+                "radius": (e.layers._layers[Object.keys(e.layers._layers)[0]]._mRadius / 1000)
+            }
+
+            console.log(circleLatLngRad);
+        }
     });
 
     // Adds a Bootstrap's tooltip on the button that allows the user to draw a rectangle.
-    $(".leaflet-draw-draw-rectangle").attr({
-        "data-placement": "right",
-        "data-trigger": "manual",
-        title: "You can draw a rectangle by clicking on this button."
-    });
-    $(".leaflet-draw-draw-rectangle").tooltip("show");
+    if (hasRectangle) {
+        $(".leaflet-draw-draw-rectangle").attr({
+            "data-placement": "right",
+            "data-trigger": "manual",
+            title: "You can draw a rectangle by clicking on this button."
+        });
+        $(".leaflet-draw-draw-rectangle").tooltip("show");
 
-    // This tooltip is removed when the user moves the cursor hover the button.
-    $(".leaflet-draw-draw-rectangle, .tooltip").hover(function() {
-        $(".leaflet-draw-draw-rectangle").tooltip("hide");
-    })
+        // This tooltip is removed when the user moves the cursor hover the button.
+        $(".leaflet-draw-draw-rectangle, .tooltip").hover(function() {
+            $(".leaflet-draw-draw-rectangle").tooltip("hide");
+        })
+    // Adds a Bootstrap's tooltip on the button that allows the user to draw a circle.
+    } else {
+        $(".leaflet-draw-draw-circle").attr({
+            "data-placement": "right",
+            "data-trigger": "manual",
+            title: "You can draw a circle by clicking on this button."
+        });
+        $(".leaflet-draw-draw-circle").tooltip("show");
+
+        // This tooltip is removed when the user moves the cursor hover the button.
+        $(".leaflet-draw-draw-circle, .tooltip").hover(function() {
+            $(".leaflet-draw-draw-circle").tooltip("hide");
+        })
+    }
 }
 
 /**
@@ -855,8 +915,8 @@ function loadStreamingResultsCharts(hasSecondStream) {
     // and then every minute.
     lineChartsUpdateInterval = setInterval(lineChartsInterval, 1000);
 
-    // Starts the pie/bar charts' refreshment process, which ticks every second.
-    doughnutChartsUpdateInterval = setInterval(function() {
+    // Starts the doughnut/bar charts' refreshment process, which ticks every second.
+    doughnutBarChartsUpdateInterval = setInterval(function() {
         // Refreshs the chart displaying the parts of received Tweets for each subject,
         // only if the user filled several keywords sets.
         // Refreshs each dataset of the bar chart, depending on the number of subjects.
@@ -930,20 +990,23 @@ function loadStreamingResultsComponents() {
 
         // Display the average speeds and change their colors by their values (red => bad speed; green => good speed).
         $.each(nbReceivedTweets, function(key, value) {
-            // Gets the speed value of received Tweets per minutes, with at most two decimals.
-            var speedPerMinutes = Math.round(60 * (value / elapsedTime) * 100) / 100;
-            // We wants to switch the hue color between 0 (red - bad speed) and 120 (green - good speed), according to the average speed.
-            var hueColorLevel =
-                (speedPerMinutes * (GOOD_SPEED_HUE_COLOR / GOOD_SPEED) > GOOD_SPEED_HUE_COLOR) ?
-                    GOOD_SPEED_HUE_COLOR : speedPerMinutes * (GOOD_SPEED_HUE_COLOR / GOOD_SPEED);
-            // We want to switch the lightness color level from 50% (bad speed) to 25% (good speed).
-            var lightnessColorLevel =
-                (BAD_SPEED_LIGHTNESS_COLOR - speedPerMinutes / (GOOD_SPEED / GOOD_SPEED_LIGHTNESS_COLOR) < GOOD_SPEED_LIGHTNESS_COLOR) ?
-                    GOOD_SPEED_LIGHTNESS_COLOR : BAD_SPEED_LIGHTNESS_COLOR - speedPerMinutes / (GOOD_SPEED / GOOD_SPEED_LIGHTNESS_COLOR);
+            // We don't want to calculate the speed of the total number of all received Tweets (with or without geolocation).
+            if (key.indexOf("Total") == -1) {
+                // Gets the speed value of received Tweets per minutes, with at most two decimals.
+                var speedPerMinutes = Math.round(60 * (value / elapsedTime) * 100) / 100;
+                // We wants to switch the hue color between 0 (red - bad speed) and 120 (green - good speed), according to the average speed.
+                var hueColorLevel =
+                    (speedPerMinutes * (GOOD_SPEED_HUE_COLOR / GOOD_SPEED) > GOOD_SPEED_HUE_COLOR) ?
+                        GOOD_SPEED_HUE_COLOR : speedPerMinutes * (GOOD_SPEED_HUE_COLOR / GOOD_SPEED);
+                // We want to switch the lightness color level from 50% (bad speed) to 25% (good speed).
+                var lightnessColorLevel =
+                    (BAD_SPEED_LIGHTNESS_COLOR - speedPerMinutes / (GOOD_SPEED / GOOD_SPEED_LIGHTNESS_COLOR) < GOOD_SPEED_LIGHTNESS_COLOR) ?
+                        GOOD_SPEED_LIGHTNESS_COLOR : BAD_SPEED_LIGHTNESS_COLOR - speedPerMinutes / (GOOD_SPEED / GOOD_SPEED_LIGHTNESS_COLOR);
 
-            // Displays the speed value with at most two decimal, only for the displayed elements.
-            $("#" + key + "StreamingSpeed:visible").text(speedPerMinutes + " Tweet(s) / minute");
-            $("#" + key + "StreamingSpeed:visible").css("color", "hsl(" + hueColorLevel + ", 100%, " + lightnessColorLevel + "%)")
+                // Displays the speed value with at most two decimal, only for the displayed elements.
+                $("#" + key + "StreamingSpeed:visible").text(speedPerMinutes + " Tweet(s) / minute");
+                $("#" + key + "StreamingSpeed:visible").css("color", "hsl(" + hueColorLevel + ", 100%, " + lightnessColorLevel + "%)")
+            }
         })
     }, 1000)
 
@@ -960,9 +1023,9 @@ function loadStreamingResultsComponents() {
 */
 function selectCountryOnMap(countryName, map) {
     // Resets the drawing's toolbar in the dynamic map if it is the given map.
-    if (map === dynamicMap && rectangleManuallyDrawn) {
-        drawControlEditOnly.removeFrom(dynamicMap);
-        drawControlFull.addTo(dynamicMap);
+    if (map === searchMaps.dynamicMap && rectangleManuallyDrawn) {
+        drawControlEditOnly.dynamicMap.removeFrom(searchMaps.dynamicMap);
+        drawControlFull.dynamicMap.addTo(searchMaps.dynamicMap);
     }
     // Erases each potential other drawn polygons on the map before drawing the
     // selected country's borders.
@@ -970,7 +1033,7 @@ function selectCountryOnMap(countryName, map) {
 
     // Deals world's borders data to display a polygon on the selected country.
     // First converts the shapefile file is GeoJSON and gets the data.
-    shp(jsRoutes.controllers.Assets.versioned('geodata/TM_WORLD_BORDERS-0.3').url).then(function(geojson) {
+    shp(jsRoutes.controllers.Assets.versioned('data/geodata/TM_WORLD_BORDERS-0.3').url).then(function(geojson) {
         // Then searchs for the right selected country.
         geojson.features.forEach(function(obj) {
             if (obj.properties.NAME == countryName) {
@@ -1183,7 +1246,7 @@ function initWebSocket() {
                                 markers.addLayer(L.marker([data.latitude, data.longitude], {icon: markersIcons[data.keywordsSet]}));
                                 $("#tweetsContent").prepend(
                                     "<div class='" + data.keywordsSet + "-streaming-text'>\
-                                        <strong>" + getCurrentTime() + " " + data.user + "</strong>: " + data.content + "<br/>\
+                                        <strong>[" + moment().format("HH:mm:ss") + "] " + data.user + "</strong>: " + data.content + "<br/>\
                                     </div>"
                                 );
                                 // Updates the Tweets' counters.
@@ -1211,8 +1274,13 @@ function initWebSocket() {
                                         alert("Your session expired, you are going to be disconnected.");
                                         window.location.replace(jsRoutes.controllers.HomeController.logout().url);
                                         break;
-                                    case "statusCode420":
+                                    case "tooManyStreamingProcesses":
                                         alert("You ran too many copies of the same application authenticating with the same account name, please stop the already-running streaming instances.");
+                                        break;
+                                    case "queryTooLong":
+                                        alert("One of the keywords set(s) you filled is too long (> 60 characters), please retry.");
+                                        // Reloads the page in order to start a new search.
+                                        location.reload();
                                         break;
                                     // Occurs in case of unknown exception.
                                     case "exception":
@@ -1260,8 +1328,8 @@ function stopStreaming(sendSocket) {
     // Stops the speed's calculation and the graphs refreshment processes.
     clearInterval(speedInterval);
     clearInterval(lineChartsUpdateInterval);
-    if (doughnutChartsUpdateInterval) {
-        clearInterval(doughnutChartsUpdateInterval);
+    if (doughnutBarChartsUpdateInterval) {
+        clearInterval(doughnutBarChartsUpdateInterval);
     }
     $("#btnStopStreaming").hide();
     $("#btnNewSearch").show();
@@ -1272,14 +1340,35 @@ function stopStreaming(sendSocket) {
 * Validates the streaming form's fields.
 * Returns either 'true' if everything is valid or 'false' otherwise.
 */
-function streamingFieldsValidation() {
+function validateDynamicFields() {
     var status = SUCCESS_STATUS;
 
     // There must be at least one keyword.
     if (!$("#streamingFirstKeywordSetOr").val() && !$("#streamingFirstKeywordSetAnd").val()) {
         status = FIRST_KEYWORD_NOT_SET;
-    // The user mast have selected an area on the map.
+    // The user must have selected an area on the map.
     } else if (boundingRectangleLatLngs.length == 0) {
+        status = LOCATION_NOT_SELECTED;
+    }
+
+    return status;
+}
+
+/**
+* Validates the static mode form's fields.
+* Returns either 'true' if everything is valid or 'false' otherwise.
+*/
+function validateStaticFields() {
+    var status = SUCCESS_STATUS;
+
+    // There must be at least one keyword.
+    if (!$("#staticFirstKeywordSetOr").val() && !$("#staticFirstKeywordSetAnd").val()) {
+        status = FIRST_KEYWORD_NOT_SET;
+    // The user must have filled the date fields.
+    } else if (!$("#staticFromDate").val() || !$("#staticToDate").val()) {
+        status = DATE_NOT_SET;
+    // The user must have selected an area on the map.
+    } else if (circleLatLngRad == null) {
         status = LOCATION_NOT_SELECTED;
     }
 
@@ -1378,8 +1467,9 @@ $(document).ready(function() {
     // does not know how to react).
     // It simply refresh the concerned map.
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-        if (staticMap) {
-            staticMap.invalidateSize(false);
+        if (searchMaps.staticMap) {
+            searchMaps.staticMap.invalidateSize(false);
+            $(".leaflet-draw-draw-circle").tooltip("show");
         }
 
         if (streamingResultsMap) {
@@ -1389,15 +1479,19 @@ $(document).ready(function() {
 
     // Loads the counties list.
     loadCountriesList();
+    // Loads the languages list.
+    loadLanguagesList();
 
     // Loads maps.
-    loadDynamicMap();
-    loadStaticMap();
+    // The user can draw a rectangle but no circle in the dynamic map.
+    loadSearchMap("dynamicMap", true, false);
+    // The user can draw a circle but no rectangle in the static map.
+    loadSearchMap("staticMap", false, true);
 
     $("#streamingDefaultArea").change(function() {
         var selectedCountryName = $("#streamingDefaultArea option:selected").val();
         // Draws a polygon on the selected country on the map.
-        selectCountryOnMap(selectedCountryName, dynamicMap);
+        selectCountryOnMap(selectedCountryName, searchMaps.dynamicMap);
 
         // Remove the tooltip of the rectangle's drawing when the user selects
         // a country with the drop-down box.
@@ -1409,31 +1503,33 @@ $(document).ready(function() {
     });
 
     $("#startStreamingBtn").click(function() {
-        $("#errorStreamingSearch").hide();
+        $("#errorDynamicSearch").hide();
 
         // Validates the search fields.
-        var fieldsValidationstatus = streamingFieldsValidation();
+        var fieldsValidationStatus = validateDynamicFields();
 
         // If all fields were valid, starts the streaming process.
-        if (fieldsValidationstatus === SUCCESS_STATUS) {
+        if (fieldsValidationStatus === SUCCESS_STATUS) {
             initWebSocket();
         // If there was an error, displays it.
         } else {
-            var errorText;
+            $("#errorDynamicSearch").html("<span aria-hidden='true' class='fa fa-exclamation-circle'></span> " + fieldsValidationStatus)
+            $("#errorDynamicSearch").fadeIn();
+        }
+    })
 
-            switch (fieldsValidationstatus) {
-                case FIRST_KEYWORD_NOT_SET:
-                    errorText = "Please fill at least one keyword of the first set.";
-                    break;
-                case LOCATION_NOT_SELECTED:
-                    errorText = "Please select a location on the map.";
-                    break;
-                default:
-                    errorText = "An error occured, please retry in a while.";
-            }
+    $("#viewStaticResultsBtn").click(function() {
+        $("#errorStaticSearch").hide();
 
-            $("#errorStreamingSearch").html("<span aria-hidden='true' class='fa fa-exclamation-circle'></span> " + errorText)
-            $("#errorStreamingSearch").fadeIn();
+        // Validates the search fields.
+        var fieldsValidationStatus = validateStaticFields();
+
+        // If all fields were valid, asks the server for the resultd.
+        if (fieldsValidationStatus === SUCCESS_STATUS) {
+            console.log("OK");
+        } else {
+            $("#errorStaticSearch").html("<span aria-hidden='true' class='fa fa-exclamation-circle'></span> " + fieldsValidationStatus)
+            $("#errorStaticSearch").fadeIn();
         }
     })
 

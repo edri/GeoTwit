@@ -3,22 +3,22 @@
 
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" id="searchTabs" role="tablist">
-        <li role="presentation" class="active"><a href="#dynamic" aria-controls="dynamic" role="tab" data-toggle="tab">Dynamic Mode</a></li>
-        <li role="presentation"><a href="#static" id="tabStatic" aria-controls="static" role="tab" data-toggle="tab">Static Mode</a></li>
+        <li role="presentation"><a href="#dynamic" aria-controls="dynamic" role="tab" data-toggle="tab">Dynamic Mode</a></li>
+        <li role="presentation" class="active"><a href="#static" id="tabStatic" aria-controls="static" role="tab" data-toggle="tab">Static Mode</a></li>
     </ul>
 
     <!-- Tab panes -->
     <div class="tab-content">
-        <div role="tabpanel" class="tab-pane fade in active" id="dynamic">
-            <h3 class="search-first-subtitle">1. First enter keyword(s), separated by <u>spaces</u></h3>
+        <div role="tabpanel" class="tab-pane fade" id="dynamic">
+            <h3 class="search-first-subtitle">1. First enter keyword(s)</h3>
             <div class="search-subcontent">
                 <div class="form-group">
-                    <label for="keywordSetOr">Keyword(s) set (max. 60 characters)</label>
-                    <input type="text" class="form-control" id="streamingFirstKeywordSetOr" placeholder="One of these keywords...">
-                    <input type="text" class="form-control group-field-bottom" id="streamingFirstKeywordSetAnd" placeholder="All these keywords...">
+                    <label for="keywordSetOr">Keyword(s) set (separate your words with <u>spaces</u> - max. 60 characters per field)</label>
+                    <input type="text" class="form-control" id="streamingFirstKeywordSetOr" maxlength="60" placeholder="One of these keywords...">
+                    <input type="text" class="form-control group-field-bottom" id="streamingFirstKeywordSetAnd" maxlength="60" placeholder="All these keywords...">
                 </div>
                 <div class="form-group">
-                    <label for="keywordSetOr">[Optional] Second keyword(s) set to compare against (max. 60 characters)</label>
+                    <label for="keywordSetOr">[Optional] Second keyword(s) set to compare against (separate your words with <u>spaces</u> - max. 60 characters per field)</label>
                     <input type="text" class="form-control" id="streamingSecondKeywordSetOr" placeholder="One of these keywords...">
                     <input type="text" class="form-control group-field-bottom" id="streamingSecondKeywordSetAnd" placeholder="All these keywords...">
                 </div>
@@ -45,126 +45,55 @@
             <div class="search-subcontent">
                 <div class="language-note">Note that some Tweets written in another language may still appear, because of the location of the user who wrote it.</div>
                 <!-- I took this languages list in the advanced search page of Twitter (https://twitter.com/search-advanced) -->
-                <select class="form-control" id="language">
+                <select class="form-control" id="dynamicLanguage">
                     <option selected="selected" value="">Any Language</option>
-                    <option value="am">Amharic (አማርኛ)</option>
-                    <option value="ar">Arabic (العربية)</option>
-                    <option value="hy">Armenian (հայերեն)</option>
-                    <option value="bn">Bengali (বাংলা)</option>
-                    <option value="bs">Bosnian (Bosanski)</option>
-                    <option value="bg">Bulgarian (български)</option>
-                    <option value="my">Burmese (ဗမာ)</option>
-                    <option value="ckb">Central Kurdish (کوردیی ناوەندی)</option>
-                    <option value="zh">Chinese (中文)</option>
-                    <option value="hr">Croatian (Hrvatski)</option>
-                    <option value="da">Danish (Dansk)</option>
-                    <option value="dv">Divehi (Divehi)</option>
-                    <option value="nl">Dutch (Nederlands)</option>
-                    <option value="en">English (English)</option>
-                    <option value="et">Estonian (Eesti)</option>
-                    <option value="fi">Finnish (Suomi)</option>
-                    <option value="fr">French (Français)</option>
-                    <option value="ka">Georgian (ქართული)</option>
-                    <option value="de">German (Deutsch)</option>
-                    <option value="el">Greek (Ελληνικά)</option>
-                    <option value="gu">Gujarati (ગુજરાતી)</option>
-                    <option value="he">Hebrew (עברית)</option>
-                    <option value="hi">Hindi (हिन्दी)</option>
-                    <option value="hu">Hungarian (Magyar)</option>
-                    <option value="is">Icelandic (Íslenska)</option>
-                    <option value="id">Indonesian (Indonesia)</option>
-                    <option value="it">Italian (Italiano)</option>
-                    <option value="ja">Japanese (日本語)</option>
-                    <option value="kn">Kannada (ಕನ್ನಡ)</option>
-                    <option value="km">Khmer (ខ្មែរ)</option>
-                    <option value="ko">Korean (한국어)</option>
-                    <option value="lo">Lao (ລາວ)</option>
-                    <option value="lv">Latvian (Latviešu)</option>
-                    <option value="lt">Lithuanian (Lietuvių)</option>
-                    <option value="ml">Malayalam (മലയാളം)</option>
-                    <option value="mr">Marathi (मराठी)</option>
-                    <option value="ne">Nepali (नेपाली)</option>
-                    <option value="no">Norwegian (Norsk)</option>
-                    <option value="or">Oriya (ଓଡ଼ିଆ)</option>
-                    <option value="ps">Pashto (پښتو)</option>
-                    <option value="fa">Persian (فارسی)</option>
-                    <option value="pl">Polish (Polski)</option>
-                    <option value="pt">Portuguese (Português)</option>
-                    <option value="pa">Punjabi (ਪੰਜਾਬੀ)</option>
-                    <option value="ro">Romanian (Română)</option>
-                    <option value="ru">Russian (Pусский)</option>
-                    <option value="sr">Serbian (Cрпски)</option>
-                    <option value="sd">Sindhi (سنڌي)</option>
-                    <option value="si">Sinhala (සිංහල)</option>
-                    <option value="sk">Slovak (Slovenčina)</option>
-                    <option value="sl">Slovenian (Slovenščina)</option>
-                    <option value="es">Spanish (Español)</option>
-                    <option value="sv">Swedish (Svenska)</option>
-                    <option value="tl">Tagalog (Tagalog)</option>
-                    <option value="ta">Tamil (தமிழ்)</option>
-                    <option value="te">Telugu (తెలుగు)</option>
-                    <option value="th">Thai (ไทย)</option>
-                    <option value="bo">Tibetan (བོད་སྐད་)</option>
-                    <option value="tr">Turkish (Türkçe)</option>
-                    <option value="ur">Urdu (اردو)</option>
-                    <option value="ug">Uyghur (ئۇيغۇرچە)</option>
-                    <option value="vi">Vietnamese (Tiếng Việt)</option>
                 </select>
             </div>
 
-            <div class="alert alert-danger error-search" id="errorStreamingSearch"></div>
+            <div class="alert alert-danger error-search" id="errorDynamicSearch"></div>
 
             <button class="btn btn-primary btn-search" id="startStreamingBtn">Start Streaming!</button>
         </div>
 
-        <div role="tabpanel" class="tab-pane fade" id="static">
+        <div role="tabpanel" class="tab-pane fade in active" id="static">
             <h3 class="search-first-subtitle">1. First enter keyword(s), separated by <u>spaces</u></h3>
             <div class="search-subcontent">
                 <div class="form-group">
-                    <label for="keywordSetOr">Keyword(s) set (max. 60 characters)</label>
-                    <input type="text" class="form-control" id="keywordSetOr" placeholder="One of these keywords...">
-                    <input type="text" class="form-control group-field-bottom" id="keywordSetAnd" placeholder="All these keywords...">
+                    <label for="keywordSetOr">Keyword(s) set (separate your words with <u>spaces</u> - max. 60 characters per field)</label>
+                    <input type="text" class="form-control" id="staticFirstKeywordSetOr" maxlength="60" placeholder="One of these keywords...">
+                    <input type="text" class="form-control group-field-bottom" id="staticFirstKeywordSetAnd" maxlength="60" placeholder="All these keywords...">
                 </div>
                 <div class="form-group">
-                    <label for="keywordSetOr">[Optional] Second keyword(s) set to compare against (max. 60 characters)</label>
-                    <input type="text" class="form-control" id="keywordSetOr" placeholder="One of these keywords...">
-                    <input type="text" class="form-control group-field-bottom" id="keywordSetAnd" placeholder="All these keywords...">
+                    <label for="keywordSetOr">[Optional] Second keyword(s) set to compare against (separate your words with <u>spaces</u> - max. 60 characters per field)</label>
+                    <input type="text" class="form-control" id="staticSecondKeywordSetOr" placeholder="One of these keywords...">
+                    <input type="text" class="form-control group-field-bottom" id="staticSecondKeywordSetAnd" placeholder="All these keywords...">
                 </div>
             </div>
 
-            <h3 class="search-subtitle">2. Then enter the range of dates in which you want the Tweets to be</h3>
+            <h3 class="search-subtitle">2. Then enter the range of dates in which you want the Tweets to be searched</h3>
             <div class="search-subcontent">
                 <div class="form-inline">
                     <div class="form-group search-from-date">
-                        <label class="date-label" for="fromDate">From: </label>
-                        <input class="form-control" id="fromDate" placeholder="DD.MM.YYYY" type="date">
+                        <label class="date-label" for="staticFromDate">From: </label>
+                        <input class="form-control" id="staticFromDate" placeholder="DD.MM.YYYY" type="date">
                     </div>
                     <div class="form-group">
-                        <label class="date-label" for="toDate">To: </label>
-                        <input class="form-control" id="toDate" placeholder="DD.MM.YYYY" type="date">
+                        <label class="date-label" for="staticToDate">To: </label>
+                        <input class="form-control" id="staticToDate" placeholder="DD.MM.YYYY" type="date">
                     </div>
                 </div>
             </div>
 
-            <h3 class="search-subtitle">3. Select a location to filter the Tweets</h3>
+            <h3 class="search-subtitle">3. Draw a circle on the map in order to filter the Tweets by location</h3>
             <div class="search-subcontent">
-                Please click on the map to select a starting point.
                 <!-- This div will contain the static mode's map. -->
                 <div class="search-map" id="staticMap"></div>
-
-                <div class="form-inline">
-                    <div class="form-group search-location-radius">
-                        <span>Then select a <strong>radius</strong>: </span>
-                        <input class="form-control" id="locationRadius" placeholder="1500" type="number">
-                        <span> km</span>
-                    </div>
-                </div>
             </div>
 
             <h3 class="search-subtitle">4. Finally select the language in which you want the Tweets to be written</h3>
             <div class="search-subcontent">
-                <select class="form-control" id="language">
-                    <option value="usa">Any Language</option>
+                <select class="form-control" id="staticLanguage">
+                    <option value="">Any Language</option>
                 </select>
             </div>
 
@@ -175,7 +104,9 @@
                 </div>
             </div>
 
-            <button class="btn btn-primary btn-search" id="startStreamingBtn">View Results!</button>
+            <div class="alert alert-danger error-search" id="errorStaticSearch"></div>
+
+            <button class="btn btn-primary btn-search" id="viewStaticResultsBtn">View Results!</button>
         </div>
     </div>
 </div>

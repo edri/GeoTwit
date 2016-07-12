@@ -139,7 +139,7 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
               case _ => println("I received a bad-formatted socket.")
             }
           }
-          // Stops streaming when the user clicked on the well-named button. 
+          // Stops streaming when the user clicked on the well-named button.
           case JsSuccess("stopStreaming", _) => out ! PoisonPill
           case _ => println("I received a bad-formatted socket.")
         }
@@ -168,13 +168,13 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
   def isUserAuthenticated(request: RequestHeader): Boolean = {
     // Checks that the session have an unique ID.
     request.session.get("id") match {
-      case Some(id) => {
+      case Some(id) => true/*{
           // Returns false if the user is not connected, otherwise returns true.
           (cache.get(id + "-twitter"), request.session.get("username")) match {
             case (Some(_), Some(_)) => true
             case _ => false
           }
-        }
+        }*/
       case None => false
     }
   }
@@ -243,31 +243,28 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
       override def onTrackLimitationNotice(numberOfLimitedStatuses: Int): Unit = {}
 
       override def onException(ex: Exception): Unit = {
-        ex.printStackTrace
-
         try {
           val twitterException = ex.asInstanceOf[TwitterException].getStatusCode
 
           // The user ran too many copies of the same application authenticating with the same account name.
-          if (twitterException == 420) {
-            out ! JsObject(Seq(
-              "messageType" -> JsString("stopStreaming"),
-              "reason"      -> JsString("statusCode420")
-            ))
-          } else {
-            out ! JsObject(Seq(
-              "messageType" -> JsString("stopStreaming"),
-              "reason"      -> JsString("exception")
-            ))
+          twitterException match {
+            case 420 => {
+              out ! JsObject(Seq(
+                "messageType" -> JsString("stopStreaming"),
+                "reason"      -> JsString("tooManyStreamingProcesses")
+              ))
+            }
+            case 406 => {
+              out ! JsObject(Seq(
+                "messageType" -> JsString("stopStreaming"),
+                "reason"      -> JsString("queryTooLong")
+              ))
+            }
+            case _ => ex.printStackTrace()
           }
         }
         catch {
-          case e: Exception => {
-            out ! JsObject(Seq(
-              "messageType" -> JsString("stopStreaming"),
-              "reason"      -> JsString("exception")
-            ))
-          }
+          case e: Exception => ex.printStackTrace()
         }
         finally {
           // Stops the streaming process.
@@ -303,10 +300,18 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
   }
 
   /**
-    * Display the Search page, allowing an user to search Tweets with the Twitter's APIs.
+    * Displays the Search page, allowing an user to search Tweets with the Twitter's APIs.
     * The user must be connected to access this action.
     */
   def index = AuthenticatedAction { request =>
     Ok(views.html.search(request.session.get("username").get)(request))
   }
+
+  /**
+    * Displays the results of the static mode, when the user pressed the "View Results"
+    * of the "Static Mode" tab in the Search page.
+    */
+  /*def staticResults = AuthenticatedAction { request =>
+    Ok(views.html.search(request.session.get("username").get)(request))
+}*/
 }
