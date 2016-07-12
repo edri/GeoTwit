@@ -168,13 +168,13 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
   def isUserAuthenticated(request: RequestHeader): Boolean = {
     // Checks that the session have an unique ID.
     request.session.get("id") match {
-      case Some(id) => true/*{
+      case Some(id) => {
           // Returns false if the user is not connected, otherwise returns true.
           (cache.get(id + "-twitter"), request.session.get("username")) match {
             case (Some(_), Some(_)) => true
             case _ => false
           }
-        }*/
+        }
       case None => false
     }
   }
