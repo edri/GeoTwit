@@ -8,7 +8,6 @@
 package controllers
 
 import javax.inject._
-
 import akka.actor._
 import akka.stream.Materializer
 import com.typesafe.config.ConfigFactory
@@ -17,8 +16,8 @@ import play.api.cache.CacheApi
 import play.api.libs.json._
 import play.api.mvc._
 import play.api.libs.streams._
+import play.twirl.api.TemplateMagic.javaCollectionToScala
 import twitter4j._
-
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.Future
 
@@ -308,10 +307,78 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
   }
 
   /**
-    * Displays the results of the static mode, when the user pressed the "View Results"
-    * of the "Static Mode" tab in the Search page.
+    * Gets and returns the results of the static mode's search, when the user pressed the "View Results" of the "Static
+    * Mode" tab in the Search page.
     */
-  /*def staticResults = AuthenticatedAction { request =>
-    Ok(views.html.search(request.session.get("username").get)(request))
-}*/
+  def staticResults = Action { request =>
+    // Checks if the user is connected before continuing.
+    if (isUserAuthenticated(request)) {
+      // Used to validate the dates' formats.
+      val dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd")
+      var firstKeywords, secondKeywords, language = ""
+      var latitude, longitude, radius = 0.0
+      var fromDate, toDate = new java.util.Date()
+
+      // Tries to get and convert the received user's parameters.
+      try {
+        // Tries to gets string-formatted parameters.
+        firstKeywords = request.queryString.get("firstKeywords").flatMap(_.headOption).get
+        secondKeywords = request.queryString.get("secondKeywords").flatMap(_.headOption).get
+        language = request.queryString.get("language").flatMap(_.headOption).get
+        // Tries to get date-formatted parameters.
+        fromDate = dateFormat.parse(request.queryString.get("fromDate").flatMap(_.headOption).get)
+        toDate = dateFormat.parse(request.queryString.get("toDate").flatMap(_.headOption).get)
+        // Tries to get the double-formatted parameters.
+        latitude = request.queryString.get("locationLat").flatMap(_.headOption).get.toDouble
+        longitude = request.queryString.get("locationLon").flatMap(_.headOption).get.toDouble
+        radius = request.queryString.get("locationRad").flatMap(_.headOption).get.toDouble
+      } catch {
+        // If an error occurred, it means that at least one of the parameters is not properly formatted.
+        case e: Exception => Ok(JsObject(Seq("error" -> JsString("fieldsFormat"))))
+      }
+
+      // Validates the user's parameters.
+      (firstKeywords, language, fromDate, toDate, latitude, longitude, radius) match {
+        // The first keywords set must be set, the "to" date must be greater than the "from" one, and the radius must be
+        // a positive double.
+        case (fk, lan, fd, td, lat, lng, rad) if !fk.isEmpty && fd.before(td) && radius > 0 => {
+          // Gets the cached Twitter object, which will be used to make the request.
+          val getTwitter = cache.get[Twitter](request.session.get("id").get + "-twitter")
+
+          getTwitter match {
+            // If the Twitter object no longer exists, the session expired so the user has to be disconnected.
+            case None => Ok(JsObject(Seq("error" -> JsString("sessionExpired"))))
+            case Some(twitter) => {
+              val query: Query = new Query(fk)
+
+              if (!lan.isEmpty) {
+                query.setLang(lan)
+              }
+
+              query.setSince(dateFormat.format(fd))
+              query.setUntil(dateFormat.format(td))
+              query.geoCode(new GeoLocation(lat, lng), rad, "km")
+
+              val results: QueryResult = twitter.search(query)
+
+              Ok(JsObject(Seq(
+                "tweets" -> JsArray(results.getTweets.toList.map(
+                  status => Json.obj(
+                    "user"      -> JsString(status.getUser.getScreenName),
+                    "latitude"  -> JsNumber(if (status.getGeoLocation != null) status.getGeoLocation.getLatitude else 0),
+                    "longitude" -> JsNumber(if (status.getGeoLocation != null) status.getGeoLocation.getLongitude else 0),
+                    "content"   -> JsString(status.getText)
+                  )
+                )),
+                "numberOfTweets" -> JsNumber(results.getTweets.size()))))
+            }
+          }
+        }
+        case _ => Ok(JsObject(Seq("error" -> JsString("fieldEmpty"))))
+      }
+    // Sends an error message to the client if the user is no longer (or not at all) connected.
+    } else {
+      Ok(JsObject(Seq("error" -> JsString("sessionExpired"))))
+    }
+  }
 }

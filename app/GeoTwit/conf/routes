@@ -8,9 +8,10 @@ GET     /auth                       controllers.HomeController.auth
 GET     /callback                   controllers.HomeController.callback(denied: Option[String], oauth_token: Option[String], oauth_verifier: Option[String])
 GET     /logout                     controllers.HomeController.logout
 GET     /search                     controllers.SearchController.index
+GET     /search-results             controllers.SearchController.staticResults
 
 # WebSocket management
-GET     /streamingSocket            controllers.SearchController.streamingSocket
+GET     /streaming-socket            controllers.SearchController.streamingSocket
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

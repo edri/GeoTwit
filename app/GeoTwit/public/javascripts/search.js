@@ -3,10 +3,14 @@ var INIT_MAP_ZOOM = 4;
 var MAP_LAYER_URL = "http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png";
 var MAP_MAX_ZOOM = 20;
 var MAP_ATTRIBUTION = "&copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>, Tiles courtesy of <a href='http://hot.openstreetmap.org/' target='_blank'>Humanitarian OpenStreetMap Team</a>";
+var DATE_FORMAT = "YYYY-MM-DD";
 var SUCCESS_STATUS = "success";
 var FIRST_KEYWORD_NOT_SET = "Please fill at least one keyword of the first set.";
 var DATE_NOT_SET = "Please fill the range of dates.";
+var DATE_NOT_VALID = "At least one of the dates you entered is not valid. Please enter dates as a \"" + DATE_FORMAT + "\" format.";
 var LOCATION_NOT_SELECTED = "Please select a location on the map.";
+var STREAMING_MODE_IDENTIFIER = "streaming";
+var STATIC_MODE_IDENTIFIER = "static";
 var FIRST_SUBJECT_LABEL = "First Subject";
 var SECOND_SUBJECT_LABEL = "Second Subject";
 var FIRST_SUBJECT_COLOR = "rgba(41, 129, 202, 1)";
@@ -72,13 +76,13 @@ var rectangleManuallyDrawn = false;
 var selectedCountryCoordinates = [];
 // Default values for a customized Leaflet's marker icon.
 var LeafResultsIcon = L.Icon.extend({
-    options: {
-        shadowUrl:      jsRoutes.controllers.Assets.versioned('images/marker-shadow.png').url,
-        iconSize:       [25, 41], // size of the icon
-        shadowSize:     [41, 41], // size of the shadow
-        iconAnchor:     [12, 40], // point of the icon which will correspond to marker's location
-        shadowAnchor:   [12, 40], // the same for the shadow
-        popupAnchor:    [-3, -76] // point from which the popup should open relative to the iconAnchor
+    "options": {
+        "shadowUrl":    jsRoutes.controllers.Assets.versioned('images/marker-shadow.png').url,
+        "iconSize":     [25, 41], // size of the icon
+        "shadowSize":   [41, 41], // size of the shadow
+        "iconAnchor":   [12, 40], // point of the icon which will correspond to marker's location
+        "shadowAnchor": [12, 40], // the same for the shadow
+        "popupAnchor":  [-3, -76] // point from which the popup should open relative to the iconAnchor
     }
 });
 // Contains the different marker's icons of each streaming results (there will be several different
@@ -373,8 +377,6 @@ function loadSearchMap(mapId, hasRectangle, hasCircle) {
                 "longitude": e.layer._latlng.lng,
                 "radius": (e.layer._mRadius / 1000)
             }
-
-            console.log(circleLatLngRad);
         }
 
         drawnItems.addLayer(e.layer);
@@ -398,8 +400,6 @@ function loadSearchMap(mapId, hasRectangle, hasCircle) {
                 "longitude": e.layers._layers[Object.keys(e.layers._layers)[0]]._latlng.lng,
                 "radius": (e.layers._layers[Object.keys(e.layers._layers)[0]]._mRadius / 1000)
             }
-
-            console.log(circleLatLngRad);
         }
     });
 
@@ -952,8 +952,8 @@ function loadStreamingResultsCharts(hasSecondStream) {
 */
 function loadStreamingResultsComponents() {
     // Displays and initializes GUI elements on the results page.
-    var firstKeywords = getAndFormatKeywords("first");
-    var secondKeywords = getAndFormatKeywords("second");
+    var firstKeywords = getAndFormatKeywords("first", STREAMING_MODE_IDENTIFIER);
+    var secondKeywords = getAndFormatKeywords("second", STREAMING_MODE_IDENTIFIER);
 
     // Loads the map and charts components.
     loadStreamingResultsMap();
@@ -1216,10 +1216,10 @@ function initWebSocket() {
                             console.log("Streaming process successfully initialized! Asking the server to begin to stream...");
                             socketConnection.send(JSON.stringify({
                                 "messageType": "readyToStream",
-                                "firstKeywords": getAndFormatKeywords("first"),
-                                "secondKeywords": getAndFormatKeywords("second"),
+                                "firstKeywords": getAndFormatKeywords("first", STREAMING_MODE_IDENTIFIER),
+                                "secondKeywords": getAndFormatKeywords("second", STREAMING_MODE_IDENTIFIER),
                                 "coordinates": boundingRectangleLatLngs,
-                                "language": $("#language option:selected").val()
+                                "language": $("#dynamicLanguage option:selected").val()
                             }));
                             break;
                         // Occurs when new Tweet's data are coming from the server.
@@ -1337,6 +1337,61 @@ function stopStreaming(sendSocket) {
 }
 
 /**
+* Sends a Ajax request to the server in order to get Tweets from the Twitter's REST API,
+* according to the validates user's input.
+*/
+function getStaticTweets() {
+    $.ajax({
+        method: "GET",
+        url: jsRoutes.controllers.SearchController.staticResults().url,
+        data: {
+            "firstKeywords": getAndFormatKeywords("first", STATIC_MODE_IDENTIFIER),
+            "secondKeywords": getAndFormatKeywords("second", STATIC_MODE_IDENTIFIER),
+            "fromDate": $("#staticFromDate").val(),
+            "toDate": $("#staticToDate").val(),
+            "locationLat": circleLatLngRad.latitude,
+            "locationLon": circleLatLngRad.longitude,
+            "locationRad": circleLatLngRad.radius,
+            "language": $("#staticLanguage option:selected").val()
+        }
+    })
+    .done(function(msg) {
+        // Checks if the server sent an error.
+        if (msg.error) {
+            switch (msg.error) {
+                // Disconnects the user if he is no longer connected.
+                case "sessionExpired":
+                    alert("Your session expired, you are going to be disconnected.");
+                    window.location.replace(jsRoutes.controllers.HomeController.logout().url);
+                    break;
+                case "fieldsFormat":
+                    alert("At least one of the given fields is not properly formatted, please retry.");
+                    break;
+                case "fieldEmpty":
+                    alert("Please fill all mandatory fields");
+                    break;
+                default:
+                    alert("An unexpected error occured, please retry in a while.");
+                    break;
+            }
+        } else {
+            if (msg.tweets && msg.numberOfTweets) {
+                console.log("NUMBER OF TWEETS: " + msg.numberOfTweets);
+                console.log("TWEETS: ");
+                for (var tweet in msg.tweets) {
+                    console.log("\t@" + tweet.user + ": " + tweet.content);
+                }
+            } else {
+                alert("An unexpected error occured, please retry in a while.");
+            }
+        }
+    })
+    .fail(function(jqXHR, textStatus) {
+        alert("An unexpected error occured, please retry in a while.");
+    });
+}
+
+/**
 * Validates the streaming form's fields.
 * Returns either 'true' if everything is valid or 'false' otherwise.
 */
@@ -1360,13 +1415,18 @@ function validateDynamicFields() {
 */
 function validateStaticFields() {
     var status = SUCCESS_STATUS;
+    var fromDate = $("#staticFromDate").val();
+    var toDate = $("#staticToDate").val();
 
     // There must be at least one keyword.
     if (!$("#staticFirstKeywordSetOr").val() && !$("#staticFirstKeywordSetAnd").val()) {
         status = FIRST_KEYWORD_NOT_SET;
     // The user must have filled the date fields.
-    } else if (!$("#staticFromDate").val() || !$("#staticToDate").val()) {
+    } else if (!fromDate || !toDate) {
         status = DATE_NOT_SET;
+    // The entered dates must match the date format.
+    } else if (!moment(fromDate, DATE_FORMAT, true).isValid() || !moment(toDate, DATE_FORMAT, true).isValid()) {
+        status = DATE_NOT_VALID;
     // The user must have selected an area on the map.
     } else if (circleLatLngRad == null) {
         status = LOCATION_NOT_SELECTED;
@@ -1376,38 +1436,40 @@ function validateStaticFields() {
 }
 
 /**
-* Gets the string representing the track (query) parameter of the Twitter's streaming request,
+* Gets the string representing the track (query) parameter of the Twitter's streaming or static request,
 * according to the values of the user's AND and OR inputs.
 * In the Twitter's API, AND parameters take priority over OR parameters (for example
 * "dog AND eating OR dog AND drinking" will be interpreted as "(dog AND eating) OR (dog AND drinking)").
-* In the query, a space (" ") is interpreted as a AND, and a comma (",") will be interpreted as
-* a OR. Parentheses are not supported.
+* In the query, a space (" ") is interpreted as a AND, and a either a comma ("," - for the streaming) or
+* a "OR" keyword (for the static mode) will be interpreted as a OR. Parentheses are not supported.
 * Here are some example of output, according to the input fields:
-*   : AND: ""               OR: ""                  => ""
-*   - AND: "job engineer"   OR: ""                  => "job engineer"
-*   - AND: ""               OR: "job engineer"      => "job,engineer"
-*   - AND: "job"            OR: "engineer nursing"  => "job engineer,job nursing"
-*   - AND: "job anybody"    OR: "engineer"          => "job anybody engineer"
-*   - AND: "job anybody"    OR: "engineer nursing"  => "job anybody engineer, job anybody nursing"
-*   - AND: "job"            OR: "engineer"          => "job engineer"
+*   AND KEYWORDS            OR KEYWORDS             STREAMING RESULT                                STATIC RESULT
+*   - AND: ""               OR: ""                  => ""                                           [SAME]
+*   - AND: "job engineer"   OR: ""                  => "job engineer"                               [SAME]
+*   - AND: ""               OR: "job engineer"      => "job,engineer"                               "job OR engineer"
+*   - AND: "job"            OR: "engineer nursing"  => "job engineer,job nursing"                   "job engineer OR job nursing"
+*   - AND: "job anybody"    OR: "engineer"          => "job anybody engineer"                       [SAME]
+*   - AND: "job anybody"    OR: "engineer nursing"  => "job anybody engineer, job anybody nursing"  "job anybody engineer OR job anybody nursing"
+*   - AND: "job"            OR: "engineer"          => "job engineer"                               [SAME]
 *
 * Parameters:
 *   - keywordsSetNumber: indicates the keyword set we are working on => "first" for the first
 *                        one, "second" for the second one.
+*   - mode: indicates the mode in which the user is; either "streaming" or "static".
 */
-function getAndFormatKeywords(keywordsSetNumber) {
+function getAndFormatKeywords(keywordsSetNumber, mode) {
     var orField, andField;
     var resultString = "";
 
     // Gets the right fields, according to the given parameter.
     switch (keywordsSetNumber) {
         case "first":
-            orField = $("#streamingFirstKeywordSetOr").val();
-            andField = $("#streamingFirstKeywordSetAnd").val();
+            orField = $("#" + mode + "FirstKeywordSetOr").val();
+            andField = $("#" + mode + "FirstKeywordSetAnd").val();
             break;
         case "second":
-            orField = $("#streamingSecondKeywordSetOr").val();
-            andField = $("#streamingSecondKeywordSetAnd").val();
+            orField = $("#" + mode + "SecondKeywordSetOr").val();
+            andField = $("#" + mode + "SecondKeywordSetAnd").val();
             break;
         // Returns an empty string if the given parameter doesn't match with existing fields.
         default:
@@ -1427,15 +1489,20 @@ function getAndFormatKeywords(keywordsSetNumber) {
         // Iterates over each OR word and adds it to the end of the AND fields.
         for (var i = 0, len = orWords.length; i < len; ++i) {
             resultString += andField + " " + orWords[i];
-            if (i < len - 1) resultString += ",";
+            if (i < len - 1) resultString += (mode === STREAMING_MODE_IDENTIFIER ? "," : " OR ");
         }
 
         // Updates the human-understandable query's string.
         humanQueryString[keywordsSetNumber] = andField.split(" ").join(" <u>AND</u> ") + " <u>AND</u> (" + orWords.join(" <u>OR</u> ") + ")";
     // 2. Only the OR field is set => returns a comma-separated string.
     } else if (orField) {
-        // Adds each comma-separated OR word to the query.
-        resultString = orField.split(" ").join(",");
+        // Adds each comma-separated OR word to the query, depending on the mode.
+        if (mode === STREAMING_MODE_IDENTIFIER) {
+            resultString = orField.split(" ").join(",");
+        } else {
+            resultString = orField.split(" ").join(" OR ");
+        }
+
         humanQueryString[keywordsSetNumber] = orField.split(" ").join(" <u>OR</u> ");
     // 3. Only the AND field is set => returns a space-separated string.
     } else if (andField) {
@@ -1481,6 +1548,9 @@ $(document).ready(function() {
     loadCountriesList();
     // Loads the languages list.
     loadLanguagesList();
+    // Displays the right date format as a placeholder for the dates fields.
+    $("#staticFromDate").attr("placeholder", DATE_FORMAT);
+    $("#staticToDate").attr("placeholder", DATE_FORMAT);
 
     // Loads maps.
     // The user can draw a rectangle but no circle in the dynamic map.
@@ -1526,7 +1596,7 @@ $(document).ready(function() {
 
         // If all fields were valid, asks the server for the resultd.
         if (fieldsValidationStatus === SUCCESS_STATUS) {
-            console.log("OK");
+            getStaticTweets();
         } else {
             $("#errorStaticSearch").html("<span aria-hidden='true' class='fa fa-exclamation-circle'></span> " + fieldsValidationStatus)
             $("#errorStaticSearch").fadeIn();

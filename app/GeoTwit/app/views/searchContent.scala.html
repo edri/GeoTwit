@@ -3,13 +3,13 @@
 
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" id="searchTabs" role="tablist">
-        <li role="presentation"><a href="#dynamic" aria-controls="dynamic" role="tab" data-toggle="tab">Dynamic Mode</a></li>
-        <li role="presentation" class="active"><a href="#static" id="tabStatic" aria-controls="static" role="tab" data-toggle="tab">Static Mode</a></li>
+        <li role="presentation" class="active"><a href="#dynamic" aria-controls="dynamic" role="tab" data-toggle="tab">Dynamic Mode</a></li>
+        <li role="presentation"><a href="#static" id="tabStatic" aria-controls="static" role="tab" data-toggle="tab">Static Mode</a></li>
     </ul>
 
     <!-- Tab panes -->
     <div class="tab-content">
-        <div role="tabpanel" class="tab-pane fade" id="dynamic">
+        <div role="tabpanel" class="tab-pane fade in active" id="dynamic">
             <h3 class="search-first-subtitle">1. First enter keyword(s)</h3>
             <div class="search-subcontent">
                 <div class="form-group">
@@ -55,7 +55,7 @@
             <button class="btn btn-primary btn-search" id="startStreamingBtn">Start Streaming!</button>
         </div>
 
-        <div role="tabpanel" class="tab-pane fade in active" id="static">
+        <div role="tabpanel" class="tab-pane fade" id="static">
             <h3 class="search-first-subtitle">1. First enter keyword(s), separated by <u>spaces</u></h3>
             <div class="search-subcontent">
                 <div class="form-group">
@@ -75,11 +75,11 @@
                 <div class="form-inline">
                     <div class="form-group search-from-date">
                         <label class="date-label" for="staticFromDate">From: </label>
-                        <input class="form-control" id="staticFromDate" placeholder="DD.MM.YYYY" type="date">
+                        <input class="form-control" id="staticFromDate" type="date">
                     </div>
                     <div class="form-group">
                         <label class="date-label" for="staticToDate">To: </label>
-                        <input class="form-control" id="staticToDate" placeholder="DD.MM.YYYY" type="date">
+                        <input class="form-control" id="staticToDate" type="date">
                     </div>
                 </div>
             </div>
@@ -96,6 +96,8 @@
                     <option value="">Any Language</option>
                 </select>
             </div>
+
+            <br/>
 
             <div class="form-inline search-checkbox-accelerated">
                 <div class="form-group">
