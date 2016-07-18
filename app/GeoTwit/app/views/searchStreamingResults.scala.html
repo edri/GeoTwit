@@ -1,13 +1,8 @@
 <div class="streaming-results" id="streamingResults">
-    <div class="view-details">
-        View details...
-        <span class="fa fa-arrow-down"></span>
-    </div>
-
-    <table class="streaming-results-header-table">
+    <table class="results-header-table">
         <tr>
             <td>
-                <h1 class="streaming-results-title" id="streamingResultsTitle">
+                <h1 class="results-title" id="streamingResultsTitle">
                     <span class="fa fa-spinner fa-spin loading-icon"></span>
                     Streaming in progression...
                 </h1>
@@ -19,22 +14,26 @@
         </tr>
     </table>
 
-    <p>
-        <div class="elapsed-time">
-            Elapsed time: <strong id="elapsedTime">00:00:00</strong>
-        </div>
-        <table class="streaming-subjects">
-            <tr class="first-streaming-text">
-                <td class="streaming-subjects-first-td" id="firstStreamingSubjectText">Streaming's subject: </td>
-                <td class="streaming-subjects-second-td" data-container="body" data-html="true" data-placement="bottom" data-toggle="tooltip" data-trigger="manual" id="firstStreamingSubject"></td>
-            </tr>
-            <tr class="second-streaming-text second-streaming-element">
-                <td class="streaming-subjects-first-td"><u>Second</u> streaming's subject: </td>
-                <td class="streaming-subjects-second-td" data-container="body" data-html="true" data-placement="bottom" data-toggle="tooltip" data-trigger="manual" id="secondStreamingSubject"></td>
-            </tr>
-        </table>
-    </p>
-    <br/>
+    <table class="streaming-subjects">
+        <tr>
+            <td>
+                Elapsed time: <strong id="elapsedTime">00:00:00</strong>
+            </td>
+            <td class="subjects-first-td first-subject-text">
+                <span id="firstStreamingSubjectText">Streaming's subject: </span>
+                <strong><span data-container="body" data-html="true" data-placement="bottom" data-toggle="tooltip" data-trigger="manual" id="firstStreamingSubject"></span></strong>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Language: <strong id="streamingLanguage"></strong>
+            </td>
+            <td class="subjects-first-td second-subject-text second-results-element">
+                <u>Second</u> streaming's subject:
+                <strong><span data-container="body" data-html="true" data-placement="bottom" data-toggle="tooltip" data-trigger="manual" id="secondStreamingSubject"></span></strong>
+            </td>
+        </tr>
+    </table>
 
     <p>
         <!-- Nav tabs -->
@@ -86,17 +85,17 @@
                 <h4 class="received-tweets-title">Received Geolocated Tweets</h4>
             </td>
             <td class="number-of-received-tweets">
-                <span class="first-streaming-text"><span id="firstStreamingNumberText">Number of received Tweets: </span><strong id="firstStreamingNumber">0</strong></span><br/>
-                <span class="second-streaming-text second-streaming-element">Number of received Tweets for the <u>second</u> streaming: <strong id="secondStreamingNumber">0</strong></span>
+                <span class="first-subject-text"><span id="firstStreamingNumberText">Number of received Tweets: </span><strong id="firstStreamingNumber">0</strong></span><br/>
+                <span class="second-subject-text second-results-element">Number of received Tweets for the <u>second</u> streaming: <strong id="secondStreamingNumber">0</strong></span>
             </td>
             <td class="tweets-reception-speed">
-                <span class="first-streaming-text"><span id="firstStreamingSpeedText">Average speed: </span><span class="first-streaming-speed" id="firstStreamingSpeed">0 Tweet(s) / minute</span></span><br/>
-                <span class="second-streaming-text second-streaming-element"><u>Second</u> streaming's average speed: <span class="second-streaming-speed" id="secondStreamingSpeed">0 Tweet(s) / minute</span></span>
+                <span class="first-subject-text"><span id="firstStreamingSpeedText">Average speed: </span><span class="first-streaming-speed" id="firstStreamingSpeed">0 Tweet(s) / minute</span></span><br/>
+                <span class="second-subject-text second-results-element"><u>Second</u> streaming's average speed: <span class="second-streaming-speed" id="secondStreamingSpeed">0 Tweet(s) / minute</span></span>
             </td>
         </tr>
     </table>
 
     <div class="no-tweet-received" id="noTweetReceivedText">No received Tweet yet.</div>
     <div class="max-number-displayed-tweets" id="maxNumberDisplayedTweets">You can see the last <span id="numberTweetsMax"></span> received Tweets below:</div>
-    <div class="tweets-content" id="tweetsContent"></div>
+    <div class="tweets-content-streaming" id="streamingTweetsContent"></div>
 </div>

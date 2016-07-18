@@ -8,7 +8,9 @@ var SUCCESS_STATUS = "success";
 var FIRST_KEYWORD_NOT_SET = "Please fill at least one keyword of the first set.";
 var DATE_NOT_SET = "Please fill the range of dates.";
 var DATE_NOT_VALID = "At least one of the dates you entered is not valid. Please enter dates as a \"" + DATE_FORMAT + "\" format.";
+var FROM_DATE_GREATER_THAN_TO_DATE = "The \"from\" date cannot be greater or equal to the \"to\" date.";
 var LOCATION_NOT_SELECTED = "Please select a location on the map.";
+var MAX_DAYS_STATIC_SEARCH = 9;
 var STREAMING_MODE_IDENTIFIER = "streaming";
 var STATIC_MODE_IDENTIFIER = "static";
 var FIRST_SUBJECT_LABEL = "First Subject";
@@ -38,8 +40,8 @@ var Chart = require('chart.js');
 // Loads the "Moment.js" library, which is used to easily format dates.
 var moment = require("moment");
 
-var circleLatLngRad, socketConnection, streamingResultsMap, markers, speedInterval, lineChartsUpdateInterval, doughnutBarChartsUpdateInterval;
-// Will contain the element of the search's maps.
+var circleLatLngRad, socketConnection, markers, speedInterval, lineChartsUpdateInterval, doughnutBarChartsUpdateInterval;
+// Will contain the element of the search and result's maps.
 var searchMaps = {
     "dynamicMap": null,
     "staticMap": null
@@ -52,6 +54,10 @@ var drawControlEditOnly = {
     "dynamicMap": null,
     "staticMap": null
 };
+var resultMaps = {
+    "streaming": null,
+    "static": null
+}
 // Used as a locker when the user reconnects to the web socket's server. Since JavaScript is indeed
 // an asynchronous language, we need to wait for the disconnection before reconnect.
 var deferredWebSocketReconnection = $.Deferred();
@@ -444,10 +450,13 @@ function loadStaticMap() {
 }
 
 /**
-* Loads all elements related to the map of the streaming's results.
+* Loads all elements related to the map of the search's results page.
+*
+* Parameters:
+*   - mode: indicates the mode of the current search -> "static" or "streaming".
 */
-function loadStreamingResultsMap() {
-    streamingResultsMap = new L.Map("streamingResultsMap", {center: INIT_MAP_CENTER, zoom: INIT_MAP_ZOOM})
+function loadResultsMap(mode) {
+    resultMaps[mode] = new L.Map(mode + "ResultsMap", {center: INIT_MAP_CENTER, zoom: INIT_MAP_ZOOM})
         .addLayer(new L.tileLayer(MAP_LAYER_URL, {
             maxZoom: MAP_MAX_ZOOM,
             attribution: MAP_ATTRIBUTION
@@ -456,7 +465,7 @@ function loadStreamingResultsMap() {
     // Adds the cluster goup object as a layer to the map of the streaming's results,
     // in order to automatically group markers with the Leaflet.markercluster library.
     markers = L.markerClusterGroup();
-    streamingResultsMap.addLayer(markers);
+    resultMaps[mode].addLayer(markers);
 }
 
 /**
@@ -956,17 +965,18 @@ function loadStreamingResultsComponents() {
     var secondKeywords = getAndFormatKeywords("second", STREAMING_MODE_IDENTIFIER);
 
     // Loads the map and charts components.
-    loadStreamingResultsMap();
+    loadResultsMap(STREAMING_MODE_IDENTIFIER);
     loadStreamingResultsCharts(secondKeywords.length != 0);
 
     $("#firstStreamingSubject").html(humanQueryString["first"]);
+    $("#streamingLanguage").text($("#dynamicLanguage option:selected").val() == "" ? "ANY" : $("#dynamicLanguage option:selected").val());
 
     if (secondKeywords) {
         $("#firstStreamingSubjectText").html("<u>First</u> streaming's subject: ");
         $("#firstStreamingNumberText").html("Number of received Tweets for the <u>first</u> streaming: ");
         $("#firstStreamingSpeedText").html("<u>First</u> streaming's average speed: ");
         $("#secondStreamingSubject").html(humanQueryString["second"]);
-        $(".second-streaming-text").show();
+        $(".second-results-element").show();
     }
 
     // Adds a tooltip on the streaming's subject when the user moves the mouse hover it
@@ -982,6 +992,15 @@ function loadStreamingResultsComponents() {
     $("#firstStreamingSubject, #secondStreamingSubject").mouseleave(function() {
         $(this).tooltip("hide");
     })
+
+    // Draws the manually drawn rectangle on the map of the streaming's results if the user
+    // manually drew the rectangle.
+    if (rectangleManuallyDrawn) {
+        drawPolygons(resultMaps[STREAMING_MODE_IDENTIFIER], [boundingRectangleLatLngs]);
+    // Otherwise draws each selected country's territories on the map of the streaming's results.
+    } else {
+        drawPolygons(resultMaps[STREAMING_MODE_IDENTIFIER], selectedCountryCoordinates);
+    }
 
     // Displays the receptions' speeds, each second.
     speedInterval = setInterval(function() {
@@ -1011,6 +1030,51 @@ function loadStreamingResultsComponents() {
     }, 1000)
 
     $("#numberTweetsMax").text(MAX_DISPLAYED_TWEETS);
+}
+
+/**
+* Loads all elements related to the components and map of the static mode's results.
+*/
+function loadStaticResultsComponents() {
+    // Displays and initializes GUI elements on the results page.
+    var firstKeywords = getAndFormatKeywords("first", STATIC_MODE_IDENTIFIER);
+    var secondKeywords = getAndFormatKeywords("second", STATIC_MODE_IDENTIFIER);
+
+    // Loads the map component.
+    loadResultsMap(STATIC_MODE_IDENTIFIER);
+
+    $("#firstStaticSubject").html(humanQueryString["first"]);
+    $("#staticSelectedLanguage").text($("#staticLanguage option:selected").val() == "" ? "ANY" : $("#staticLanguage option:selected").val());
+
+
+    if (secondKeywords) {
+        $("#firstStaticSubjectText").html("<u>First</u> subject: ");
+        $("#firstStaticNumberText").html("Number of Tweets for the <u>first</u> subject: ");
+        $("#secondStaticSubject").html(humanQueryString["second"]);
+        $(".second-results-element").show();
+    }
+
+    // Adds a tooltip on the static mode's subject when the user moves the mouse hover it
+    // and if it is too big to fill the entire cell.
+    $("#firstStaticSubject, #secondStaticSubject").mouseenter(function() {
+        if (this.offsetWidth < this.scrollWidth) {
+            $(this).attr("data-original-title", $(this).html());
+            $(this).tooltip("show");
+        }
+    })
+
+    // Removes the tooltip when the user moves the mouse out of the static mode's subject.
+    $("#firstStaticSubject, #secondStaticSubject").mouseleave(function() {
+        $(this).tooltip("hide");
+    })
+
+    // Draws the manually drawn circle on the map of the static mode's results.
+    var circle = L.circle([circleLatLngRad.latitude, circleLatLngRad.longitude], circleLatLngRad.radius * 1000, {
+        color: '#0033ff',
+        fillColor: '#0033ff',
+        fillOpacity: 0.2
+    }).addTo(resultMaps[STATIC_MODE_IDENTIFIER]);
+    resultMaps[STATIC_MODE_IDENTIFIER].fitBounds(circle.getBounds());
 }
 
 /**
@@ -1199,15 +1263,6 @@ function initWebSocket() {
                             $("#streamingResults").fadeIn();
                             loadStreamingResultsComponents();
 
-                            // Draws the manually drawn rectangle on the map of the streaming's results if the user
-                            // manually drew the rectangle.
-                            if (rectangleManuallyDrawn) {
-                                drawPolygons(streamingResultsMap, [boundingRectangleLatLngs]);
-                            // Otherwise draws each selected country's territories on the map of the streaming's results.
-                            } else {
-                                drawPolygons(streamingResultsMap, selectedCountryCoordinates);
-                            }
-
                             // Since the Leaflet library uses the "latitude,longitude" format for coordinates while the
                             // Twitter's APIs use the "longitude,latitude" format, we have to invert coordinates of the
                             // bounding rectangle before sending it.
@@ -1238,27 +1293,24 @@ function initWebSocket() {
                                 if ($("#noTweetReceivedText").is(":visible")) {
                                     $("#noTweetReceivedText").hide();
                                     $("#maxNumberDisplayedTweets").fadeIn();
-                                    $("#tweetsContent").fadeIn();
+                                    $("#streamingTweetsContent").fadeIn();
                                 }
 
                                 // Adds the new Tweet on the map and displays it in the results panel.
                                 // The Leaflet.markercluster library will automatically group Tweets on the map.
-                                markers.addLayer(L.marker([data.latitude, data.longitude], {icon: markersIcons[data.keywordsSet]}));
-                                $("#tweetsContent").prepend(
-                                    "<div class='" + data.keywordsSet + "-streaming-text'>\
-                                        <strong>[" + moment().format("HH:mm:ss") + "] " + data.user + "</strong>: " + data.content + "<br/>\
-                                    </div>"
-                                );
-                                // Updates the Tweets' counters.
-                                $("#" + data.keywordsSet + "StreamingNumber").text(parseInt($("#" + data.keywordsSet + "StreamingNumber").text()) + 1);
+                                addTweetOnPage(STREAMING_MODE_IDENTIFIER, data.keywordsSet, data.latitude, data.longitude, moment().format("HH:mm:ss"), data.user, data.content);
 
                                 // Removes the old received Tweets it there is too many of theme (in order to avoid
                                 // the web browser to lag).
-                                if ($("#tweetsContent div").length > MAX_DISPLAYED_TWEETS) {
-                                    $("#tweetsContent div").last().remove();
+                                if ($("#streamingTweetsContent div").length > MAX_DISPLAYED_TWEETS) {
+                                    $("#streamingTweetsContent div").last().remove();
                                 }
                             }
 
+                            break;
+                        // Occurs when an error occured when the server tried to create the backup file.
+                        case "errorFile":
+                            alert("I could not create the backup file for reasons. Try to start a new streaming process in order to resolve the problem, otherwise you won't be able to export this file at the end of the current streaming process.");
                             break;
                         // Occurs when the server stopped the streaming process for reasons.
                         case "stopStreaming":
@@ -1334,6 +1386,72 @@ function stopStreaming(sendSocket) {
     $("#btnStopStreaming").hide();
     $("#btnNewSearch").show();
     $("#streamingResultsTitle").html("This streaming was <strong><u>stopped</u></strong>!")
+
+    // Asks the user if he wants to export the results.
+    if (confirm("Do you want to export the results as a text file?\nIf you cancel or close this window, you will NOT be able to export them later.")) {
+        // If so, uses the johnculviner's "jquery.fileDownload" library (https://github.com/johnculviner/jquery.fileDownload)
+        // in order to download the text file.
+        $.fileDownload(jsRoutes.controllers.SearchController.fileAction(
+            "download",
+            getAndFormatKeywords("first", STREAMING_MODE_IDENTIFIER),
+            getAndFormatKeywords("second", STREAMING_MODE_IDENTIFIER)
+        ).url)
+            .done(function () {
+                // Deletes the file from the server once it has been downloaded.
+                deleteFile();
+            })
+            .fail(function () {
+                alert(
+                    "An error occurred when trying to download the file; you can try to manually download it here: " +
+                    jsRoutes.controllers.SearchController.fileAction(
+                        "download",
+                        getAndFormatKeywords("first", STREAMING_MODE_IDENTIFIER),
+                        getAndFormatKeywords("second", STREAMING_MODE_IDENTIFIER)
+                    ).url + "."
+                );
+            });
+    // Otherwise just deletes the file from the server.
+    } else {
+        deleteFile();
+    }
+}
+
+/**
+* Sends an Ajax request in order to ask the server to delete the current user's
+* file.
+*/
+function deleteFile() {
+    $.ajax({
+        method: "GET",
+        url: jsRoutes.controllers.SearchController.fileAction("delete").url
+    });
+}
+
+/*
+* Adds in the results map and in the Tweets panel the Tweet whose information are given in parameters.
+*
+* Parameters:
+*   - mode: indicates the current mode of the search -> "static" or "streaming".
+*   - subjectNumber: indicates the subject's identifier in which the Tweet belongs to -> "first" or "second".
+*   - latitude: the latitude coordinate of the Tweet to add, or 0 if the Tweet doesn't have a geolocation.
+*   - longitude: the longitude coordinate of the Tweet to add, or 0 if the Tweet doesn't have a geolocation.
+*   - date: the date as a string of the Tweet.
+*   - user: the name of the user who wrote the Tweet.
+*   - content: the Tweet's content.
+*/
+function addTweetOnPage(mode, subjectNumber, latitude, longitude, date, user, content) {
+    if (latitude != 0 && longitude != 0) {
+        markers.addLayer(L.marker([latitude, longitude], {icon: markersIcons[subjectNumber]}));
+        // Updates the geolocated Tweets' counter.
+        var elementNumberName = "#" + subjectNumber + mode.charAt(0).toUpperCase() + mode.slice(1) + "Number";
+        $(elementNumberName).text(parseInt($(elementNumberName).text()) + 1);
+    }
+
+    $("#" + mode + "TweetsContent").prepend(
+        "<div class='" + subjectNumber + "-subject-text'>\
+            <strong>[" + date + "] " + user + "</strong>: " + content + "<br/>\
+        </div>"
+    );
 }
 
 /**
@@ -1341,6 +1459,10 @@ function stopStreaming(sendSocket) {
 * according to the validates user's input.
 */
 function getStaticTweets() {
+    $("#viewStaticResultsBtn").html("<span class='fa fa-spinner fa-spin loading-icon'></span>Searching...");
+    $("#viewStaticResultsBtn").prop("disabled", true);
+
+    // Makes an Ajax request to the server in order to get the Tweets.
     $.ajax({
         method: "GET",
         url: jsRoutes.controllers.SearchController.staticResults().url,
@@ -1367,27 +1489,55 @@ function getStaticTweets() {
                 case "fieldsFormat":
                     alert("At least one of the given fields is not properly formatted, please retry.");
                     break;
-                case "fieldEmpty":
-                    alert("Please fill all mandatory fields");
+                case "fieldEmptyOrNotValid":
+                    alert("Please fill all mandatory fields in a valid way.");
                     break;
                 default:
                     alert("An unexpected error occured, please retry in a while.");
                     break;
             }
-        } else {
-            if (msg.tweets && msg.numberOfTweets) {
-                console.log("NUMBER OF TWEETS: " + msg.numberOfTweets);
-                console.log("TWEETS: ");
-                for (var tweet in msg.tweets) {
-                    console.log("\t@" + tweet.user + ": " + tweet.content);
-                }
-            } else {
-                alert("An unexpected error occured, please retry in a while.");
+        // Otherwise checks that the received Tweets object is properly formatted.
+        } else if (msg.first.tweets && msg.first.tweets.length > 0 && (!msg.second || msg.second.tweets)) {
+            var tweets = [];
+
+            // Displays the results page.
+            $("#searchContent").hide();
+            $("#staticResults").fadeIn();
+            loadStaticResultsComponents();
+
+            // Collects and counts Tweets of each subject.
+            for (label in msg) {
+                $("#" + label + "StaticTotalNumber").text(msg[label].tweets.length);
+                tweets = tweets.concat(msg[label].tweets);
             }
+
+            // Then alphabetically sorts the tweets by their date and time.
+            tweets.sort(function(a, b) {
+                var dateA = new Date(a.date.replace(", ", "T")).getTime();
+                var dateB = new Date(b.date.replace(", ", "T")).getTime();
+
+                if (dateA < dateB) return -1;
+                else if (dateA > dateB) return 1;
+                else return 0;
+            });
+
+            // Iterates over each subject's Tweet in order to display it.
+            tweets.forEach(function(tweet) {
+                // Adds the current Tweet on the map and displays it in the results panel.
+                // The Leaflet.markercluster library will automatically group Tweets on the map.
+                addTweetOnPage(STATIC_MODE_IDENTIFIER, tweet.subjectNumber, tweet.latitude, tweet.longitude, tweet.date, tweet.user, tweet.content);
+            })
+        } else {
+            alert("Sorry, there is no result for the given parameters.");
         }
+
+        $("#viewStaticResultsBtn").html("View Results!");
+        $("#viewStaticResultsBtn").prop("disabled", false);
     })
     .fail(function(jqXHR, textStatus) {
         alert("An unexpected error occured, please retry in a while.");
+        $("#viewStaticResultsBtn").html("View Results!");
+        $("#viewStaticResultsBtn").prop("disabled", false);
     });
 }
 
@@ -1427,6 +1577,9 @@ function validateStaticFields() {
     // The entered dates must match the date format.
     } else if (!moment(fromDate, DATE_FORMAT, true).isValid() || !moment(toDate, DATE_FORMAT, true).isValid()) {
         status = DATE_NOT_VALID;
+    // The to date must be greater than the from date.
+    } else if (moment(fromDate, DATE_FORMAT).toDate() >= moment(toDate, DATE_FORMAT).toDate()) {
+        status = FROM_DATE_GREATER_THAN_TO_DATE;
     // The user must have selected an area on the map.
     } else if (circleLatLngRad == null) {
         status = LOCATION_NOT_SELECTED;
@@ -1539,8 +1692,8 @@ $(document).ready(function() {
             $(".leaflet-draw-draw-circle").tooltip("show");
         }
 
-        if (streamingResultsMap) {
-            streamingResultsMap.invalidateSize(false);
+        if (resultMaps[STREAMING_MODE_IDENTIFIER]) {
+            resultMaps[STREAMING_MODE_IDENTIFIER].invalidateSize(false);
         }
     })
 
@@ -1548,9 +1701,19 @@ $(document).ready(function() {
     loadCountriesList();
     // Loads the languages list.
     loadLanguagesList();
+    // Displays the minimum date of the static search, which corresponds to the date it
+    // was 9 days ago.
+    $("#maxDaysStaticSearch").text(MAX_DAYS_STATIC_SEARCH);
+    $("#dateOneWeekAgo").text(moment().subtract(MAX_DAYS_STATIC_SEARCH, 'd').format('YYYY-MM-DD'));
     // Displays the right date format as a placeholder for the dates fields.
-    $("#staticFromDate").attr("placeholder", DATE_FORMAT);
-    $("#staticToDate").attr("placeholder", DATE_FORMAT);
+    $("#staticFromDate, #staticToDate").attr("placeholder", DATE_FORMAT);
+    // Loads the date picker on the date fields.
+    $("#staticFromDate, #staticToDate").pickadate({
+        "format": "yyyy-mm-dd",
+        min: moment().subtract(MAX_DAYS_STATIC_SEARCH, 'd').toDate(),
+        max: new Date()
+    });
+    $("#viewStaticResultsBtn").prop("disabled", false);
 
     // Loads maps.
     // The user can draw a rectangle but no circle in the dynamic map.
@@ -1580,6 +1743,8 @@ $(document).ready(function() {
 
         // If all fields were valid, starts the streaming process.
         if (fieldsValidationStatus === SUCCESS_STATUS) {
+            // Deletes the current user's file if it was not already deleted.
+            deleteFile();
             initWebSocket();
         // If there was an error, displays it.
         } else {

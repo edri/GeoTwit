@@ -9,6 +9,7 @@ GET     /callback                   controllers.HomeController.callback(denied: 
 GET     /logout                     controllers.HomeController.logout
 GET     /search                     controllers.SearchController.index
 GET     /search-results             controllers.SearchController.staticResults
+GET     /file-action                controllers.SearchController.fileAction(action: String, firstSubject: Option[String], secondSubject: Option[String])
 
 # WebSocket management
 GET     /streaming-socket            controllers.SearchController.streamingSocket

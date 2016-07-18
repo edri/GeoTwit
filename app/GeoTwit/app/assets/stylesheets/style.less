@@ -3,6 +3,7 @@
 @subtitles-margin-bottom: 0.4em;
 @subtitles-margin-top: 1em;
 @group-fields-spacing: 0.3em;
+@gray-color: #999;
 
 // ================================== LAYOUT ===================================
 @font-face {
@@ -207,6 +208,15 @@ body {
     width: 100%;
 }
 
+.gray-text {
+    color: @gray-color;
+    margin: 0 0 1em 0;
+}
+
+.one-week-ago-label {
+    color: red;
+}
+
 .search-from-date {
     margin-right: 5vw;
 }
@@ -227,16 +237,16 @@ body {
     margin-right: 0.5em;
 }
 
-.streaming-results {
+.streaming-results, .static-results {
     display: none;
 }
 
-.streaming-results-header-table {
+.results-header-table {
     margin: 20px 0 5vh 0;
     width: 100%;
 }
 
-.streaming-results-title {
+.results-title {
     margin: 0;
 }
 
@@ -244,7 +254,7 @@ body {
     text-align: right;
 }
 
-.btn-stop-streaming, .btn-new-search {
+.btn-stop-streaming, .btn-new-search, .btn-new-search-static-mode {
     font-size: 1.5em;
     width: 14vw;
 }
@@ -276,23 +286,13 @@ body {
 }
 
 .streaming-subjects {
-    float: right;
-    width: 50%;
+    margin-bottom: 1em;
+    width: 100%;
 }
 
-.streaming-subjects-first-td {
-    max-width: 0;
+.subjects-first-td {
     padding-right: 0.5em;
     text-align: right;
-}
-
-.streaming-subjects-second-td {
-    font-weight: bold;
-    max-width: 0;
-    overflow: hidden;
-    text-align: center;
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
 
 .tweets-content-results {
@@ -308,15 +308,19 @@ body {
     text-align: center;
 }
 
-.first-streaming-text {
+.number-of-static-tweets {
+    text-align: right;
+}
+
+.first-subject-text {
     color: #2981ca;
 }
 
-.second-streaming-text {
+.second-subject-text {
     color: #ff6f27;
 }
 
-.second-streaming-element {
+.second-results-element {
     display: none;
 }
 
@@ -331,7 +335,7 @@ body {
 }
 
 .no-tweet-received, .max-number-displayed-tweets {
-    color: #999;
+    color: @gray-color;
     font-style: italic;
     margin-top: 1.5em;
 }
@@ -340,11 +344,14 @@ body {
     display: none;
 }
 
-.tweets-content {
+.tweets-content, .tweets-content-streaming {
     border: 1px solid #ddd;
-    display: none;
     line-height: 2em;
     height: 300px;
     overflow: auto;
     padding: 0.5em 1em;
+}
+
+.tweets-content-streaming {
+    display: none;
 }

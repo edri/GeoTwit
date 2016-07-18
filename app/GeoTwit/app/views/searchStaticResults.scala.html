@@ -1,0 +1,49 @@
+<div class="static-results" id="staticResults">
+    <table class="results-header-table">
+        <tr>
+            <td>
+                <h1 class="results-title" id="streamingResultsTitle">
+                    Here are the results!
+                </h1>
+            </td>
+            <td class="td-stop-streaming">
+                <button class="btn btn-primary btn-new-search-static-mode" onclick="location.reload()">Make a new search</button>
+            </td>
+        </tr>
+    </table>
+
+    <table class="results-header-table">
+        <tr class="first-subject-text">
+            <td>
+                <span id="firstStaticSubjectText">Subject: </span>
+                <strong><span data-container="body" data-html="true" data-placement="bottom" data-toggle="tooltip" data-trigger="manual" id="firstStaticSubject"></span></strong>
+            </td>
+            <td class="number-of-static-tweets">
+                <span id="firstStaticNumberText">Number of Tweets: </span><strong id="firstStaticTotalNumber">0</strong>,
+                including <strong id="firstStaticNumber">0</strong> one(s) with geolocation tags.
+            </td>
+        </tr>
+        <tr class="second-subject-text second-results-element">
+            <td>
+                <u>Second</u> subject:
+                <strong><span data-container="body" data-html="true" data-placement="bottom" data-toggle="tooltip" data-trigger="manual" id="secondStaticSubject"></span></strong>
+            </td>
+            <td class="number-of-static-tweets">
+                Number of Tweets for the <u>second</u> subject: <strong id="secondStaticTotalNumber">0</strong>,
+                including <strong id="secondStaticNumber">0</strong> one(s) with geolocation tags.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Language: <strong id="staticSelectedLanguage"></strong>
+            </td>
+            <td></td>
+        </tr>
+    </table>
+
+    <!-- This div will contain the map of the streaming's results. -->
+    <div class="search-map" id="staticResultsMap"></div>
+
+    <h4 class="tweets-content-results">Tweets:</h4>
+    <div class="tweets-content" id="staticTweetsContent"></div>
+</div>

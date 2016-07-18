@@ -10,14 +10,18 @@ package controllers
 
 import java.util.UUID
 import javax.inject._
+
 import com.typesafe.config.ConfigFactory
-import play.api.Configuration
+import play.api.{Configuration, Environment, Play}
 import play.api.cache.CacheApi
+
 import scala.concurrent.duration._
 import play.api.mvc._
 import twitter4j.auth.RequestToken
 import twitter4j._
+
 import scala.concurrent.Future
+import scala.io.Source
 
 /**
   * This controller creates an `Action` to handle HTTP requests to the application's home page.

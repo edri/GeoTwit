@@ -7,19 +7,24 @@
 
 package controllers
 
+import java.io.{File, FileWriter}
+import java.util.Date
 import javax.inject._
+
 import akka.actor._
 import akka.stream.Materializer
 import com.typesafe.config.ConfigFactory
-import play.api.Configuration
+import play.api.{Configuration, Environment}
 import play.api.cache.CacheApi
+import play.api.libs.iteratee.Enumerator
 import play.api.libs.json._
 import play.api.mvc._
 import play.api.libs.streams._
 import play.twirl.api.TemplateMagic.javaCollectionToScala
 import twitter4j._
+
 import scala.collection.mutable.ListBuffer
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 /**
   * This controller creates an `Action` to handle HTTP requests to the application's search page.
@@ -28,10 +33,16 @@ import scala.concurrent.Future
   * @param materializer used by the WebSocket system's actors.
   * @param cache the cache object used to access the server's cache.
   * @param configuration the configuration object used to access the server's configuration.
+  * @param environment the environment of the application, used to get its absolute path in order to write files.
   */
 @Singleton
-class SearchController @Inject() (implicit system: ActorSystem, materializer: Materializer, cache: CacheApi, configuration: Configuration) extends Controller {
+class SearchController @Inject() (implicit system: ActorSystem, materializer: Materializer, cache: CacheApi, configuration: Configuration, environment: Environment) extends Controller {
   val config = ConfigFactory.load("twitter.conf")
+  // Will be used to validate and format the Tweets' date and time formats.
+  val dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd")
+  val dateTimeFormat = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+  // Contains the path of the GeoTwit's "tmp" file, in which backup files will be saved.
+  val baseFilePath: String = environment.rootPath + "/tmp/"
 
   /**
     * Represents an actions composition, which can be interpreted like a generic action functionality.
@@ -60,7 +71,9 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
     * Instantiates a new WebSocket's actor, used for the Twitter's streaming process.
     */
   object StreamingSocketActor {
-    def props(out: ActorRef, id: String) = Props(new StreamingSocketActor(out, id))
+    def props(out: ActorRef, id: String) = {
+      Props(new StreamingSocketActor(out, id))
+    }
   }
 
   /**
@@ -110,6 +123,13 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
                     out ! PoisonPill
                   }
                   case Some(twitter) => {
+                    // Writes the metadata at the beginning of the backup file.
+                    val metadata =
+                      "\tFIRST SUBJECT: \"" + fk + (if (!sk.isEmpty) "\"\r\n\tSECOND SUBJECT: \"" + sk else "") +
+                      "\"\r\n\tLANGUAGE: " + (if (l.isEmpty) "ANY" else "\"" + l + "\"") + "\r\n\tCOORDINATES: [" +
+                      c.map(coord => "[" + coord.mkString(", ") + "]").mkString(", ") + "]\r\n"
+                    writeInFile("streaming-" + id + ".txt", "METADATA:\r\n" + metadata + "\r\nTWEETS:\r\n")
+
                     // Sets the Twitter's Stream object with the Twitter object's configuration.
                     twitterStreams(0).setOAuthConsumer(
                       config.getString("twitter4j.oauth.consumerKey"),
@@ -117,7 +137,7 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
                     )
                     twitterStreams(0).setOAuthAccessToken(twitter.getOAuthAccessToken)
 
-                    streaming(out, twitterStreams(0), "first", fk, c(0), c(2), l)
+                    streaming(out, twitterStreams(0), id, "first", fk, c(0), c(2), l)
 
                     // Starts a second streaming process if the second keywords set is set.
                     if (!sk.isEmpty) {
@@ -130,7 +150,7 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
                       )
                       twitterStreams(1).setOAuthAccessToken(twitter.getOAuthAccessToken)
 
-                      streaming(out, twitterStreams(1), "second", sk, c(0), c(2), l)
+                      streaming(out, twitterStreams(1), id, "second", sk, c(0), c(2), l)
                     }
                   }
                 }
@@ -168,13 +188,30 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
     // Checks that the session have an unique ID.
     request.session.get("id") match {
       case Some(id) => {
-          // Returns false if the user is not connected, otherwise returns true.
-          (cache.get(id + "-twitter"), request.session.get("username")) match {
-            case (Some(_), Some(_)) => true
-            case _ => false
-          }
+        // Returns false if the user is not connected, otherwise returns true.
+        (cache.get(id + "-twitter"), request.session.get("username")) match {
+          case (Some(_), Some(_)) => true
+          case _ => false
         }
+      }
       case None => false
+    }
+  }
+
+  /**
+    * Writes the given string in the given file's name.
+    *
+    * @param fileName the name of the file in which the string will be saved
+    * @param str the string value to save
+    */
+  def writeInFile(fileName: String, str: String) = {
+    val file = new File(baseFilePath + fileName)
+    val fw = new FileWriter(file, true)
+
+    try {
+      fw.write(str)
+    } finally {
+      fw.close()
     }
   }
 
@@ -183,6 +220,7 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
     *
     * @param out the actor who is in charge of the current client's web socket discussion.
     * @param twitterStream a instantiated and configured Twitter's stream object
+    * @param id the unique ID of the current session
     * @param keywordsSet indicates the keywords set ("first" or "second") for which the current streaming process will
     *                    be, so the client can display Tweet with different colors.
     * @param query the query used to filter the streaming of Tweets
@@ -193,8 +231,12 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
     * @param language a English-written language used to filter Tweets; if this parameter is empty, there won't be a
     *                 language filter.
     */
-  def streaming(out: ActorRef, twitterStream: TwitterStream, keywordsSet: String, query: String,
+  def streaming(out: ActorRef, twitterStream: TwitterStream, id: String, keywordsSet: String, query: String,
                 southwestCoordinates: Array[Double], northeastCoordinates: Array[Double], language: String) = {
+    // Geolocated Tweets' counter.
+    var nbGeolocatedTweets = 0
+    // Indicates if the server could write the file for the first Tweet (in order to get an error for each Tweet).
+    var cantCreateFile = false
     println("Starting " + keywordsSet + " streaming: \"" + query + "\" written in " + (if (language.isEmpty) "any language" else "\"" + language + "\"") + ".")
     // Contains the total number of received Tweets (with or without geolocation tags.)
     var numberOfReceivedTweets = 0
@@ -219,6 +261,24 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
           // Sends a web socket to the client if the received Tweet is located into the given coordinates.
           if (longitude >= southwestCoordinates(0) && longitude <= northeastCoordinates(0) &&
             latitude >= southwestCoordinates(1) && latitude <= northeastCoordinates(1)) {
+
+            if (!cantCreateFile) {
+              nbGeolocatedTweets += 1
+
+              try {
+                writeInFile(
+                  "streaming-" + id + ".txt", "\t" + keywordsSet  + "-subject#" + nbGeolocatedTweets.toString + ";" +
+                  dateTimeFormat.format(status.getCreatedAt) + ";" + longitude + ";" + latitude + ";\"" +
+                  status.getUser.getName + "\";\"" + status.getText + "\"\r\n"
+                )
+              } catch {
+                case e: Exception => {
+                  e.printStackTrace()
+                  cantCreateFile = true
+                  out ! JsObject(Seq("messageType" -> JsString("errorFile")))
+                }
+              }
+            }
 
             out ! JsObject(Seq(
               "messageType"       -> JsString("newTweet"),
@@ -307,14 +367,65 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
   }
 
   /**
+    * Gets the file containing the last streaming's results and either downloads or deletes it, depending on the given
+    * parameter. Returns a BadRequest result if the file or the given action do not exist.
+    * The user must be connected to access this action.
+    *
+    * @param action the string representing the action to do with the file - either "download" or "delete"
+    */
+  def fileAction(action: String, firstSubject: Option[String], secondSubject: Option[String]) = AuthenticatedAction { request =>
+    // Gets the file to either download or delete.
+    val file = new File(baseFilePath + "streaming-" + request.session.get("id").get + ".txt")
+    var fileName = ""
+
+    // Sets the output file's name, according to the given parameters.
+    if (firstSubject.nonEmpty) {
+      fileName += firstSubject.get
+
+      if (secondSubject.nonEmpty && secondSubject.get.nonEmpty) {
+        fileName += "_" + secondSubject.get
+      }
+
+      fileName += "_"
+    }
+
+    fileName += "STREAMING_" + dateTimeFormat.format(new Date()) + ".txt"
+
+    // Checks if the file exists.
+    if (file.exists() && !file.isDirectory()) {
+      // Then downloads or deletes it, depending on the action.
+      action match {
+        case "download" => {
+          // The file to download will be named "STREAMING_[DATETIME].txt" for the user and won't be server as an inline
+          // file (inline => display of the file directly in the web browser).
+          // The "Set-Cookie" header is used by the "jquery.fileDownload" in order to know that the file was
+          // successfully downloaded.
+          Ok.sendFile(
+            content = file,
+            fileName = _ => fileName,
+            inline = false
+          ).withHeaders("Set-Cookie" -> "fileDownload=true; path=/")
+        }
+        case "delete" => {
+          file.delete()
+          Ok("File successfully deleted.")
+        }
+        case _ => {
+          BadRequest("This action is unknown.")
+        }
+      }
+    } else {
+      BadRequest("The file you are trying to access does not exist anymore.")
+    }
+  }
+
+  /**
     * Gets and returns the results of the static mode's search, when the user pressed the "View Results" of the "Static
     * Mode" tab in the Search page.
     */
   def staticResults = Action { request =>
     // Checks if the user is connected before continuing.
     if (isUserAuthenticated(request)) {
-      // Used to validate the dates' formats.
-      val dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd")
       var firstKeywords, secondKeywords, language = ""
       var latitude, longitude, radius = 0.0
       var fromDate, toDate = new java.util.Date()
@@ -348,33 +459,123 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
           getTwitter match {
             // If the Twitter object no longer exists, the session expired so the user has to be disconnected.
             case None => Ok(JsObject(Seq("error" -> JsString("sessionExpired"))))
+            // Otherwise get the static Tweets.
             case Some(twitter) => {
-              val query: Query = new Query(fk)
-
-              if (!lan.isEmpty) {
-                query.setLang(lan)
-              }
-
+              // Creates the query, according to the user's parameters.
+              var query: Query = new Query(fk)
+              query.setCount(100)
               query.setSince(dateFormat.format(fd))
               query.setUntil(dateFormat.format(td))
               query.geoCode(new GeoLocation(lat, lng), rad, "km")
+              if (!lan.isEmpty) {
+                query.setLang(lan)
+              }
+              // Create the second query, only if the user set a second keywords set.
+              var queryCopy = query
+              var secondQuery = (if (secondKeywords.isEmpty) null else query)
 
-              val results: QueryResult = twitter.search(query)
+              var results: QueryResult = twitter.search(query)
+              var tweets: List[twitter4j.Status] = Nil
 
-              Ok(JsObject(Seq(
-                "tweets" -> JsArray(results.getTweets.toList.map(
-                  status => Json.obj(
-                    "user"      -> JsString(status.getUser.getScreenName),
-                    "latitude"  -> JsNumber(if (status.getGeoLocation != null) status.getGeoLocation.getLatitude else 0),
-                    "longitude" -> JsNumber(if (status.getGeoLocation != null) status.getGeoLocation.getLongitude else 0),
-                    "content"   -> JsString(status.getText)
-                  )
-                )),
-                "numberOfTweets" -> JsNumber(results.getTweets.size()))))
+              // Since there can be a lot of results, the Twitter's API send us Tweets by page, so we have to browse all
+              // pages in order to get all results.
+              var i = 0
+              while (i < 5 && results.getTweets.size() != 0) {
+                println("OK1")
+
+                var minId = Long.MaxValue
+
+                do {
+                  // If there are results, concats them to the current results' list.
+                  if (results.getTweets.size() > 0) {
+                    tweets ++= results.getTweets
+                  }
+
+                  query = results.nextQuery()
+
+                  if (query != null) {
+                    // Collect Tweets for the current page.
+                    results = twitter.search(query)
+                  }
+                } while (query != null)
+
+                tweets.foreach(s => if (s.getId < minId) minId = s.getId)
+                query = queryCopy
+                query.setMaxId(minId - 1)
+                results = twitter.search(query)
+
+                println("OK2")
+                i += 1
+              }
+
+              println("OK3")
+
+              // If the user only set one keywords set, sends the results
+              if (secondKeywords.isEmpty) {
+                Ok(JsObject(Seq(
+                  "first" -> JsObject(Seq(
+                    "tweets" -> JsArray(tweets.map(
+                      status => Json.obj(
+                        "subjectNumber" -> "first",
+                        "date"          -> JsString(dateTimeFormat.format(status.getCreatedAt)),
+                        "user"          -> JsString(status.getUser.getScreenName),
+                        "latitude"      -> JsNumber(if (status.getGeoLocation != null) status.getGeoLocation.getLatitude else 0),
+                        "longitude"     -> JsNumber(if (status.getGeoLocation != null) status.getGeoLocation.getLongitude else 0),
+                        "content"       -> JsString(status.getText)
+                      )
+                    ))
+                  ))
+                )))
+              // Otherwise collects the Tweets linked to the second stream and sends the Tweets of both subjects to the
+              // client.
+              } else {
+                secondQuery.setQuery(secondKeywords)
+                var secondTweets: List[twitter4j.Status] = Nil
+
+                // pages in order to get all results.
+                do {
+                  // Collect Tweets for the current page.
+                  results = twitter.search(secondQuery)
+
+                  // If there are results, concats them to the current resutls' list.
+                  if (results.getCount > 0) {
+                    secondTweets ++= results.getTweets
+                  }
+
+                  secondQuery = results.nextQuery()
+                } while (secondQuery != null)
+
+                Ok(JsObject(Seq(
+                  "first" -> JsObject(Seq(
+                    "tweets" -> JsArray(tweets.map(
+                      status => Json.obj(
+                        "subjectNumber" -> "first",
+                        "date"          -> JsString(dateTimeFormat.format(status.getCreatedAt)),
+                        "user"          -> JsString(status.getUser.getScreenName),
+                        "latitude"      -> JsNumber(if (status.getGeoLocation != null) status.getGeoLocation.getLatitude else 0),
+                        "longitude"     -> JsNumber(if (status.getGeoLocation != null) status.getGeoLocation.getLongitude else 0),
+                        "content"       -> JsString(status.getText)
+                      )
+                    ))
+                  )),
+                  "second" -> JsObject(Seq(
+                    "tweets" -> JsArray(secondTweets.map(
+                      status => Json.obj(
+                        "subjectNumber" -> "second",
+                        "date"          -> JsString(dateTimeFormat.format(status.getCreatedAt)),
+                        "user"          -> JsString(status.getUser.getScreenName),
+                        "latitude"      -> JsNumber(if (status.getGeoLocation != null) status.getGeoLocation.getLatitude else 0),
+                        "longitude"     -> JsNumber(if (status.getGeoLocation != null) status.getGeoLocation.getLongitude else 0),
+                        "content"       -> JsString(status.getText)
+                      )
+                    ))
+                  ))
+                )))
+              }
             }
           }
         }
-        case _ => Ok(JsObject(Seq("error" -> JsString("fieldEmpty"))))
+        case _ => Ok(JsObject(Seq("error" -> JsString("fieldEmptyOrNotValidZ"))))
       }
     // Sends an error message to the client if the user is no longer (or not at all) connected.
     } else {
