@@ -1314,10 +1314,6 @@ function initWebSocket() {
                             break;
                         // Occurs when the server stopped the streaming process for reasons.
                         case "stopStreaming":
-                            // Stops the streaming process without indicating it to the server (since it is the one which
-                            // ask us to stop the process).
-                            stopStreaming(false);
-
                             // Displays an alert, depending on the reason, if set.
                             if (data.reason) {
                                 switch (data.reason) {
@@ -1341,6 +1337,10 @@ function initWebSocket() {
                                         break;
                                 }
                             }
+
+                            // Stops the streaming process without indicating it to the server (since it is the one which
+                            // ask us to stop the process).
+                            stopStreaming(false);
 
                             break;
                     }
@@ -1401,13 +1401,16 @@ function stopStreaming(sendSocket) {
                 deleteFile();
             })
             .fail(function () {
+                var urlParts = window.location.href.split("/");
+
                 alert(
-                    "An error occurred when trying to download the file; you can try to manually download it here: " +
+                    "An error occurred when trying to download the file; you can try to manually download it here: \"" +
+                    urlParts[0] + "//" + urlParts[2] + 
                     jsRoutes.controllers.SearchController.fileAction(
                         "download",
                         getAndFormatKeywords("first", STREAMING_MODE_IDENTIFIER),
                         getAndFormatKeywords("second", STREAMING_MODE_IDENTIFIER)
-                    ).url + "."
+                    ).url + "\"."
                 );
             });
     // Otherwise just deletes the file from the server.

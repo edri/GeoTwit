@@ -396,8 +396,8 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
       // Then downloads or deletes it, depending on the action.
       action match {
         case "download" => {
-          // The file to download will be named "STREAMING_[DATETIME].txt" for the user and won't be server as an inline
-          // file (inline => display of the file directly in the web browser).
+          // The file to download will be named "[SUBJECT1]_[SUBJECT2]_STREAMING_[DATETIME].txt" for the user and won't
+          // be served as an inline file (inline => display of the file directly in the web browser).
           // The "Set-Cookie" header is used by the "jquery.fileDownload" in order to know that the file was
           // successfully downloaded.
           Ok.sendFile(
