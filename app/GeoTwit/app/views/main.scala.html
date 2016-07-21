@@ -4,20 +4,22 @@
  * tags. It takes two arguments, a `String` for the title of the
  * page and an `Html` object to insert into the body of the page.
  *@
-@(title: String, username: String)(content: Html)
+@(title: String, username: Option[String])(content: Html)
 
 @* Call the HTML header, which is the same for all templates. *@
 @header(title)
 
 <div class="header">
     <a class="header-title" href="@routes.SearchController.index">
-        <img class="header-logo" src="@routes.Assets.versioned("images/logo2.svg")" />
-        GeoTwit
+        <img class="header-logo" src="@routes.Assets.versioned("images/logo.png")" />
     </a>
-    <div class="header-right">
-        <span class="welcome-message">Welcome, <strong>@username</strong></span>
-        <a class="btn btn-primary" href="@routes.HomeController.logout">Disconnect</a>
-    </div>
+
+    @if(username.nonEmpty) {
+        <div class="header-right">
+            <span class="welcome-message">Welcome, <strong>@username.get</strong></span>
+            <a class="btn btn-primary disconnect-button" href="@routes.HomeController.logout">Disconnect</a>
+        </div>
+    }
 </div>
 <div class="header-decoration"></div>
 
@@ -29,7 +31,10 @@
 
 <div class="footer">
     GeoTwit, 2016
-    <a href="http://www.freepik.com/free-photos-vectors/abstract">Abstract vector designed by Freepik</a>
+    <div class="home-about-links-container">
+        <a class="home-link" href="@routes.HomeController.help">Help</a>
+        <a class="about-link" href="@routes.HomeController.about">About GeoTwit...</a>
+    </div>
 </div>
 
 @* Call the HTML footer. *@

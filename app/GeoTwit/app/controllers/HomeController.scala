@@ -176,4 +176,18 @@ class HomeController @Inject() (cache: CacheApi, configuration: Configuration) e
       "error" -> request.flash.get("error").getOrElse("success")
     )
   }
+
+  /**
+    * Displays the "about" page.
+    */
+  def about = Action { implicit request =>
+    Ok(views.html.about(request.session.get("username")))
+  }
+
+  /**
+    * Displays the Help page.
+    */
+  def help = Action { implicit request =>
+    Ok(views.html.help(request.session.get("username")))
+  }
 }

@@ -16,7 +16,6 @@ import akka.stream.Materializer
 import com.typesafe.config.ConfigFactory
 import play.api.{Configuration, Environment}
 import play.api.cache.CacheApi
-import play.api.libs.iteratee.Enumerator
 import play.api.libs.json._
 import play.api.mvc._
 import play.api.libs.streams._
@@ -24,7 +23,9 @@ import play.twirl.api.TemplateMagic.javaCollectionToScala
 import twitter4j._
 
 import scala.collection.mutable.ListBuffer
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
+import scala.io.Source
+import scala.util.control.Breaks._
 
 /**
   * This controller creates an `Action` to handle HTTP requests to the application's search page.
@@ -43,6 +44,21 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
   val dateTimeFormat = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
   // Contains the path of the GeoTwit's "tmp" file, in which backup files will be saved.
   val baseFilePath: String = environment.rootPath + "/tmp/"
+  // Strings used in the backup file.
+  val METADATA_STRING = "METADATA:"
+  val FIRST_SUBJECT_STRING = "FIRST_SUBJECT:"
+  val SECOND_SUBJECT_STRING = "SECOND_SUBJECT:"
+  val LANGUAGE_STRING = "LANGUAGE:"
+  val COORDINATES_STRING = "COORDINATES:"
+  val TWEETS_STRING = "TWEETS:"
+  val RESULTS_STRING = "RESULTS:"
+  val ELAPSED_TIME_STRING = "ELAPSED_TIME:"
+  val TOTAL_RECEIVED_GEOLOCATED_TWEETS_STRING = "GTRT:"
+  val RECEPTION_OF_GEOLOCATED_TWEETS_STRING = "GRT:"
+  val PART_RECEIVED_GEOLOCATED_TWEETS_BY_SUBJECT_STRING = "GPRT:"
+  val TOTAL_RECEIVED_TWEETS_STRING = "ATRT:"
+  val RECEPTION_OF_TWEETS_STRING = "ART:"
+  val TWEETS_WITH_VS_WITHOUT_GEOLOC_STRING = "AGVW:"
 
   /**
     * Represents an actions composition, which can be interpreted like a generic action functionality.
@@ -125,10 +141,10 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
                   case Some(twitter) => {
                     // Writes the metadata at the beginning of the backup file.
                     val metadata =
-                      "\tFIRST SUBJECT: \"" + fk + (if (!sk.isEmpty) "\"\r\n\tSECOND SUBJECT: \"" + sk else "") +
-                      "\"\r\n\tLANGUAGE: " + (if (l.isEmpty) "ANY" else "\"" + l + "\"") + "\r\n\tCOORDINATES: [" +
-                      c.map(coord => "[" + coord.mkString(", ") + "]").mkString(", ") + "]\r\n"
-                    writeInFile("streaming-" + id + ".txt", "METADATA:\r\n" + metadata + "\r\nTWEETS:\r\n")
+                      FIRST_SUBJECT_STRING + fk + (if (!sk.isEmpty) "\r\n" + SECOND_SUBJECT_STRING + sk else "") +
+                      "\r\n" + LANGUAGE_STRING + (if (l.isEmpty) "ANY" else l) + "\r\n" + COORDINATES_STRING + "[" +
+                      c.map(coord => "[" + coord.mkString(",") + "]").mkString(",") + "]"
+                    writeInFile("streaming-" + id + ".gt", METADATA_STRING + "\r\n" + metadata + "\r\n" + TWEETS_STRING + "\r\n")
 
                     // Sets the Twitter's Stream object with the Twitter object's configuration.
                     twitterStreams(0).setOAuthConsumer(
@@ -187,13 +203,13 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
   def isUserAuthenticated(request: RequestHeader): Boolean = {
     // Checks that the session have an unique ID.
     request.session.get("id") match {
-      case Some(id) => {
+      case Some(id) => true/*{
         // Returns false if the user is not connected, otherwise returns true.
         (cache.get(id + "-twitter"), request.session.get("username")) match {
           case (Some(_), Some(_)) => true
           case _ => false
         }
-      }
+      }*/
       case None => false
     }
   }
@@ -212,6 +228,158 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
       fw.write(str)
     } finally {
       fw.close()
+    }
+  }
+
+  /**
+    * Validates and parses the given file in order to export its data within the application.
+    * The file must be a well-formatted GeoTwit file (".gt" extension, and containing metadata, tweets and results).
+    *
+    * @param file the file to validate and parse
+    * @return a Json object containing all the file's information or a Json object containing an error if the file was
+    *         not valid.
+    */
+  def validateAndParseFile(file: File): JsObject = {
+    // Contains the object returned in case of error.
+    val errorResult = Json.obj("error" -> JsBoolean(true), "reason" -> JsString("fileNotValid"))
+
+    try {
+      // Get all the file's lines.
+      val lines = Source.fromFile(file).getLines().toList
+
+      // The first line of the file must introduce the metadata.
+      if (lines(0) != METADATA_STRING) {
+        errorResult
+      } else {
+        // Contains regular expressions in order to validate and get the metadata.
+        val firstSubjectRE = (FIRST_SUBJECT_STRING + "(.+)").r
+        val secondSubjectRE = (SECOND_SUBJECT_STRING + "(.+)").r
+        val languageRE = (LANGUAGE_STRING + "(.+)").r
+        val coordinatesRE = (COORDINATES_STRING + """\[(.+)\]""").r
+
+        // Used to count the number of parsed lines and to get the numbers of the lines that start a new section.
+        var currentLineNumber = 1
+        var lineNumberTweets, lineNumberResults = 0
+
+        // Will contain the retrieved metadata.
+        var firstSubject, secondSubject, language = ""
+        var coordinates: Array[Array[Double]] = Array()
+
+        // Validates the metadata and get the sections' lines.
+        breakable {
+          for (line <- lines.tail) {
+            currentLineNumber += 1
+
+            line match {
+              case firstSubjectRE(f)  => firstSubject = f
+              case secondSubjectRE(s) => secondSubject = s
+              case languageRE(l)      => language = l
+              // Converts the given string into an array of arrays of double containing the search's coordinates.
+              case coordinatesRE(c)   => coordinates = c.drop(1).dropRight(1).split("""\],\[""").map(coord => coord.split(",").map(x => x.toDouble))
+              case TWEETS_STRING      => lineNumberTweets = currentLineNumber
+              // Stops the loop once the last section's title was found.
+              case RESULTS_STRING     => {
+                lineNumberResults = currentLineNumber
+                break
+              }
+              case _                  => {}
+            }
+          }
+        }
+
+        // Ensures the metadata are valid and all the sections exist before reading the Tweets and the results.
+        if (firstSubject.nonEmpty && language.nonEmpty && coordinates.length > 0 && lineNumberTweets > 0 && lineNumberResults > 0) {
+          // Regular expression used to validate a Tweet entry and get its data.
+          val tweetRE = "(.+-.+#\\d+);(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2});(-?\\d+\\.?\\d*);(-?\\d+\\.?\\d*);\"(.+)\";\"(.+)\"".r
+          var error = false
+
+          // Iterates over each Tweet.
+          val values = lines.take(lineNumberResults - 1).drop(lineNumberTweets).map(
+            t => t match {
+              // Validates the current Tweet's format and gets its data.
+              case tweetRE(sub, date, long, lat, user, content) => {
+                Json.obj(
+                  "subjectIdentifier" -> JsString(sub.substring(0, t.indexOf('-'))),
+                  "dateAndTime" -> JsString(date),
+                  "longitude" -> JsNumber(long.toDouble),
+                  "latitude" -> JsNumber(lat.toDouble),
+                  "user" -> JsString(user),
+                  "content" -> JsString(content)
+                )
+              }
+              // Indicates that an error occurred if the Tweet is not valid.
+              case _ => {
+                error = true
+                Json.obj()
+              }
+            }
+          )
+
+          if (error) {
+            errorResult
+          } else {
+            // Regular expressions used to validate and get the results.
+            val elapsedTimeRE = (ELAPSED_TIME_STRING + "(.+)").r
+            val gtrtRE = (TOTAL_RECEIVED_GEOLOCATED_TWEETS_STRING + """\[(.+)\]""").r
+            val grtRE = (RECEPTION_OF_GEOLOCATED_TWEETS_STRING + """\[(.+)\]""").r
+            val gprtRE = (PART_RECEIVED_GEOLOCATED_TWEETS_BY_SUBJECT_STRING + """(.+)""").r
+            val atrtRE = (TOTAL_RECEIVED_TWEETS_STRING + """\[(.+)\]""").r
+            val artRE = (RECEPTION_OF_TWEETS_STRING + """\[(.+)\]""").r
+            val agvwRE = (TWEETS_WITH_VS_WITHOUT_GEOLOC_STRING + """\[(.+)\]""").r
+
+            // Will contain all the results' values.
+            var elapsedTime = ""
+            var gtrt: Array[Array[Double]] = Array()
+            var grt: Array[Array[Double]] = Array()
+            var gprt: Array[Double] = Array()
+            var atrt: Array[Array[Double]] = Array()
+            var art: Array[Array[Double]] = Array()
+            var agvw: Array[Array[Double]] = Array()
+
+            // Iterates over the results in the file and collects them.
+            for (line <- lines.drop(lineNumberResults)) {
+              line match {
+                case elapsedTimeRE(e) => elapsedTime = e
+                case gtrtRE(g)        => gtrt = g.drop(1).dropRight(1).split("""\],\[""").map(dataset => dataset.split(",").map(x => x.toDouble))
+                case grtRE(g)         => grt = g.drop(1).dropRight(1).split("""\],\[""").map(dataset => dataset.split(",").map(x => x.toDouble))
+                case gprtRE(g)        => gprt = g.drop(1).dropRight(1).split(",").map(x => x.toDouble)
+                case atrtRE(g)        => atrt = g.drop(1).dropRight(1).split("""\],\[""").map(dataset => dataset.split(",").map(x => x.toDouble))
+                case artRE(g)         => art = g.drop(1).dropRight(1).split("""\],\[""").map(dataset => dataset.split(",").map(x => x.toDouble))
+                case agvwRE(g)        => agvw = g.drop(1).dropRight(1).split("""\],\[""").map(dataset => dataset.split(",").map(x => x.toDouble))
+                case _                => error = true
+              }
+            }
+
+            // Builds and returns the Json object if the results were valid.
+            if (!error && elapsedTime.nonEmpty && gtrt.length > 0 && grt.length > 0 && gprt.length > 0 && atrt.length > 0 && art.length > 0 && agvw.length > 0) {
+              Json.obj(
+                "error"         -> JsBoolean(false),
+                "firstSubject"  -> JsString(firstSubject),
+                "secondSubject" -> JsString(secondSubject),
+                "language"      -> JsString(language),
+                "coordinates"   -> coordinates
+              ) + ("tweets" -> JsArray(values)) + ("results" -> (Json.obj(
+                "elapsedTime"   -> JsString(elapsedTime),
+                "gtrt"          -> gtrt,
+                "grt"           -> grt,
+                "gprt"          -> gprt,
+                "atrt"          -> atrt,
+                "art"           -> art,
+                "agvw"          -> agvw
+              )))
+            } else {
+              errorResult
+            }
+          }
+        } else {
+          errorResult
+        }
+      }
+    } catch {
+      case e: Exception => {
+        e.printStackTrace()
+        errorResult
+      }
     }
   }
 
@@ -267,7 +435,7 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
 
               try {
                 writeInFile(
-                  "streaming-" + id + ".txt", "\t" + keywordsSet  + "-subject#" + nbGeolocatedTweets.toString + ";" +
+                  "streaming-" + id + ".gt", keywordsSet  + "-subject#" + nbGeolocatedTweets.toString + ";" +
                   dateTimeFormat.format(status.getCreatedAt) + ";" + longitude + ";" + latitude + ";\"" +
                   status.getUser.getName + "\";\"" + status.getText + "\"\r\n"
                 )
@@ -375,7 +543,7 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
     */
   def fileAction(action: String, firstSubject: Option[String], secondSubject: Option[String]) = AuthenticatedAction { request =>
     // Gets the file to either download or delete.
-    val file = new File(baseFilePath + "streaming-" + request.session.get("id").get + ".txt")
+    val file = new File(baseFilePath + "streaming-" + request.session.get("id").get + ".gt")
     var fileName = ""
 
     // Sets the output file's name, according to the given parameters.
@@ -389,14 +557,14 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
       fileName += "_"
     }
 
-    fileName += "STREAMING_" + dateTimeFormat.format(new Date()) + ".txt"
+    fileName += "STREAMING_" + dateTimeFormat.format(new Date()) + ".gt"
 
     // Checks if the file exists.
     if (file.exists() && !file.isDirectory()) {
       // Then downloads or deletes it, depending on the action.
       action match {
         case "download" => {
-          // The file to download will be named "[SUBJECT1]_[SUBJECT2]_STREAMING_[DATETIME].txt" for the user and won't
+          // The file to download will be named "[SUBJECT1]_[SUBJECT2]_STREAMING_[DATETIME].gt" for the user and won't
           // be served as an inline file (inline => display of the file directly in the web browser).
           // The "Set-Cookie" header is used by the "jquery.fileDownload" in order to know that the file was
           // successfully downloaded.
@@ -416,6 +584,26 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
       }
     } else {
       BadRequest("The file you are trying to access does not exist anymore.")
+    }
+  }
+
+  /**
+    * Parses and validates the uploaded file.
+    */
+  def uploadAndParseFile = AuthenticatedAction(parse.multipartFormData) { request =>
+    request.body.file("importedFile").map { file =>
+      // The file cannot be empty
+      if (file.ref.file.length <= 0) {
+        Ok(Json.obj("error" -> JsBoolean(true), "reason" -> JsString("fileEmpty")))
+      // The file must be a text file.
+      } else if (file.contentType.isEmpty || file.contentType.get != "application/octet-stream") {
+        Ok(Json.obj("error" -> JsBoolean(true), "reason" -> JsString("wrongFormat")))
+      // Validate and parses the file.
+      } else {
+        Ok(validateAndParseFile(file.ref.file))
+      }
+    }.getOrElse {
+      Ok(Json.obj("error" -> JsBoolean(true), "reason" -> JsString("missingFile")))
     }
   }
 
@@ -516,7 +704,7 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
                   "first" -> JsObject(Seq(
                     "tweets" -> JsArray(tweets.map(
                       status => Json.obj(
-                        "subjectNumber" -> "first",
+                        "subjectNumber" -> JsString("first"),
                         "date"          -> JsString(dateTimeFormat.format(status.getCreatedAt)),
                         "user"          -> JsString(status.getUser.getScreenName),
                         "latitude"      -> JsNumber(if (status.getGeoLocation != null) status.getGeoLocation.getLatitude else 0),
@@ -549,7 +737,7 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
                   "first" -> JsObject(Seq(
                     "tweets" -> JsArray(tweets.map(
                       status => Json.obj(
-                        "subjectNumber" -> "first",
+                        "subjectNumber" -> JsString("first"),
                         "date"          -> JsString(dateTimeFormat.format(status.getCreatedAt)),
                         "user"          -> JsString(status.getUser.getScreenName),
                         "latitude"      -> JsNumber(if (status.getGeoLocation != null) status.getGeoLocation.getLatitude else 0),
@@ -561,7 +749,7 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
                   "second" -> JsObject(Seq(
                     "tweets" -> JsArray(secondTweets.map(
                       status => Json.obj(
-                        "subjectNumber" -> "second",
+                        "subjectNumber" -> JsString("second"),
                         "date"          -> JsString(dateTimeFormat.format(status.getCreatedAt)),
                         "user"          -> JsString(status.getUser.getScreenName),
                         "latitude"      -> JsNumber(if (status.getGeoLocation != null) status.getGeoLocation.getLatitude else 0),

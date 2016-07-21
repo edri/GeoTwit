@@ -1,0 +1,96 @@
+@(username: Option[String])
+
+@*
+ * Call the `mainIndex` template with two arguments. The first
+ * argument is a `String` with the title of the page, the second
+ * argument is an `Html` object containing the body of the page.
+ * The 'main' template is used to properly format all pages but
+ * the index, which is differently presented.
+ *@
+@main("GeoTwit - Help", username) {
+    <!-- Introduction Row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header about-title">
+                Help
+                <small>and FAQ</small>
+            </h1>
+            <p>
+                This page contains all you need to know about GeoTwit!
+            </p>
+        </div>
+
+        <div class="col-lg-12">
+            <h3 class="page-header">Okay, what is GeoTwit?</h3>
+            <p>
+               <i>GeoTwit is an application, which allows you to analyze activities on Twitter-based subjects with maps and charts, either on real-time or staticly.<br/>
+               You can indeed find two modes of search: a <strong>dynamic</strong> mode (for real-time activities) and a <strong>static</strong> mode.</i>
+            </p>
+        </div>
+
+        <div class="col-lg-12">
+            <h3 class="page-header">How is the dynamic mode working?</h3>
+            <p>
+               <i>
+                   <p>
+                       In order to follow a streaming process, you have to indicate at
+                       least one keywords set and to choose an area on the map (either
+                       with the drop-down menu or by manually drawing a rectangle on it).
+                       You can also select the language in which you want the received Tweets to be written in.<br/>
+                       If you fill a second keywords set, a second streaming process will simultaneously be started so you can compare the two subjects.
+                   </p>
+                   <p>
+                       Once you started the streaming(s), you will be able to access both the map in which the received Tweets are displayed and some charts
+                       that allow you to better analyze and understand the incoming data.
+                   </p>
+                   <p>
+                       In addition of these features, you can also import the results: once you stopped the streaming process, you will automatically be asked
+                       to either export or not the data. If you choose "yes", you will be able to download a text file containing the data.
+                   </p>
+               </i>
+            </p>
+        </div>
+
+        <div class="col-lg-12">
+            <h3 class="page-header">How is the static mode working?</h3>
+            <p>
+                <p>
+                    Like in the dynamic mode, you have to indicate at least one keywords set and to choose an area on the map (by manually drawing a circle on it <u>only</u>).
+                    In addition, you also have to select a range of dates in which the received Tweets will be contained.
+                    You can also select the language in which you want the received Tweets to be written in.<br/>
+                    If you fill a second keywords set, a second static search will simultaneously be performed so you can compare the two subjects.
+                </p>
+                Once you searched the results, you will be able to access the map in which the received Tweets are displayed.
+            </p>
+        </div>
+
+        <div class="col-lg-12">
+            <h3 class="page-header">How to use the application?</h3>
+            <p>
+               <i>Firstly, you have to possess a <a href="https://twitter.com/signup">Twitter account</a>.<br/>
+               Then, click on the "Get Started" button or on the "Connect" link of the <a href="@routes.HomeController.index">home</a>
+               page, allow GeoTwit to access your account, and that's it! You can now use GeoTwit.</i>
+            </p>
+        </div>
+
+        <div class="col-lg-12">
+            <h3 class="page-header">Can you access my Twitter's password?</h3>
+            <p>
+               <i>Nope, we <u>only</u> get your username, in order to display it in the header of the pages.<br/>
+               You account is used to make the different search requests of the application.</i>
+            </p>
+        </div>
+
+        <div class="col-lg-12">
+            <h3 class="page-header">Is the application free?</h3>
+            <p>
+               <i>Yes, GeoTwit is entirely free.</i>
+            </p>
+        </div>
+    </div>
+
+    <br/>
+    <br/>
+
+    <a class="btn btn-primary" href="@routes.HomeController.index">Home</a>
+}

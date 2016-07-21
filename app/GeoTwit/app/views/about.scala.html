@@ -1,0 +1,38 @@
+@(username: Option[String])
+
+@*
+ * Call the `mainIndex` template with two arguments. The first
+ * argument is a `String` with the title of the page, the second
+ * argument is an `Html` object containing the body of the page.
+ * The 'main' template is used to properly format all pages but
+ * the index, which is differently presented.
+ *@
+@main("About GeoTwit...", username) {
+    <!-- Introduction Row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header about-title">
+                GeoTwit
+                <small>version 1.0.0, July 2016</small>
+            </h1>
+            <p>
+                GeoTwit was developed as a Bachelor project in the <a href="http://www.heig-vd.ch/international">HEIG-VD</a> of Yverdon, Switzerland.<br/>
+                It took part from February 2016 to September 2016, and was developed by Miguel Santamaria and supervised by Nastaran Fatemi.
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <h2 class="page-header">GitHub</h2>
+            <p>
+               Feel free to take a look at this project on <a href="https://github.com/edri/GeoTwit">GitHub</a>!
+            </p>
+        </div>
+    </div>
+
+    <br/>
+    <br/>
+
+    <a class="btn btn-primary" href="@routes.HomeController.index">Home</a>
+}

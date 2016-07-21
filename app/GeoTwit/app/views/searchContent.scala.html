@@ -1,5 +1,5 @@
 <div class="search-content" id="searchContent">
-    <h1 class="search-title">Let's follow a Twitter's Streaming...</h1>
+    <h1 class="search-title">Let's analyze some Twitter's data...</h1>
 
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" id="searchTabs" role="tablist">
@@ -10,49 +10,69 @@
     <!-- Tab panes -->
     <div class="tab-content">
         <div role="tabpanel" class="tab-pane fade in active" id="dynamic">
-            <h3 class="search-first-subtitle">1. First enter keyword(s)</h3>
-            <div class="search-subcontent">
-                <div class="form-group">
-                    <label for="keywordSetOr">Keyword(s) set (separate your words with <u>spaces</u> - max. 60 characters per field)</label>
-                    <input type="text" class="form-control" id="streamingFirstKeywordSetOr" maxlength="60" placeholder="One of these keywords...">
-                    <input type="text" class="form-control group-field-bottom" id="streamingFirstKeywordSetAnd" maxlength="60" placeholder="All these keywords...">
-                </div>
-                <div class="form-group">
-                    <label for="keywordSetOr">[Optional] Second keyword(s) set to compare against (separate your words with <u>spaces</u> - max. 60 characters per field)</label>
-                    <input type="text" class="form-control" id="streamingSecondKeywordSetOr" placeholder="One of these keywords...">
-                    <input type="text" class="form-control group-field-bottom" id="streamingSecondKeywordSetAnd" placeholder="All these keywords...">
+            <h3 class="search-first-subtitle">First thing first: do you want to import a peviously generated data file?</h3>
+            <div class="note">If you don't now what this option is about yet, just ignore it.</div>
+
+            <input accept=".gt" data-url="@routes.SearchController.uploadAndParseFile" id="importedFile" name="importedFile" type="file" />
+            <div class="progress progress-upload" id="progressUpload">
+                <div aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="progress-bar" id="progressBarUpload" role="progressbar" style="width:0%">
+                    <span id="uploadPercents">0</span>% Complete
                 </div>
             </div>
 
-            <h3 class="search-subtitle">2. Then select a location to filter the Tweets</h3>
-            <div class="search-subcontent">
-                Please select a default area <strong><u>or</u></strong> draw a rectangle area on the following map.<br/>
-                <table class="default-area-table">
-                    <tr>
-                        <td class="default-area-label">Default area:</td>
-                        <td>
-                            <select class="form-control horizontal-field" id="streamingDefaultArea">
-                              <option value="">select an area here or draw a rectangle on the map...</option>
-                            </select>
-                        </td>
-                    </tr>
-                </table>
-                <!-- This div will contain the dynamic mode's map. -->
-                <div class="search-map" id="dynamicMap"></div>
+            <div class="alert alert-danger upload-error" id="uploadError">
+                <span id="uploadErrorText"></span>
             </div>
 
-            <h3 class="search-subtitle">3. Finally select the language in which you want the Tweets to be written</h3>
-            <div class="search-subcontent">
-                <div class="language-note">Note that some Tweets written in another language may still appear, because of the location of the user who wrote it.</div>
-                <!-- I took this languages list in the advanced search page of Twitter (https://twitter.com/search-advanced) -->
-                <select class="form-control" id="dynamicLanguage">
-                    <option selected="selected" value="">Any Language</option>
-                </select>
+            <hr/>
+
+            <div id="dynamicModeSearch">
+                <h3 class="search-subtitle">1. First enter keyword(s)</h3>
+                <div class="search-subcontent">
+                    <div class="form-group">
+                        <label for="keywordSetOr">Keyword(s) set (separate your words with <u>spaces</u> - max. 60 characters per field)</label>
+                        <input type="text" class="form-control" id="streamingFirstKeywordSetOr" maxlength="60" placeholder="One of these keywords...">
+                        <input type="text" class="form-control group-field-bottom" id="streamingFirstKeywordSetAnd" maxlength="60" placeholder="All these keywords...">
+                    </div>
+                    <div class="form-group">
+                        <label for="keywordSetOr">[Optional] Second keyword(s) set to compare against (separate your words with <u>spaces</u> - max. 60 characters per field)</label>
+                        <input type="text" class="form-control" id="streamingSecondKeywordSetOr" placeholder="One of these keywords...">
+                        <input type="text" class="form-control group-field-bottom" id="streamingSecondKeywordSetAnd" placeholder="All these keywords...">
+                    </div>
+                </div>
+
+                <h3 class="search-subtitle">2. Then select a location to filter the Tweets</h3>
+                <div class="search-subcontent">
+                    Please select a default area <strong><u>or</u></strong> draw a rectangle area on the following map.<br/>
+                    <table class="default-area-table">
+                        <tr>
+                            <td class="default-area-label">Default area:</td>
+                            <td>
+                                <select class="form-control horizontal-field" id="streamingDefaultArea">
+                                  <option value="">select an area here or draw a rectangle on the map...</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+                    <!-- This div will contain the dynamic mode's map. -->
+                    <div class="search-map" id="dynamicMap"></div>
+                </div>
+
+                <h3 class="search-subtitle">3. Finally select the language in which you want the Tweets to be written</h3>
+                <div class="search-subcontent">
+                    <div class="note">Note that some Tweets written in another language may still appear, because of the location of the user who wrote it.</div>
+                    <!-- I took this languages list in the advanced search page of Twitter (https://twitter.com/search-advanced) -->
+                    <select class="form-control" id="dynamicLanguage">
+                        <option selected="selected" value="">Any Language</option>
+                    </select>
+                </div>
+
+                <br/>
+
+                <div class="alert alert-danger error-search" id="errorDynamicSearch"></div>
+
+                <button class="btn btn-primary btn-search" id="startStreamingBtn">Start Streaming!</button>
             </div>
-
-            <div class="alert alert-danger error-search" id="errorDynamicSearch"></div>
-
-            <button class="btn btn-primary btn-search" id="startStreamingBtn">Start Streaming!</button>
         </div>
 
         <div role="tabpanel" class="tab-pane fade" id="static">
@@ -72,7 +92,7 @@
 
             <h3 class="search-subtitle">2. Then enter the range of dates in which you want the Tweets to be searched</h3>
             <div class="search-subcontent">
-                <div class="gray-text">
+                <div class="note date-note">
                     Since Twitter only allows us to get Tweets from <strong class="one-week-ago-label"><span id="maxDaysStaticSearch"></span> days ago</strong>,
                     you won't have any result if you search for Tweets <u>before the <strong class="one-week-ago-label" id="dateOneWeekAgo"></strong></u>.
                 </div>
@@ -102,13 +122,6 @@
             </div>
 
             <br/>
-
-            <div class="form-inline search-checkbox-accelerated">
-                <div class="form-group">
-                    <input type="checkbox"><strong> Accelerated streaming view</strong>
-                    <button>?</button>
-                </div>
-            </div>
 
             <div class="alert alert-danger error-search" id="errorStaticSearch"></div>
 

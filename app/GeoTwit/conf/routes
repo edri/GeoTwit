@@ -7,9 +7,12 @@ GET     /                           controllers.HomeController.index
 GET     /auth                       controllers.HomeController.auth
 GET     /callback                   controllers.HomeController.callback(denied: Option[String], oauth_token: Option[String], oauth_verifier: Option[String])
 GET     /logout                     controllers.HomeController.logout
+GET     /about                      controllers.HomeController.about
+GET     /help                       controllers.HomeController.help
 GET     /search                     controllers.SearchController.index
 GET     /search-results             controllers.SearchController.staticResults
 GET     /file-action                controllers.SearchController.fileAction(action: String, firstSubject: Option[String], secondSubject: Option[String])
+POST    /upload                     controllers.SearchController.uploadAndParseFile
 
 # WebSocket management
 GET     /streaming-socket            controllers.SearchController.streamingSocket
