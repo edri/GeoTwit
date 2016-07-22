@@ -1046,6 +1046,7 @@ function loadFileResultsComponents(data) {
     $("#btnNewSearch").show();
     $("#streamingResultsTitle").html("Here are the exported file's results!");
     $("#noTweetReceivedText").text("Sorry, there is no Tweet.");
+    $("#numberTweetsMax").text(MAX_DISPLAYED_TWEETS);
     $("#elapsedTime").text(data.results.elapsedTime);
     $("#streamingLanguage").text(data.language);
     $("#firstStreamingSubject").text(data.firstSubject);
