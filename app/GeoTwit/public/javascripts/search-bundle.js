@@ -25719,6 +25719,16 @@ function loadStreamingResultsComponents() {
 
         // Sends the current results to the server.
         if (socketConnection) {
+            // Contains the last chart's current data if they are set, or 0 else.
+            var cgc = [
+                chartGeolocationComparison.data.datasets[0].data[0] ? chartGeolocationComparison.data.datasets[0].data[0] : 0,
+                chartGeolocationComparison.data.datasets[0].data[1] ? chartGeolocationComparison.data.datasets[0].data[1] : 0
+            ]
+            if (secondKeywords) {
+                cgc.push(chartGeolocationComparison.data.datasets[1].data[2] ? chartGeolocationComparison.data.datasets[1].data[2] : 0);
+                cgc.push(chartGeolocationComparison.data.datasets[1].data[3] ? chartGeolocationComparison.data.datasets[1].data[3] : 0);
+            }
+
             socketConnection.send(JSON.stringify({
                 "messageType": "currentResults",
                 "elapsedTime": HhMmSsElapsedTime,
@@ -25727,7 +25737,7 @@ function loadStreamingResultsComponents() {
                 "gprt": JSON.stringify(secondKeywords ? chartPartsOfReceivedTweets.data.datasets[0].data : []),
                 "atrt": JSON.stringify([chartWithoutGeolocation.data.datasets[0].data, (secondKeywords ? chartWithoutGeolocation.data.datasets[1].data : [])]),
                 "art": JSON.stringify([chartWithoutGeolocationCurrent.data.datasets[0].data, (secondKeywords ? chartWithoutGeolocationCurrent.data.datasets[1].data : [])]),
-                "agvw": JSON.stringify([chartGeolocationComparison.data.datasets[0].data.slice(0, 2), (secondKeywords ? chartGeolocationComparison.data.datasets[1].data.slice(2, 4) : [])])
+                "agvw": JSON.stringify([cgc.slice(0, 2), (secondKeywords ? cgc.slice(2, 4) : [])])
             }));
         }
     }, 1000)

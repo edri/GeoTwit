@@ -309,6 +309,7 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
 
       // The first line of the file must introduce the metadata.
       if (lines(0) != METADATA_STRING) {
+        println("1")
         errorResult
       } else {
         // Contains regular expressions in order to validate and get the metadata.
@@ -376,6 +377,7 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
           )
 
           if (error) {
+            println("2")
             errorResult
           } else {
             // Regular expressions used to validate and get the results.
@@ -400,12 +402,12 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
             for (line <- lines.drop(lineNumberResults)) {
               line match {
                 case elapsedTimeRE(e) => elapsedTime = e
-                case gtrtRE(g)        => gtrt = g.drop(1).dropRight(1).split("""\],\[""").map(dataset => dataset.split(",").map(x => x.toDouble))
-                case grtRE(g)         => grt = g.drop(1).dropRight(1).split("""\],\[""").map(dataset => dataset.split(",").map(x => x.toDouble))
-                case gprtRE(g)        => gprt = g.drop(1).dropRight(1).split(",").map(x => x.toDouble)
-                case atrtRE(g)        => atrt = g.drop(1).dropRight(1).split("""\],\[""").map(dataset => dataset.split(",").map(x => x.toDouble))
-                case artRE(g)         => art = g.drop(1).dropRight(1).split("""\],\[""").map(dataset => dataset.split(",").map(x => x.toDouble))
-                case agvwRE(g)        => agvw = g.drop(1).dropRight(1).split("""\],\[""").map(dataset => dataset.split(",").map(x => x.toDouble))
+                case gtrtRE(g)        => if (g != "[[],[]]") gtrt = g.drop(1).dropRight(1).split("""\],\[""").map(dataset => dataset.split(",").map(x => x.toDouble)) else gtrt = Array(Array(0.0), Array(0.0))
+                case grtRE(g)         => if (g != "[[],[]]") grt = g.drop(1).dropRight(1).split("""\],\[""").map(dataset => dataset.split(",").map(x => x.toDouble)) else grt = Array(Array(0.0), Array(0.0))
+                case gprtRE(g)        => if (g != "[]") gprt = g.drop(1).dropRight(1).split(",").map(x => x.toDouble) else gprt = Array(0.0)
+                case atrtRE(g)        => if (g != "[[],[]]") atrt = g.drop(1).dropRight(1).split("""\],\[""").map(dataset => dataset.split(",").map(x => x.toDouble)) else atrt = Array(Array(0.0), Array(0.0))
+                case artRE(g)         => if (g != "[[],[]]") art = g.drop(1).dropRight(1).split("""\],\[""").map(dataset => dataset.split(",").map(x => x.toDouble)) else art = Array(Array(0.0), Array(0.0))
+                case agvwRE(g)        => if (g != "[[],[]]" && g != "[[null,null],[]]") agvw = g.drop(1).dropRight(1).split("""\],\[""").map(dataset => dataset.split(",").map(x => x.toDouble)) else agvw = Array(Array(0.0, 0.0), Array(0.0, 0.0))
                 case _                => error = true
               }
             }
@@ -428,10 +430,12 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
                 "agvw"          -> agvw
               )))
             } else {
+              println("3")
               errorResult
             }
           }
         } else {
+          println("4")
           errorResult
         }
       }
@@ -461,10 +465,12 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
   def writeTweetInFile(out: ActorRef, sessionId: String, keywordsSet: String, internalId: Int, creationDate: String, longitude: Double,
                        latitude: Double, user: String, content: String): Boolean = {
     try {
+      // Write the given Tweet in the file, by replacing each line break of the Tweet's content (in order to avoid
+      // issues with the file's parsing).
       writeInFile(
         "streaming-" + sessionId + ".gt", keywordsSet  + "-subject#" + internalId + ";" +
           creationDate + ";" + longitude + ";" + latitude + ";\"" +
-          user + "\";\"" + content + "\"\r\n"
+          user + "\";\"" + content.filter(c => c != '\n' && c != '\r') + "\"\r\n"
       )
 
       true
