@@ -1025,13 +1025,28 @@ function loadStreamingResultsComponents() {
         drawPolygons(resultMaps[STREAMING_MODE_IDENTIFIER], selectedCountryCoordinates);
     }
 
-    // Displays the receptions' speeds, each second.
+    // Displays the receptions' speeds and sends the current results to the server, each second.
     speedInterval = setInterval(function() {
+        var HhMmSsElapsedTime = secondsToHhMmSs(++elapsedTime);
         // Increments and display the elapsed time as a HH:MM:SS format.
-        $("#elapsedTime").text(secondsToHhMmSs(++elapsedTime));
+        $("#elapsedTime").text(HhMmSsElapsedTime);
 
         // Displays the average speeds and change their colors by their values (red => bad speed; green => good speed).
         calculateAndDisplaySpeedValues();
+
+        // Sends the current results to the server.
+        if (socketConnection) {
+            socketConnection.send(JSON.stringify({
+                "messageType": "currentResults",
+                "elapsedTime": HhMmSsElapsedTime,
+                "gtrt": JSON.stringify([chartTotalReceivedTweets.data.datasets[0].data, (secondKeywords ? chartTotalReceivedTweets.data.datasets[1].data : [])]),
+                "grt": JSON.stringify([chartTweetsReception.data.datasets[0].data, (secondKeywords ? chartTweetsReception.data.datasets[1].data : [])]),
+                "gprt": JSON.stringify(secondKeywords ? chartPartsOfReceivedTweets.data.datasets[0].data : []),
+                "atrt": JSON.stringify([chartWithoutGeolocation.data.datasets[0].data, (secondKeywords ? chartWithoutGeolocation.data.datasets[1].data : [])]),
+                "art": JSON.stringify([chartWithoutGeolocationCurrent.data.datasets[0].data, (secondKeywords ? chartWithoutGeolocationCurrent.data.datasets[1].data : [])]),
+                "agvw": JSON.stringify([chartGeolocationComparison.data.datasets[0].data.slice(0, 2), (secondKeywords ? chartGeolocationComparison.data.datasets[1].data.slice(2, 4) : [])])
+            }));
+        }
     }, 1000)
 
     $("#numberTweetsMax").text(MAX_DISPLAYED_TWEETS);
@@ -1094,6 +1109,8 @@ function loadFileResultsComponents(data) {
     // Displays the average speeds and change their colors by their values (red => bad speed; green => good speed).
     calculateAndDisplaySpeedValues();
 
+    // Loads the charts.
+    // Contains all the lined charts and their associated abbreviation key.
     var linedCharts = {
         "gtrt": chartTotalReceivedTweets,
         "grt": chartTweetsReception,
@@ -1101,28 +1118,33 @@ function loadFileResultsComponents(data) {
         "art": chartWithoutGeolocationCurrent
     };
     var labels = [0];
+    // Indicates the number of labels, depending on the elapsed time (one label per second if there was less than one minute, otherwise one label per minute).
     var numberOfLabels = (elapsedTime > 59 ? moment.duration(data.results.elapsedTime, "HH:mm:ss").asMinutes() : elapsedTime);
+    // Calculates the lines charts' labels.
     for (var i = 1; i <= numberOfLabels; ++i) {
         labels.push(i);
     }
 
+    // Loads each lined graph's data.
     $.each(linedCharts, function(id, chart) {
         if (elapsedTime > 59) {
             chart.options.scales.xAxes[0].scaleLabel.labelString = "Time [minutes]";
         }
 
+        // Sets the labels.
         chart.data.labels = labels;
-
+        // Sets the first subject's data.
         chart.data.datasets[0].data = data.results[id][0];
 
+        // Sets the second subject's data, only if there is a second subject.
         if (hasSecondSubject) {
             chart.data.datasets[1].data = data.results[id][1];
         }
     })
 
-    // Refreshs the chart displaying the parts of received Tweets for each subject,
-    // only if the user filled several keywords sets.
-    // Refreshs each dataset of the bar chart, depending on the number of subjects.
+    // Loads the chart displaying the parts of received Tweets for each subject,
+    // only if there is several subjects.
+    // Also refreshs each dataset of the bar chart, depending on the number of subjects.
     if (hasSecondSubject) {
         chartPartsOfReceivedTweets.data.datasets[0].data = data.results.gprt;
 
@@ -1385,6 +1407,7 @@ function initWebSocket() {
                             console.log("Streaming process successfully initialized! Asking the server to begin to stream...");
                             socketConnection.send(JSON.stringify({
                                 "messageType": "readyToStream",
+                                "isAreaRectangle": rectangleManuallyDrawn,
                                 "firstKeywords": getAndFormatKeywords("first", STREAMING_MODE_IDENTIFIER),
                                 "secondKeywords": getAndFormatKeywords("second", STREAMING_MODE_IDENTIFIER),
                                 "coordinates": boundingRectangleLatLngs,
@@ -1400,6 +1423,21 @@ function initWebSocket() {
                             // Tweet belongs to the selected country's territory (since it wasn't possible to send the entire
                             // massive coordinates array through the network).
                             if (rectangleManuallyDrawn || isPointInSelectedArea(data.latitude, data.longitude, selectedCountryCoordinates)) {
+                                // Sends a confirmation to the server that the Tweet belongs to the country's territories if so and if
+                                // the user selected a country in the drop-down menu.
+                                if (!rectangleManuallyDrawn) {
+                                    socketConnection.send(JSON.stringify({
+                                        "messageType": "tweetLocationConfirmation",
+                                        "keywordsSet": data.keywordsSet,
+                                        "internalId": data.internalId,
+                                        "creationDate": data.creationDate,
+                                        "longitude": data.longitude,
+                                        "latitude": data.latitude,
+                                        "user": data.user,
+                                        "content": data.content
+                                    }));
+                                }
+
                                 // Increments the number of received Tweets for the given dataset, in order to calculate the speed value.
                                 ++nbReceivedTweets[data.keywordsSet];
 

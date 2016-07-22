@@ -99,6 +99,13 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
     * @param id the current session's unique ID
     */
   class StreamingSocketActor(out: ActorRef, id: String) extends Actor {
+    var elapsedTime = "00:00:00"
+    var gtrt, grt, atrt, art, agvw = "[[],[]]"
+    var gprt = "[]"
+    // Indicates if the server was able to write the file for the first Tweet (in order to avoid getting an error for
+    // each Tweet).
+    var canCreateFile = true
+
     // Sends a successful initialization's status as soon as the connection has been established.
     out ! JsObject(Seq("messageType" -> JsString("successfulInit")))
 
@@ -117,13 +124,14 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
           // stream.
           case JsSuccess("readyToStream", _) => {
             println("Yay, ready to stream!")
+            val isAreaRectangleVal = (data \ "isAreaRectangle").validate[Boolean]
             val firstKeywords = (data \ "firstKeywords").validate[String]
             val secondKeywords = (data \ "secondKeywords").validate[String]
             val coordinates = (data \ "coordinates").validate[Array[Array[Double]]]
             val language = (data \ "language").validate[String]
 
-            (firstKeywords, secondKeywords, coordinates, language) match {
-              case (JsSuccess(fk, _), JsSuccess(sk, _), JsSuccess(c, _), JsSuccess(l, _)) => {
+            (isAreaRectangleVal, firstKeywords, secondKeywords, coordinates, language) match {
+              case (JsSuccess(rec, _), JsSuccess(fk, _), JsSuccess(sk, _), JsSuccess(c, _), JsSuccess(l, _)) => {
                 // Gets the cached Twitter object, which will be used to correctly configure the Twitter's stream object.
                 val getTwitter = cache.get[Twitter](id + "-twitter")
 
@@ -153,7 +161,7 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
                     )
                     twitterStreams(0).setOAuthAccessToken(twitter.getOAuthAccessToken)
 
-                    streaming(out, twitterStreams(0), id, "first", fk, c(0), c(2), l)
+                    streaming(out, twitterStreams(0), id, rec, "first", fk, c(0), c(2), l)
 
                     // Starts a second streaming process if the second keywords set is set.
                     if (!sk.isEmpty) {
@@ -166,10 +174,54 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
                       )
                       twitterStreams(1).setOAuthAccessToken(twitter.getOAuthAccessToken)
 
-                      streaming(out, twitterStreams(1), id, "second", sk, c(0), c(2), l)
+                      streaming(out, twitterStreams(1), id, rec, "second", sk, c(0), c(2), l)
                     }
                   }
                 }
+              }
+              case _ => println("I received a bad-formatted socket.")
+            }
+          }
+          // Occurs when the client sent a confirmation that the received Tweet belongs to the country's territories, if
+          // the user selected a country in the drop-down menu.
+          case JsSuccess("tweetLocationConfirmation", _) => {
+            if (canCreateFile) {
+              val keywordsSet = (data \ "keywordsSet").validate[String]
+              val internalId = (data \ "internalId").validate[Int]
+              val creationDate = (data \ "creationDate").validate[String]
+              val longitude = (data \ "longitude").validate[Double]
+              val latitude = (data \ "latitude").validate[Double]
+              val user = (data \ "user").validate[String]
+              val content = (data \ "content").validate[String]
+
+              (keywordsSet, internalId, creationDate, longitude, latitude, user, content) match {
+                case (JsSuccess(k, _), JsSuccess(tweetInternalId, _), JsSuccess(d, _), JsSuccess(lon, _), JsSuccess(lat, _), JsSuccess(u, _), JsSuccess(c, _)) => {
+                  canCreateFile = writeTweetInFile(out, id, k, tweetInternalId, d, lon, lat, u, c)
+                }
+                case _ => println("I received a bad-formatted socket.")
+              }
+            }
+          }
+          // Occurs when the client sent the current charts' results and the elapsed time.
+          case JsSuccess("currentResults", _) => {
+            val elapsedTimeVal = (data \ "elapsedTime").validate[String]
+            val gtrtVal = (data \ "gtrt").validate[String]
+            val grtVal = (data \ "grt").validate[String]
+            val gprtVal = (data \ "gprt").validate[String]
+            val atrtVal = (data \ "atrt").validate[String]
+            val artVal = (data \ "art").validate[String]
+            val agvwVal = (data \ "agvw").validate[String]
+
+            // Saves the current results if they are valid.
+            (elapsedTimeVal, gtrtVal, grtVal, gprtVal, atrtVal, artVal, agvwVal) match {
+              case (JsSuccess(e, _), JsSuccess(g1, _), JsSuccess(g2, _), JsSuccess(g3, _), JsSuccess(g4, _), JsSuccess(g5, _), JsSuccess(g6, _)) => {
+                elapsedTime = e
+                gtrt = g1
+                grt = g2
+                gprt = g3
+                atrt = g4
+                art = g5
+                agvw = g6
               }
               case _ => println("I received a bad-formatted socket.")
             }
@@ -191,6 +243,14 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
         ts.clearListeners()
         ts.shutdown()
       }
+
+      // Writes the current results at the end of the backup file.
+      val results =
+        ELAPSED_TIME_STRING + elapsedTime + "\r\n" + TOTAL_RECEIVED_GEOLOCATED_TWEETS_STRING + gtrt + "\r\n" +
+        RECEPTION_OF_GEOLOCATED_TWEETS_STRING + grt + "\r\n" + PART_RECEIVED_GEOLOCATED_TWEETS_BY_SUBJECT_STRING + gprt +
+        "\r\n" + TOTAL_RECEIVED_TWEETS_STRING + atrt + "\r\n" + RECEPTION_OF_TWEETS_STRING + art + "\r\n" +
+        TWEETS_WITH_VS_WITHOUT_GEOLOC_STRING + agvw
+      writeInFile("streaming-" + id + ".gt", RESULTS_STRING + "\r\n" + results)
     }
   }
 
@@ -203,13 +263,13 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
   def isUserAuthenticated(request: RequestHeader): Boolean = {
     // Checks that the session have an unique ID.
     request.session.get("id") match {
-      case Some(id) => true/*{
+      case Some(id) => {
         // Returns false if the user is not connected, otherwise returns true.
         (cache.get(id + "-twitter"), request.session.get("username")) match {
           case (Some(_), Some(_)) => true
           case _ => false
         }
-      }*/
+      }
       case None => false
     }
   }
@@ -384,11 +444,53 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
   }
 
   /**
+    * Writes the Tweets whose information are given in parameters in the backup file.
+    *
+    * @param out the actor who is in charge of the current client's web socket discussion; used to send an error to the
+    *            client if the server is not able to write the file.
+    * @param sessionId the unique ID of the current session
+    * @param keywordsSet the identifier of the Tweet's keywords set/subject - either "first" or "second"
+    * @param internalId the internal ID of the Tweet
+    * @param creationDate the creation date of the Tweet
+    * @param longitude the Tweet's longitude
+    * @param latitude the Tweet's latitude
+    * @param user the Tweet's user
+    * @param content the Tweet's content
+    * @return a boolean value indicating if the Tweet was either successfully written in the file (true) or not (false).
+    */
+  def writeTweetInFile(out: ActorRef, sessionId: String, keywordsSet: String, internalId: Int, creationDate: String, longitude: Double,
+                       latitude: Double, user: String, content: String): Boolean = {
+    try {
+      writeInFile(
+        "streaming-" + sessionId + ".gt", keywordsSet  + "-subject#" + internalId + ";" +
+          creationDate + ";" + longitude + ";" + latitude + ";\"" +
+          user + "\";\"" + content + "\"\r\n"
+      )
+
+      true
+    } catch {
+      case e: Exception => {
+        e.printStackTrace()
+        // Sends an error message to the client if the server was not able to write the file.
+        out ! JsObject(Seq("messageType" -> JsString("errorFile")))
+
+        false
+      }
+    }
+  }
+
+  /**
     * Starts a new Twitter's streaming, by the given parameters.
     *
     * @param out the actor who is in charge of the current client's web socket discussion.
     * @param twitterStream a instantiated and configured Twitter's stream object
     * @param id the unique ID of the current session
+    * @param isAreaRectangle indicates whether the user manually drew a rectangle on the map (true) or selected a
+    *                        country in the drop-down menu (false); if false, this value indicates that the server must
+    *                        wait for the client to send a confirmation indicating that the received Tweet is in the
+    *                        complex polygon area that represents the country's territories (since the client only gave
+    *                        the bounding box to the server, in order to avoid to overload the connection), in order to
+    *                        only write Tweets belonging to the area in the backup file.
     * @param keywordsSet indicates the keywords set ("first" or "second") for which the current streaming process will
     *                    be, so the client can display Tweet with different colors.
     * @param query the query used to filter the streaming of Tweets
@@ -399,12 +501,12 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
     * @param language a English-written language used to filter Tweets; if this parameter is empty, there won't be a
     *                 language filter.
     */
-  def streaming(out: ActorRef, twitterStream: TwitterStream, id: String, keywordsSet: String, query: String,
+  def streaming(out: ActorRef, twitterStream: TwitterStream, id: String, isAreaRectangle: Boolean, keywordsSet: String, query: String,
                 southwestCoordinates: Array[Double], northeastCoordinates: Array[Double], language: String) = {
     // Geolocated Tweets' counter.
     var nbGeolocatedTweets = 0
-    // Indicates if the server could write the file for the first Tweet (in order to get an error for each Tweet).
-    var cantCreateFile = false
+    // Indicates if the server was able to write the file for the first Tweet (in order to avoid getting an error for each Tweet).
+    var canCreateFile = true
     println("Starting " + keywordsSet + " streaming: \"" + query + "\" written in " + (if (language.isEmpty) "any language" else "\"" + language + "\"") + ".")
     // Contains the total number of received Tweets (with or without geolocation tags.)
     var numberOfReceivedTweets = 0
@@ -430,27 +532,19 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
           if (longitude >= southwestCoordinates(0) && longitude <= northeastCoordinates(0) &&
             latitude >= southwestCoordinates(1) && latitude <= northeastCoordinates(1)) {
 
-            if (!cantCreateFile) {
-              nbGeolocatedTweets += 1
+            nbGeolocatedTweets += 1
 
-              try {
-                writeInFile(
-                  "streaming-" + id + ".gt", keywordsSet  + "-subject#" + nbGeolocatedTweets.toString + ";" +
-                  dateTimeFormat.format(status.getCreatedAt) + ";" + longitude + ";" + latitude + ";\"" +
-                  status.getUser.getName + "\";\"" + status.getText + "\"\r\n"
-                )
-              } catch {
-                case e: Exception => {
-                  e.printStackTrace()
-                  cantCreateFile = true
-                  out ! JsObject(Seq("messageType" -> JsString("errorFile")))
-                }
-              }
+            // If the user manually drew a rectangle area, directly writes the Tweet in the backup file, (otherwise we
+            // must wait for the client's "tweetLocationConfirmation" web socket.
+            if (isAreaRectangle && canCreateFile) {
+              canCreateFile = writeTweetInFile(out, id, keywordsSet, nbGeolocatedTweets, dateTimeFormat.format(status.getCreatedAt), longitude, latitude, status.getUser.getName, status.getText)
             }
 
             out ! JsObject(Seq(
               "messageType"       -> JsString("newTweet"),
               "keywordsSet"       -> JsString(keywordsSet),
+              "internalId"        -> JsNumber(nbGeolocatedTweets),
+              "creationDate"      -> JsString(dateTimeFormat.format(status.getCreatedAt)),
               "longitude"         -> JsNumber(longitude),
               "latitude"          -> JsNumber(latitude),
               "user"              -> JsString(status.getUser.getName),
