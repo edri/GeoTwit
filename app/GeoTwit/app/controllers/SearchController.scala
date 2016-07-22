@@ -583,7 +583,7 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
         }
       }
     } else {
-      BadRequest("The file you are trying to access does not exist anymore.")
+      Ok("The file you are trying to access does not exist anymore.")
     }
   }
 

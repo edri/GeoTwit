@@ -40,7 +40,8 @@ var Chart = require('chart.js');
 // Loads the "Moment.js" library, which is used to easily format dates.
 var moment = require("moment");
 
-var circleLatLngRad, socketConnection, markers, speedInterval, lineChartsUpdateInterval, doughnutBarChartsUpdateInterval;
+var circleLatLngRad, socketConnection, markers, speedInterval, lineChartsUpdateInterval, doughnutBarChartsUpdateInterval,
+    chartTotalReceivedTweets, chartTweetsReception, chartPartsOfReceivedTweets, chartWithoutGeolocation, chartWithoutGeolocationCurrent, chartGeolocationComparison;
 // Will contain the element of the search and result's maps.
 var searchMaps = {
     "dynamicMap": null,
@@ -175,8 +176,10 @@ function erasePolygons(map) {
 *   - coordinates: an array of arrays containing each polygon's coordinates as a
 *                  [latitude,longitude] format, for example
 *                  coordinates[[COORD_POLYGON_1], [COORD_POLYGON_2], [COORD_POLYGON_3]].
+*   - readFileMode: indicates whether the user imported a file in the application (true) or not (false - default),
+*                   in order to zoom on the right coordinates.
 */
-function drawPolygons(map, coordinates) {
+function drawPolygons(map, coordinates, readFileMode = false) {
     // Draws each polygon one by one.
     for (var i = 0, nbPoly = coordinates.length; i < nbPoly; ++i) {
         // Adds the current polygon to the map.
@@ -184,7 +187,9 @@ function drawPolygons(map, coordinates) {
     }
 
     // Zooms and fits the map according to the current selected country's bounding box.
-    if (selectedCountryCoordinates) {
+    if (readFileMode) {
+        map.fitBounds(coordinates[0]);
+    } else {
         map.fitBounds(boundingRectangleLatLngs);
     }
 }
@@ -474,8 +479,10 @@ function loadResultsMap(mode) {
 * Parameters:
 *   - hasSecondStream: boolean value indicating if the user filled a second keywords
 *                      set, in order to show/hide graphs according to the value.
+*   - refresh: indicates whether the charts must automatically be refreshed (true - default)
+*              or not (false).
 */
-function loadStreamingResultsCharts(hasSecondStream) {
+function loadStreamingResultsCharts(hasSecondStream, refresh = true) {
     // Sets global charts' parameters.
     Chart.defaults.global.title.display = true;
     Chart.defaults.global.title.fontSize = 15;
@@ -595,7 +602,7 @@ function loadStreamingResultsCharts(hasSecondStream) {
     // Creates the lined graph that displays the total of received Tweets since the
     // beginning of the streaming process. There can only be 10 labels per axe, to
     // avoid display's bugs.
-    var chartTotalReceivedTweets = new Chart(ctxTotalReceivedTweets, {
+    chartTotalReceivedTweets = new Chart(ctxTotalReceivedTweets, {
         type: 'line',
         data: cloneObject(emptyLinedGraphData),
         options: {
@@ -635,7 +642,7 @@ function loadStreamingResultsCharts(hasSecondStream) {
 
     // Creates the lined graph that displays the current's Tweets reception rate since
     // the beginning of the streaming process.
-    var chartTweetsReception = new Chart(ctxTweetsReception, {
+    chartTweetsReception = new Chart(ctxTweetsReception, {
         type: 'line',
         data: cloneObject(emptyLinedGraphData),
         options: {
@@ -675,7 +682,6 @@ function loadStreamingResultsCharts(hasSecondStream) {
 
     // Creates the doughnut graph that displays the parts of each subjects for the
     // current streaming process, only if there are several subjects.
-    var chartPartsOfReceivedTweets;
     if (hasSecondStream) {
         chartPartsOfReceivedTweets = new Chart(ctxPartsOfReceivedTweets, {
             type: 'doughnut',
@@ -706,7 +712,7 @@ function loadStreamingResultsCharts(hasSecondStream) {
     // Creates the lined graph that displays the total of received Tweets (with and
     // WITHOUT geolocation) since the beginning of the streaming process. There can
     // only be 10 labels per axe, to avoid display's bugs.
-    var chartWithoutGeolocation = new Chart(ctxWithoutGeolocation, {
+    chartWithoutGeolocation = new Chart(ctxWithoutGeolocation, {
         type: 'line',
         data: cloneObject(emptyLinedGraphData),
         options: {
@@ -746,7 +752,7 @@ function loadStreamingResultsCharts(hasSecondStream) {
 
     // Creates the lined graph that displays the current's Tweets reception rate since
     // the beginning of the streaming process.
-    var chartWithoutGeolocationCurrent = new Chart(ctxWithoutGeolocationCurrent, {
+    chartWithoutGeolocationCurrent = new Chart(ctxWithoutGeolocationCurrent, {
         type: 'line',
         data: cloneObject(emptyLinedGraphData),
         options: {
@@ -786,7 +792,7 @@ function loadStreamingResultsCharts(hasSecondStream) {
 
     // Creates the bar graph that displays the parts of Tweets with and without
     // geolocation, for each subject.
-    var chartGeolocationComparison = new Chart(ctxGeolocationComparison, {
+    chartGeolocationComparison = new Chart(ctxGeolocationComparison, {
         type: 'bar',
         data: geolocationComparisonGraphData,
         options: {
@@ -817,143 +823,174 @@ function loadStreamingResultsCharts(hasSecondStream) {
         }
     });
 
-    var index = 0;
-    // Will contain the last number of received Tweet for each interval's tick, in
-    // order to do calculations.
-    // The total attributes will contain the last number of received Tweets that
-    // have or not geolocation tags.
-    var lastNbReceivedTweets = {
-        "first": 0,
-        "second": 0,
-        "firstTotal": 0,
-        "secondTotal": 0
-    };
-    // Indicates if the lined graphs still display results by seconds or not.
-    // These graphs indeed display results by seconds until 60 seconds, from where
-    // they will display them by minutes.
-    var stillSeconds = true;
+    // Refreshs the graphs if they have to.
+    if (refresh) {
+        var index = 0;
+        // Will contain the last number of received Tweet for each interval's tick, in
+        // order to do calculations.
+        // The total attributes will contain the last number of received Tweets that
+        // have or not geolocation tags.
+        var lastNbReceivedTweets = {
+            "first": 0,
+            "second": 0,
+            "firstTotal": 0,
+            "secondTotal": 0
+        };
+        // Indicates if the lined graphs still display results by seconds or not.
+        // These graphs indeed display results by seconds until 60 seconds, from where
+        // they will display them by minutes.
+        var stillSeconds = true;
 
-    /**
-    * Refresh the lined charts.
-    * This function is executed at each tick of the lined charts' interval.
-    */
-    function lineChartsInterval() {
-        index += 1;
+        /**
+        * Refresh the lined charts.
+        * This function is executed at each tick of the lined charts' interval.
+        */
+        function lineChartsInterval() {
+            index += 1;
 
-        // When 60 seconds elapsed since the beginning of the streaming process, the lined
-        // graph will display their results by minutes and not by seconds anymore.
-        if (stillSeconds && index >= 60) {
-            stillSeconds = false;
-            index = 1;
+            // When 60 seconds elapsed since the beginning of the streaming process, the lined
+            // graph will display their results by minutes and not by seconds anymore.
+            if (stillSeconds && index >= 60) {
+                stillSeconds = false;
+                index = 1;
 
-            // Change the graphs' time system by erasing all the x-axes' labels and by
-            // displaying the last result (the ones from the 60th second) in the first minutes.
-            chartTotalReceivedTweets.options.scales.xAxes[0].scaleLabel.labelString =
-                chartTweetsReception.options.scales.xAxes[0].scaleLabel.labelString =
-                chartWithoutGeolocation.options.scales.xAxes[0].scaleLabel.labelString =
-                chartWithoutGeolocationCurrent.options.scales.xAxes[0].scaleLabel.labelString =
-                "Time [minutes]";
-            chartTotalReceivedTweets.data.labels = [0, index];
-            chartTotalReceivedTweets.data.datasets[0].data = [0, nbReceivedTweets.first];
-            if (hasSecondStream) {
-                chartTotalReceivedTweets.data.datasets[1].data = [0, nbReceivedTweets.second];
+                // Change the graphs' time system by erasing all the x-axes' labels and by
+                // displaying the last result (the ones from the 60th second) in the first minutes.
+                chartTotalReceivedTweets.options.scales.xAxes[0].scaleLabel.labelString =
+                    chartTweetsReception.options.scales.xAxes[0].scaleLabel.labelString =
+                    chartWithoutGeolocation.options.scales.xAxes[0].scaleLabel.labelString =
+                    chartWithoutGeolocationCurrent.options.scales.xAxes[0].scaleLabel.labelString =
+                    "Time [minutes]";
+                chartTotalReceivedTweets.data.labels = [0, index];
+                chartTotalReceivedTweets.data.datasets[0].data = [0, nbReceivedTweets.first];
+                if (hasSecondStream) {
+                    chartTotalReceivedTweets.data.datasets[1].data = [0, nbReceivedTweets.second];
+                }
+
+                chartTweetsReception.data.labels = [0, index];
+                chartTweetsReception.data.datasets[0].data = [0, nbReceivedTweets.first];
+                if (hasSecondStream) {
+                    chartTweetsReception.data.datasets[1].data = [0, nbReceivedTweets.second];
+                }
+
+                chartWithoutGeolocation.data.labels = [0, index];
+                chartWithoutGeolocation.data.datasets[0].data = [0, nbReceivedTweets.firstTotal];
+                if (hasSecondStream) {
+                    chartWithoutGeolocation.data.datasets[1].data = [0, nbReceivedTweets.secondTotal];
+                }
+
+                chartWithoutGeolocationCurrent.data.labels = [0, index];
+                chartWithoutGeolocationCurrent.data.datasets[0].data = [0, nbReceivedTweets.firstTotal];
+                if (hasSecondStream) {
+                    chartWithoutGeolocationCurrent.data.datasets[1].data = [0, nbReceivedTweets.secondTotal];
+                }
+
+                // Clears the current interval and change its refreshment rate to 60 seconds.
+                clearInterval(lineChartsUpdateInterval);
+                lineChartsUpdateInterval = setInterval(lineChartsInterval, 60 * 1000);
+            } else {
+                // Inserts new data in the graphs.
+                chartTotalReceivedTweets.data.labels.push(index);
+                chartTotalReceivedTweets.data.datasets[0].data.push(nbReceivedTweets.first);
+                if (hasSecondStream) {
+                    chartTotalReceivedTweets.data.datasets[1].data.push(nbReceivedTweets.second);
+                }
+
+                chartTweetsReception.data.labels.push(index);
+                chartTweetsReception.data.datasets[0].data.push(nbReceivedTweets.first - lastNbReceivedTweets.first);
+                if (hasSecondStream) {
+                    chartTweetsReception.data.datasets[1].data.push(nbReceivedTweets.second - lastNbReceivedTweets.second);
+                }
+
+                chartWithoutGeolocation.data.labels.push(index);
+                chartWithoutGeolocation.data.datasets[0].data.push(nbReceivedTweets.firstTotal);
+                if (hasSecondStream) {
+                    chartWithoutGeolocation.data.datasets[1].data.push(nbReceivedTweets.secondTotal);
+                }
+
+                chartWithoutGeolocationCurrent.data.labels.push(index);
+                chartWithoutGeolocationCurrent.data.datasets[0].data.push(nbReceivedTweets.firstTotal - lastNbReceivedTweets.firstTotal);
+                if (hasSecondStream) {
+                    chartWithoutGeolocationCurrent.data.datasets[1].data.push(nbReceivedTweets.secondTotal - lastNbReceivedTweets.secondTotal);
+                }
             }
 
-            chartTweetsReception.data.labels = [0, index];
-            chartTweetsReception.data.datasets[0].data = [0, nbReceivedTweets.first];
-            if (hasSecondStream) {
-                chartTweetsReception.data.datasets[1].data = [0, nbReceivedTweets.second];
-            }
+            // Saves the current number of received tweets.
+            lastNbReceivedTweets.first = nbReceivedTweets.first;
+            lastNbReceivedTweets.second = nbReceivedTweets.second;
+            lastNbReceivedTweets.firstTotal = nbReceivedTweets.firstTotal;
+            lastNbReceivedTweets.secondTotal = nbReceivedTweets.secondTotal;
 
-            chartWithoutGeolocation.data.labels = [0, index];
-            chartWithoutGeolocation.data.datasets[0].data = [0, nbReceivedTweets.firstTotal];
-            if (hasSecondStream) {
-                chartWithoutGeolocation.data.datasets[1].data = [0, nbReceivedTweets.secondTotal];
-            }
-
-            chartWithoutGeolocationCurrent.data.labels = [0, index];
-            chartWithoutGeolocationCurrent.data.datasets[0].data = [0, nbReceivedTweets.firstTotal];
-            if (hasSecondStream) {
-                chartWithoutGeolocationCurrent.data.datasets[1].data = [0, nbReceivedTweets.secondTotal];
-            }
-
-            // Clears the current interval and change its refreshment rate to 60 seconds.
-            clearInterval(lineChartsUpdateInterval);
-            lineChartsUpdateInterval = setInterval(lineChartsInterval, 60 * 1000);
-        } else {
-            // Inserts new data in the graphs.
-            chartTotalReceivedTweets.data.labels.push(index);
-            chartTotalReceivedTweets.data.datasets[0].data.push(nbReceivedTweets.first);
-            if (hasSecondStream) {
-                chartTotalReceivedTweets.data.datasets[1].data.push(nbReceivedTweets.second);
-            }
-
-            chartTweetsReception.data.labels.push(index);
-            chartTweetsReception.data.datasets[0].data.push(nbReceivedTweets.first - lastNbReceivedTweets.first);
-            if (hasSecondStream) {
-                chartTweetsReception.data.datasets[1].data.push(nbReceivedTweets.second - lastNbReceivedTweets.second);
-            }
-
-            chartWithoutGeolocation.data.labels.push(index);
-            chartWithoutGeolocation.data.datasets[0].data.push(nbReceivedTweets.firstTotal);
-            if (hasSecondStream) {
-                chartWithoutGeolocation.data.datasets[1].data.push(nbReceivedTweets.secondTotal);
-            }
-
-            chartWithoutGeolocationCurrent.data.labels.push(index);
-            chartWithoutGeolocationCurrent.data.datasets[0].data.push(nbReceivedTweets.firstTotal - lastNbReceivedTweets.firstTotal);
-            if (hasSecondStream) {
-                chartWithoutGeolocationCurrent.data.datasets[1].data.push(nbReceivedTweets.secondTotal - lastNbReceivedTweets.secondTotal);
-            }
+            // Updates the graphs to animate them with the new data.
+            chartTotalReceivedTweets.update();
+            chartTweetsReception.update();
+            chartWithoutGeolocation.update();
+            chartWithoutGeolocationCurrent.update();
         }
 
-        // Saves the current number of received tweets.
-        lastNbReceivedTweets.first = nbReceivedTweets.first;
-        lastNbReceivedTweets.second = nbReceivedTweets.second;
-        lastNbReceivedTweets.firstTotal = nbReceivedTweets.firstTotal;
-        lastNbReceivedTweets.secondTotal = nbReceivedTweets.secondTotal;
+        // Starts the lined charts' refreshment process, which ticks every second until 60 seconds,
+        // and then every minute.
+        lineChartsUpdateInterval = setInterval(lineChartsInterval, 1000);
 
-        // Updates the graphs to animate them with the new data.
-        chartTotalReceivedTweets.update();
-        chartTweetsReception.update();
-        chartWithoutGeolocation.update();
-        chartWithoutGeolocationCurrent.update();
+        // Starts the doughnut/bar charts' refreshment process, which ticks every second.
+        doughnutBarChartsUpdateInterval = setInterval(function() {
+            // Refreshs the chart displaying the parts of received Tweets for each subject,
+            // only if the user filled several keywords sets.
+            // Refreshs each dataset of the bar chart, depending on the number of subjects.
+            if (hasSecondStream) {
+                chartPartsOfReceivedTweets.data.datasets[0].data = [nbReceivedTweets.first, nbReceivedTweets.second];
+                chartPartsOfReceivedTweets.update();
+
+                chartGeolocationComparison.data.datasets[0].data = [
+                    Math.round(nbReceivedTweets.first / (nbReceivedTweets.firstTotal / 100) * 100) / 100,
+                    Math.round((nbReceivedTweets.firstTotal - nbReceivedTweets.first) / (nbReceivedTweets.firstTotal / 100) * 100) / 100,
+                    null,
+                    null
+                ];
+                chartGeolocationComparison.data.datasets[1].data = [
+                    null,
+                    null,
+                    Math.round(nbReceivedTweets.second / (nbReceivedTweets.secondTotal / 100) * 100) / 100,
+                    Math.round((nbReceivedTweets.secondTotal - nbReceivedTweets.second) / (nbReceivedTweets.secondTotal / 100) * 100) / 100
+                ];
+            } else {
+                chartGeolocationComparison.data.datasets[0].data = [
+                    Math.round(nbReceivedTweets.first / (nbReceivedTweets.firstTotal / 100) * 100) / 100,
+                    Math.round((nbReceivedTweets.firstTotal - nbReceivedTweets.first) / (nbReceivedTweets.firstTotal / 100) * 100) / 100
+                ];
+            }
+
+            chartGeolocationComparison.update();
+        }, 1000);
     }
+}
 
-    // Starts the lined charts' refreshment process, which ticks every second until 60 seconds,
-    // and then every minute.
-    lineChartsUpdateInterval = setInterval(lineChartsInterval, 1000);
+/**
+* Calculates and displays the speed of the given received Tweets in the given time (in seconds),
+* then calculates and apply the color levels associated to it.
+* The calculations are operated according to the current number of received Tweets and the current elapsed time.
+*/
+function calculateAndDisplaySpeedValues() {
+    // Displays the average speeds and change their colors by their values (red => bad speed; green => good speed).
+    $.each(nbReceivedTweets, function(key, value) {
+        // We don't want to calculate the speed of the total number of all received Tweets (with or without geolocation).
+        if (key.indexOf("Total") == -1) {
+            // Gets the speed value of received Tweets per minutes, with at most two decimals.
+            var speedPerMinutes = Math.round(60 * (value / elapsedTime) * 100) / 100;
+            // We wants to switch the hue color between 0 (red - bad speed) and 120 (green - good speed), according to the average speed.
+            var hueColorLevel =
+                (speedPerMinutes * (GOOD_SPEED_HUE_COLOR / GOOD_SPEED) > GOOD_SPEED_HUE_COLOR) ?
+                    GOOD_SPEED_HUE_COLOR : speedPerMinutes * (GOOD_SPEED_HUE_COLOR / GOOD_SPEED);
+            // We want to switch the lightness color level from 50% (bad speed) to 25% (good speed).
+            var lightnessColorLevel =
+                (BAD_SPEED_LIGHTNESS_COLOR - speedPerMinutes / (GOOD_SPEED / GOOD_SPEED_LIGHTNESS_COLOR) < GOOD_SPEED_LIGHTNESS_COLOR) ?
+                    GOOD_SPEED_LIGHTNESS_COLOR : BAD_SPEED_LIGHTNESS_COLOR - speedPerMinutes / (GOOD_SPEED / GOOD_SPEED_LIGHTNESS_COLOR);
 
-    // Starts the doughnut/bar charts' refreshment process, which ticks every second.
-    doughnutBarChartsUpdateInterval = setInterval(function() {
-        // Refreshs the chart displaying the parts of received Tweets for each subject,
-        // only if the user filled several keywords sets.
-        // Refreshs each dataset of the bar chart, depending on the number of subjects.
-        if (hasSecondStream) {
-            chartPartsOfReceivedTweets.data.datasets[0].data = [nbReceivedTweets.first, nbReceivedTweets.second];
-            chartPartsOfReceivedTweets.update();
-
-            chartGeolocationComparison.data.datasets[0].data = [
-                Math.round(nbReceivedTweets.first / (nbReceivedTweets.firstTotal / 100) * 100) / 100,
-                Math.round((nbReceivedTweets.firstTotal - nbReceivedTweets.first) / (nbReceivedTweets.firstTotal / 100) * 100) / 100,
-                null,
-                null
-            ];
-            chartGeolocationComparison.data.datasets[1].data = [
-                null,
-                null,
-                Math.round(nbReceivedTweets.second / (nbReceivedTweets.secondTotal / 100) * 100) / 100,
-                Math.round((nbReceivedTweets.secondTotal - nbReceivedTweets.second) / (nbReceivedTweets.secondTotal / 100) * 100) / 100
-            ];
-        } else {
-            chartGeolocationComparison.data.datasets[0].data = [
-                Math.round(nbReceivedTweets.first / (nbReceivedTweets.firstTotal / 100) * 100) / 100,
-                Math.round((nbReceivedTweets.firstTotal - nbReceivedTweets.first) / (nbReceivedTweets.firstTotal / 100) * 100) / 100
-            ];
+            // Displays the speed value with at most two decimal, only for the displayed elements.
+            $("#" + key + "StreamingSpeed:visible").text(speedPerMinutes + " Tweet(s) / minute");
+            $("#" + key + "StreamingSpeed:visible").css("color", "hsl(" + hueColorLevel + ", 100%, " + lightnessColorLevel + "%)");
         }
-
-        chartGeolocationComparison.update();
-    }, 1000);
+    })
 }
 
 /**
@@ -961,7 +998,7 @@ function loadStreamingResultsCharts(hasSecondStream) {
 */
 function loadStreamingResultsComponents() {
     // Displays and initializes GUI elements on the results page.
-    var firstKeywords = getAndFormatKeywords("first", STREAMING_MODE_IDENTIFIER);
+    getAndFormatKeywords("first", STREAMING_MODE_IDENTIFIER);
     var secondKeywords = getAndFormatKeywords("second", STREAMING_MODE_IDENTIFIER);
 
     // Loads the map and charts components.
@@ -979,20 +1016,6 @@ function loadStreamingResultsComponents() {
         $(".second-results-element").show();
     }
 
-    // Adds a tooltip on the streaming's subject when the user moves the mouse hover it
-    // and if it is too big to fill the entire cell.
-    $("#firstStreamingSubject, #secondStreamingSubject").mouseenter(function() {
-        if (this.offsetWidth < this.scrollWidth) {
-            $(this).attr("data-original-title", $(this).html());
-            $(this).tooltip("show");
-        }
-    })
-
-    // Removes the tooltip when the user moves the mouse out of the streaming's subject.
-    $("#firstStreamingSubject, #secondStreamingSubject").mouseleave(function() {
-        $(this).tooltip("hide");
-    })
-
     // Draws the manually drawn rectangle on the map of the streaming's results if the user
     // manually drew the rectangle.
     if (rectangleManuallyDrawn) {
@@ -1007,29 +1030,119 @@ function loadStreamingResultsComponents() {
         // Increments and display the elapsed time as a HH:MM:SS format.
         $("#elapsedTime").text(secondsToHhMmSs(++elapsedTime));
 
-        // Display the average speeds and change their colors by their values (red => bad speed; green => good speed).
-        $.each(nbReceivedTweets, function(key, value) {
-            // We don't want to calculate the speed of the total number of all received Tweets (with or without geolocation).
-            if (key.indexOf("Total") == -1) {
-                // Gets the speed value of received Tweets per minutes, with at most two decimals.
-                var speedPerMinutes = Math.round(60 * (value / elapsedTime) * 100) / 100;
-                // We wants to switch the hue color between 0 (red - bad speed) and 120 (green - good speed), according to the average speed.
-                var hueColorLevel =
-                    (speedPerMinutes * (GOOD_SPEED_HUE_COLOR / GOOD_SPEED) > GOOD_SPEED_HUE_COLOR) ?
-                        GOOD_SPEED_HUE_COLOR : speedPerMinutes * (GOOD_SPEED_HUE_COLOR / GOOD_SPEED);
-                // We want to switch the lightness color level from 50% (bad speed) to 25% (good speed).
-                var lightnessColorLevel =
-                    (BAD_SPEED_LIGHTNESS_COLOR - speedPerMinutes / (GOOD_SPEED / GOOD_SPEED_LIGHTNESS_COLOR) < GOOD_SPEED_LIGHTNESS_COLOR) ?
-                        GOOD_SPEED_LIGHTNESS_COLOR : BAD_SPEED_LIGHTNESS_COLOR - speedPerMinutes / (GOOD_SPEED / GOOD_SPEED_LIGHTNESS_COLOR);
-
-                // Displays the speed value with at most two decimal, only for the displayed elements.
-                $("#" + key + "StreamingSpeed:visible").text(speedPerMinutes + " Tweet(s) / minute");
-                $("#" + key + "StreamingSpeed:visible").css("color", "hsl(" + hueColorLevel + ", 100%, " + lightnessColorLevel + "%)")
-            }
-        })
+        // Displays the average speeds and change their colors by their values (red => bad speed; green => good speed).
+        calculateAndDisplaySpeedValues();
     }, 1000)
 
     $("#numberTweetsMax").text(MAX_DISPLAYED_TWEETS);
+}
+
+function loadFileResultsComponents(data) {
+    // Indicates if there is a second subject set in the file.
+    var hasSecondSubject = data.secondSubject && data.secondSubject.length != 0;
+
+    // Loads the components, which are stopped (no actove timer).
+    $("#btnStopStreaming").hide();
+    $("#btnNewSearch").show();
+    $("#streamingResultsTitle").html("Here are the exported file's results!");
+    $("#noTweetReceivedText").text("Sorry, there is no Tweet.");
+    $("#elapsedTime").text(data.results.elapsedTime);
+    $("#streamingLanguage").text(data.language);
+    $("#firstStreamingSubject").text(data.firstSubject);
+    if (hasSecondSubject) {
+        $("#firstStreamingSubjectText").html("<u>First</u> streaming's subject: ");
+        $("#firstStreamingNumberText").html("Number of received Tweets for the <u>first</u> streaming: ");
+        $("#firstStreamingSpeedText").html("<u>First</u> streaming's average speed: ");
+        $("#secondStreamingSubject").text(data.secondSubject);
+        $(".second-results-element").show();
+    }
+
+    // Loads the map and charts components (without automatic refreshment).
+    loadResultsMap(STREAMING_MODE_IDENTIFIER);
+    loadStreamingResultsCharts(hasSecondSubject, false);
+
+    // Draws the location rectangle on the map.
+    invertCoordinates(data.coordinates);
+    drawPolygons(resultMaps[STREAMING_MODE_IDENTIFIER], [data.coordinates], true);
+
+    // Displays each Tweet and count the number of Tweets per subject.
+    $.each(data.tweets, function(key, tweet) {
+        // Increments the number of received Tweets for the current Tweet's subject, in order to calculate the speed values.
+        ++nbReceivedTweets[tweet.subjectIdentifier];
+
+        // Shows the reveived tweets panel if not already done.
+        if ($("#noTweetReceivedText").is(":visible")) {
+            $("#noTweetReceivedText").hide();
+            $("#maxNumberDisplayedTweets").fadeIn();
+            $("#streamingTweetsContent").fadeIn();
+        }
+
+        // Adds the new Tweet on the map and displays it in the results panel.
+        // The Leaflet.markercluster library will automatically group Tweets on the map.
+        addTweetOnPage(STREAMING_MODE_IDENTIFIER, tweet.subjectIdentifier, tweet.latitude, tweet.longitude, tweet.dateAndTime, tweet.user, tweet.content);
+
+        // Removes the old received Tweets it there is too many of theme (in order to avoid
+        // the web browser to lag).
+        if ($("#streamingTweetsContent div").length > MAX_DISPLAYED_TWEETS) {
+            $("#streamingTweetsContent div").last().remove();
+        }
+    })
+
+    // Gets the elapsed time in seconds.
+    elapsedTime = moment.duration(data.results.elapsedTime, "HH:mm:ss").asSeconds();
+    // Displays the average speeds and change their colors by their values (red => bad speed; green => good speed).
+    calculateAndDisplaySpeedValues();
+
+    var linedCharts = {
+        "gtrt": chartTotalReceivedTweets,
+        "grt": chartTweetsReception,
+        "atrt": chartWithoutGeolocation,
+        "art": chartWithoutGeolocationCurrent
+    };
+    var labels = [0];
+    var numberOfLabels = (elapsedTime > 59 ? moment.duration(data.results.elapsedTime, "HH:mm:ss").asMinutes() : elapsedTime);
+    for (var i = 1; i <= numberOfLabels; ++i) {
+        labels.push(i);
+    }
+
+    $.each(linedCharts, function(id, chart) {
+        if (elapsedTime > 59) {
+            chart.options.scales.xAxes[0].scaleLabel.labelString = "Time [minutes]";
+        }
+
+        chart.data.labels = labels;
+
+        chart.data.datasets[0].data = data.results[id][0];
+
+        if (hasSecondSubject) {
+            chart.data.datasets[1].data = data.results[id][1];
+        }
+    })
+
+    // Refreshs the chart displaying the parts of received Tweets for each subject,
+    // only if the user filled several keywords sets.
+    // Refreshs each dataset of the bar chart, depending on the number of subjects.
+    if (hasSecondSubject) {
+        chartPartsOfReceivedTweets.data.datasets[0].data = data.results.gprt;
+
+        chartGeolocationComparison.data.datasets[0].data = [
+            data.results.agvw[0][0],
+            data.results.agvw[0][1],
+            null,
+            null
+        ];
+        chartGeolocationComparison.data.datasets[1].data = [
+            null,
+            null,
+            data.results.agvw[1][0],
+            data.results.agvw[1][1]
+        ];
+    } else {
+        chartGeolocationComparison.data.datasets[0].data = [
+            data.results.agvw[0][0],
+            data.results.agvw[0][1]
+        ];
+    }
 }
 
 /**
@@ -1340,7 +1453,7 @@ function initWebSocket() {
 
                             // Stops the streaming process without indicating it to the server (since it is the one which
                             // ask us to stop the process).
-                            stopStreaming(false);
+                            stopStreaming(false, !data.reason || data.reason != "sessionExpired");
 
                             break;
                     }
@@ -1369,8 +1482,9 @@ function initWebSocket() {
 *   - sendSocket: indicates whether the client must send a "stopStreaming"
 *                 socket to the server (true) or not (false). If this parameter
 *                 is false, it means the server already stopped its process.
+*   - displayExportPopup: indicates whether we want to display the exportation pop-up (true - default) or not (false).
 */
-function stopStreaming(sendSocket) {
+function stopStreaming(sendSocket, displayExportPopup = true) {
     if (socketConnection && sendSocket) {
         socketConnection.send(JSON.stringify({
             "messageType": "stopStreaming"
@@ -1385,10 +1499,10 @@ function stopStreaming(sendSocket) {
     }
     $("#btnStopStreaming").hide();
     $("#btnNewSearch").show();
-    $("#streamingResultsTitle").html("This streaming was <strong><u>stopped</u></strong>!")
+    $("#streamingResultsTitle").html("This streaming was <strong><u>stopped</u></strong>!");
 
     // Asks the user if he wants to export the results.
-    if (confirm("Do you want to export the results as a text file?\nIf you cancel or close this window, you will NOT be able to export them later.")) {
+    if (displayExportPopup && confirm("Do you want to export the results as a text file?\nIf you cancel or close this window, you will NOT be able to export them later.")) {
         // If so, uses the johnculviner's "jquery.fileDownload" library (https://github.com/johnculviner/jquery.fileDownload)
         // in order to download the text file.
         $.fileDownload(jsRoutes.controllers.SearchController.fileAction(
@@ -1716,7 +1830,9 @@ $(document).ready(function() {
         min: moment().subtract(MAX_DAYS_STATIC_SEARCH, 'd').toDate(),
         max: new Date()
     });
+
     $("#viewStaticResultsBtn").prop("disabled", false);
+    $("#importedFile").prop("disabled", false);
 
     // Loads maps.
     // The user can draw a rectangle but no circle in the dynamic map.
@@ -1730,6 +1846,7 @@ $(document).ready(function() {
         $("#progressUpload").show();
         $("#progressBarUpload").css("width", "0%");
         $("#uploadPercents").text(0);
+        $("#importedFile").prop("disabled", true);
 
         $("#dynamicModeSearch").fadeOut("fast");
     })
@@ -1766,9 +1883,13 @@ $(document).ready(function() {
                 $("#progressUpload").hide();
                 $("#uploadError").html(errorMessage);
                 $("#uploadError").fadeIn();
+                $("#importedFile").prop("disabled", false);
                 $("#dynamicModeSearch").fadeIn("fast");
             } else {
-                console.log("OK!");
+                console.log(data.result);
+                $("#searchContent").hide();
+                $("#streamingResults").fadeIn();
+                loadFileResultsComponents(data.result);
             }
         },
         progressall: function (e, data) {
