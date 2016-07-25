@@ -25152,7 +25152,10 @@ function loadResultsMap(mode) {
 
     // Adds the cluster goup object as a layer to the map of the streaming's results,
     // in order to automatically group markers with the Leaflet.markercluster library.
-    markers = L.markerClusterGroup();
+    markers = L.markerClusterGroup({
+        disableClusteringAtZoom: 6,
+        maxClusterRadius: 50
+    });
     resultMaps[mode].addLayer(markers);
 }
 
@@ -25788,7 +25791,7 @@ function loadFileResultsComponents(data) {
 
         // Adds the new Tweet on the map and displays it in the results panel.
         // The Leaflet.markercluster library will automatically group Tweets on the map.
-        addTweetOnPage(STREAMING_MODE_IDENTIFIER, tweet.subjectIdentifier, tweet.latitude, tweet.longitude, tweet.dateAndTime, tweet.user, tweet.content);
+        addTweetOnPage(STREAMING_MODE_IDENTIFIER, tweet.subjectIdentifier, tweet.latitude, tweet.longitude, tweet.dateAndTime.replace("T", " "), tweet.user, tweet.content);
 
         // Removes the old received Tweets it there is too many of theme (in order to avoid
         // the web browser to lag).
@@ -26290,7 +26293,21 @@ function deleteFile() {
 */
 function addTweetOnPage(mode, subjectNumber, latitude, longitude, date, user, content) {
     if (latitude != 0 && longitude != 0) {
-        markers.addLayer(L.marker([latitude, longitude], {icon: markersIcons[subjectNumber]}));
+        var marker = L.marker([latitude, longitude], {icon: markersIcons[subjectNumber]});
+
+        // Adds a pop-up on the marker, which displays the Tweet's date, user and content,
+        // and which is triggered when the user moves the mouse hover the marker.
+        marker.bindPopup("<strong>[" + date + "] " + user + "</strong>: " + content);
+        marker.on('mouseover', function (e) {
+            this.openPopup();
+        });
+        marker.on('mouseout', function (e) {
+            this.closePopup();
+        });
+
+        // Adds the marker in the marker's collection, in order to group it.
+        markers.addLayer(marker);
+
         // Updates the geolocated Tweets' counter.
         var elementNumberName = "#" + subjectNumber + mode.charAt(0).toUpperCase() + mode.slice(1) + "Number";
         $(elementNumberName).text(parseInt($(elementNumberName).text()) + 1);
@@ -26341,12 +26358,15 @@ function getStaticTweets() {
                 case "fieldEmptyOrNotValid":
                     alert("Please fill all mandatory fields in a valid way.");
                     break;
+                case "tooManyRequests":
+                    alert("You made to many requests to the Twitter API in the last 15 minutes, please wait for a while.");
+                    break;
                 default:
                     alert("An unexpected error occured, please retry in a while.");
                     break;
             }
         // Otherwise checks that the received Tweets object is properly formatted.
-        } else if (msg.first.tweets && msg.first.tweets.length > 0 && (!msg.second || msg.second.tweets)) {
+        } else if (msg.first && msg.first.length > 0 && (!msg.second || msg.second.length > 0)) {
             var tweets = [];
 
             // Displays the results page.
@@ -26356,8 +26376,8 @@ function getStaticTweets() {
 
             // Collects and counts Tweets of each subject.
             for (label in msg) {
-                $("#" + label + "StaticTotalNumber").text(msg[label].tweets.length);
-                tweets = tweets.concat(msg[label].tweets);
+                $("#" + label + "StaticTotalNumber").text(msg[label].length);
+                tweets = tweets.concat(msg[label]);
             }
 
             // Then alphabetically sorts the tweets by their date and time.
@@ -26377,7 +26397,7 @@ function getStaticTweets() {
                 addTweetOnPage(STATIC_MODE_IDENTIFIER, tweet.subjectNumber, tweet.latitude, tweet.longitude, tweet.date, tweet.user, tweet.content);
             })
         } else {
-            alert("Sorry, there is no result for the given parameters.");
+            alert("Sorry, there is either no result for the given parameters or you made to many requests to the Twitter API in the last 15 minutes, please wait for a while.");
         }
 
         $("#viewStaticResultsBtn").html("View Results!");
@@ -26553,7 +26573,7 @@ $(document).ready(function() {
     // Displays the minimum date of the static search, which corresponds to the date it
     // was 9 days ago.
     $("#maxDaysStaticSearch").text(MAX_DAYS_STATIC_SEARCH);
-    $("#dateOneWeekAgo").text(moment().subtract(MAX_DAYS_STATIC_SEARCH, 'd').format('YYYY-MM-DD'));
+    $("#dateOneWeekAgo").text(moment().subtract(MAX_DAYS_STATIC_SEARCH, 'd').format(DATE_FORMAT));
     // Displays the right date format as a placeholder for the dates fields.
     $("#staticFromDate, #staticToDate").attr("placeholder", DATE_FORMAT);
     // Loads the date picker on the date fields.
@@ -26586,7 +26606,7 @@ $(document).ready(function() {
     // Uploads, parses and validates the file to upload and get its data when the user choosed a file to upload.
     // The blueimp's "jQuery-File-Upload" library (https://github.com/blueimp/jQuery-File-Upload) is used in
     // order to upload the file with Ajax and display a progress bar.
-    // The URL of the route to which we send the file is determinated by the input file's data-url attribute.
+    // The URL of the route to which we send the file is determined by the input file's "data-url" attribute.
     $('#importedFile').fileupload({
         dataType: 'json',
         done: function (e, data) {

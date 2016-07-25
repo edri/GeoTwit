@@ -10,18 +10,14 @@ package controllers
 
 import java.util.UUID
 import javax.inject._
-
 import com.typesafe.config.ConfigFactory
-import play.api.{Configuration, Environment, Play}
+import play.api.Configuration
 import play.api.cache.CacheApi
-
 import scala.concurrent.duration._
 import play.api.mvc._
 import twitter4j.auth.RequestToken
 import twitter4j._
-
 import scala.concurrent.Future
-import scala.io.Source
 
 /**
   * This controller creates an `Action` to handle HTTP requests to the application's home page.
@@ -30,7 +26,7 @@ import scala.io.Source
   */
 @Singleton
 class HomeController @Inject() (cache: CacheApi, configuration: Configuration) extends Controller {
-  val config = ConfigFactory.load("twitter.conf")
+  val CONFIG = ConfigFactory.load("twitter.conf")
 
   /**
     * Represents an actions composition, which can be interpreted like a generic action functionality.
@@ -46,8 +42,8 @@ class HomeController @Inject() (cache: CacheApi, configuration: Configuration) e
       // Checks that the session have an unique ID.
       request.session.get("id") match {
         case Some(id) =>
-          // Redirects the user to the Search page if he is already connected to the application, otherwise just give the
-          // action the control of the request.
+          // Redirects the user to the Search page if he is already connected to the application, otherwise just give
+          // the action the control of the request.
           (cache.get(id + "-twitter"), request.session.get("username")) match {
             // Redirects the user to the search page if he is already connected to the application.
             case (Some(_), Some(_)) => Future.successful(Redirect(routes.SearchController.index))
@@ -87,8 +83,8 @@ class HomeController @Inject() (cache: CacheApi, configuration: Configuration) e
     // Initializes the Twitter object with the right consumer's key and secret present in the "twitter.conf"
     // configuration file.
     val twitter: Twitter = (new TwitterFactory()).getInstance()
-    twitter.setOAuthConsumer(config.getString("twitter4j.oauth.consumerKey"),
-                             config.getString("twitter4j.oauth.consumerSecret"))
+    twitter.setOAuthConsumer(CONFIG.getString("twitter4j.oauth.consumerKey"),
+                             CONFIG.getString("twitter4j.oauth.consumerSecret"))
 
     try {
       // Gets the request token from the Twitter's API, in order to get the Twitter's authentication URL.
@@ -144,7 +140,8 @@ class HomeController @Inject() (cache: CacheApi, configuration: Configuration) e
                 cache.remove(id + "-tmpTwitter")
                 cache.remove(id + "-requestToken")
                 // Then sets the new Twitter object.
-                cache.set(id + "-twitter", twitter, configuration.getMilliseconds("play.http.session.maxAge").get.milliseconds)
+                cache.set(id + "-twitter", twitter, configuration.getMilliseconds("play.http.session.maxAge")
+                  .get.milliseconds)
 
                 // Sets the user's name in the session and redirects him to the Search page.
                 Redirect(routes.SearchController.index).withSession(

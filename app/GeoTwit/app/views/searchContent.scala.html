@@ -71,7 +71,7 @@
 
                 <div class="alert alert-danger error-search" id="errorDynamicSearch"></div>
 
-                <button class="btn btn-primary btn-search" id="startStreamingBtn">Start Streaming!</button>
+                <button class="btn btn-primary btn-dynamic-search" id="startStreamingBtn">Start Streaming!</button>
             </div>
         </div>
 
@@ -96,15 +96,21 @@
                     Since Twitter only allows us to get Tweets from <strong class="one-week-ago-label"><span id="maxDaysStaticSearch"></span> days ago</strong>,
                     you won't have any result if you search for Tweets <u>before the <strong class="one-week-ago-label" id="dateOneWeekAgo"></strong></u>.
                 </div>
-                <div class="form-inline">
-                    <div class="form-group search-from-date">
-                        <label class="date-label" for="staticFromDate">From: </label>
-                        <input class="form-control" id="staticFromDate" type="date">
+                <p>
+                    <div class="form-inline">
+                        <div class="form-group search-from-date">
+                            <label class="date-label" for="staticFromDate">From: </label>
+                            <input class="form-control" id="staticFromDate" type="text" />
+                        </div>
+                        <div class="form-group">
+                            <label class="date-label" for="staticToDate">To: </label>
+                            <input class="form-control" id="staticToDate" type="text" />
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label class="date-label" for="staticToDate">To: </label>
-                        <input class="form-control" id="staticToDate" type="date">
-                    </div>
+                </p>
+                <div class="note">
+                    Be aware of the fact that Twitter restricts the maximum number of retrieved Tweets, so you may not get every results.<br/>
+                    If this appends, reduce the dates range in order to get more specific results and try to be more specific with your search criteria.
                 </div>
             </div>
 
@@ -125,7 +131,8 @@
 
             <div class="alert alert-danger error-search" id="errorStaticSearch"></div>
 
-            <button class="btn btn-primary btn-search" id="viewStaticResultsBtn">View Results!</button>
+            <div class="note note-static-search">The search may take time, so please be patient.</div>
+            <button class="btn btn-primary btn-static-search" id="viewStaticResultsBtn">View Results!</button>
         </div>
     </div>
 </div>

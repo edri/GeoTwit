@@ -1,57 +1,82 @@
 <?xml version="1.0" encoding="iso-8859-15" standalone="no"?>
 <classDiagram>
-  <diagramElements name="GeoTwit">
-    <dependency id="3954" label="">
-      <source>3791</source>
-      <target>3886</target>
-    </dependency>
+  <diagramElements name="GeoTwit - Server">
     <dependency id="3953" label="">
       <source>3791</source>
       <target>3794</target>
     </dependency>
-    <entity entityType="CLASS" id="3886" isAbstract="false" name="SearchController" visibility="PUBLIC">
-      <method isAbstract="false" isStatic="false" name="index" returnType="void" view="DEFAULT" visibility="PUBLIC"/>
-    </entity>
-    <entity entityType="CLASS" id="3794" isAbstract="false" name="HomeController" visibility="PUBLIC">
-      <method isAbstract="false" isStatic="false" name="index" returnType="void" view="DEFAULT" visibility="PUBLIC">
-        <variable const="false" name="error" type="Option(String)"/>
-      </method>
-      <method isAbstract="false" isStatic="false" name="auth" returnType="void" view="DEFAULT" visibility="PUBLIC"/>
-      <method isAbstract="false" isStatic="false" name="callback" returnType="void" view="DEFAULT" visibility="PUBLIC">
-        <variable const="false" name="denied" type="Option(String)"/>
-        <variable const="false" name="oauthToken" type="Option(String)"/>
-        <variable const="false" name="oauthVerifier" type="Option(String)"/>
-      </method>
+    <dependency id="3954" label="">
+      <source>3791</source>
+      <target>3886</target>
+    </dependency>
+    <entity entityType="CLASS" id="4041" isAbstract="false" name="NotAuthenticatedAction" visibility="PUBLIC">
+      <method isAbstract="false" isStatic="false" name="invokeBlock" returnType="Future(Request)" view="DEFAULT" visibility="PUBLIC"/>
     </entity>
     <entity entityType="CLASS" id="3791" isAbstract="false" name="Controller" visibility="PUBLIC"/>
+    <entity entityType="CLASS" id="3794" isAbstract="false" name="HomeController" visibility="PUBLIC">
+      <attribute const="false" defaultValue="" isStatic="false" name="CONFIG" type="Config" visibility="PRIVATE"/>
+      <method isAbstract="false" isStatic="true" name="index" returnType="Result" view="DEFAULT" visibility="PUBLIC"/>
+      <method isAbstract="false" isStatic="true" name="auth" returnType="Result" view="DEFAULT" visibility="PUBLIC"/>
+      <method isAbstract="false" isStatic="true" name="callback" returnType="Result" view="DEFAULT" visibility="PUBLIC">
+        <variable const="false" name="denied" type="Option(String)"/>
+        <variable const="false" name="..." type="..."/>
+      </method>
+      <method isAbstract="false" isStatic="true" name="logout" returnType="Result" view="DEFAULT" visibility="PUBLIC"/>
+      <method isAbstract="false" isStatic="true" name="about" returnType="Result" view="DEFAULT" visibility="PUBLIC"/>
+      <method isAbstract="false" isStatic="true" name="help" returnType="Result" view="DEFAULT" visibility="PUBLIC"/>
+    </entity>
+    <entity entityType="CLASS" id="3886" isAbstract="false" name="SearchController" visibility="PUBLIC">
+      <attribute const="false" defaultValue="" isStatic="false" name="CONFIG" type="Config" visibility="PRIVATE"/>
+      <attribute const="false" defaultValue="" isStatic="false" name="DATE_FORMAT" type="SimpleDateFormat" visibility="PRIVATE"/>
+      <attribute const="false" defaultValue="" isStatic="false" name="DATE_TIME_FORMAT" type="SimpleDateFormat" visibility="PRIVATE"/>
+      <attribute const="false" defaultValue="" isStatic="false" name="BASE_FILE_PATH" type="String" visibility="PRIVATE"/>
+      <method isAbstract="false" isStatic="false" name="isUserAuthenticated" returnType="Boolean" view="DEFAULT" visibility="PUBLIC">
+        <variable const="false" name="request" type="RequestHeader"/>
+      </method>
+      <method isAbstract="false" isStatic="false" name="writeInFile" returnType="Unit" view="DEFAULT" visibility="PUBLIC">
+        <variable const="false" name="fileName" type="String"/>
+        <variable const="false" name="content" type="String"/>
+      </method>
+      <method isAbstract="false" isStatic="false" name="validateAndParseFile" returnType="JsObject" view="DEFAULT" visibility="PUBLIC">
+        <variable const="false" name="file" type="File"/>
+      </method>
+      <method isAbstract="false" isStatic="false" name="writeTweetInFile" returnType="Boolean" view="DEFAULT" visibility="PUBLIC">
+        <variable const="false" name="out" type="ActorRef"/>
+        <variable const="false" name="sessionId" type="String"/>
+        <variable const="false" name="keywordsSetIdentifier" type="String"/>
+        <variable const="false" name="..." type="..."/>
+      </method>
+      <method isAbstract="false" isStatic="false" name="streaming" returnType="Unit" view="DEFAULT" visibility="PUBLIC">
+        <variable const="false" name="out" type="ActorRef"/>
+        <variable const="false" name="twitterStream" type="TwitterStream"/>
+        <variable const="false" name="id" type="String"/>
+        <variable const="false" name="..." type="..."/>
+      </method>
+      <method isAbstract="false" isStatic="false" name="getStaticTweets" returnType="JsArray" view="DEFAULT" visibility="PUBLIC">
+        <variable const="false" name="twitter" type="Twitter"/>
+        <variable const="false" name="query" type="Query"/>
+        <variable const="false" name="keywordsSetIdentifier" type="String"/>
+        <variable const="false" name="..." type="..."/>
+      </method>
+      <method isAbstract="false" isStatic="true" name="index" returnType="Result" view="DEFAULT" visibility="PUBLIC"/>
+      <method isAbstract="false" isStatic="true" name="fileAction" returnType="Result" view="DEFAULT" visibility="PUBLIC">
+        <variable const="false" name="action" type="String"/>
+        <variable const="false" name="firstSubject" type="Option(String)"/>
+        <variable const="false" name="secondSubject" type="Option(String)"/>
+      </method>
+      <method isAbstract="false" isStatic="true" name="uploadAndParseFile" returnType="Result" view="DEFAULT" visibility="PUBLIC"/>
+      <method isAbstract="false" isStatic="true" name="streamingSocket" returnType="WebSocket" view="DEFAULT" visibility="PUBLIC"/>
+      <method isAbstract="false" isStatic="true" name="staticResults" returnType="Result" view="DEFAULT" visibility="PUBLIC"/>
+    </entity>
+    <entity entityType="CLASS" id="4572" isAbstract="false" name="NotAuthenticatedAction" visibility="PUBLIC">
+      <method isAbstract="false" isStatic="false" name="invokeBlock" returnType="Future(Request)" view="DEFAULT" visibility="PUBLIC"/>
+    </entity>
+    <entity entityType="CLASS" id="4574" isAbstract="false" name="StreamingSocketActor" visibility="PUBLIC">
+      <method isAbstract="false" isStatic="false" name="receive" returnType="Unit" view="DEFAULT" visibility="PUBLIC"/>
+      <method isAbstract="false" isStatic="false" name="postStop" returnType="Unit" view="DEFAULT" visibility="PUBLIC"/>
+    </entity>
   </diagramElements>
   <umlView grid="10" name="view no name">
-    <relationView color="-12566464" relationId="3953">
-      <line>
-        <point>
-          <x>791</x>
-          <y>116</y>
-        </point>
-        <point>
-          <x>791</x>
-          <y>151</y>
-        </point>
-        <point>
-          <x>491</x>
-          <y>151</y>
-        </point>
-        <point>
-          <x>491</x>
-          <y>191</y>
-        </point>
-      </line>
-      <labelAssociation>
-        <x>645</x>
-        <y>155</y>
-        <w>0</w>
-        <h>17</h>
-      </labelAssociation>
-    </relationView>
     <relationView color="-12566464" relationId="3954">
       <line>
         <point>
@@ -78,6 +103,64 @@
         <h>17</h>
       </labelAssociation>
     </relationView>
+    <relationView color="-12566464" relationId="3953">
+      <line>
+        <point>
+          <x>791</x>
+          <y>116</y>
+        </point>
+        <point>
+          <x>791</x>
+          <y>151</y>
+        </point>
+        <point>
+          <x>631</x>
+          <y>151</y>
+        </point>
+        <point>
+          <x>631</x>
+          <y>191</y>
+        </point>
+      </line>
+      <labelAssociation>
+        <x>635</x>
+        <y>175</y>
+        <w>0</w>
+        <h>17</h>
+      </labelAssociation>
+    </relationView>
+    <componentView color="-2079" componentID="4574" displayAttributes="true" displayDefault="true" displayMethods="true">
+      <geometry>
+        <x>830</x>
+        <y>540</y>
+        <w>520</w>
+        <h>85</h>
+      </geometry>
+    </componentView>
+    <componentView color="-2079" componentID="4572" displayAttributes="true" displayDefault="true" displayMethods="true">
+      <geometry>
+        <x>830</x>
+        <y>470</y>
+        <w>520</w>
+        <h>70</h>
+      </geometry>
+    </componentView>
+    <componentView color="-2079" componentID="3886" displayAttributes="true" displayDefault="true" displayMethods="true">
+      <geometry>
+        <x>810</x>
+        <y>190</y>
+        <w>560</w>
+        <h>280</h>
+      </geometry>
+    </componentView>
+    <componentView color="-2079" componentID="3794" displayAttributes="true" displayDefault="true" displayMethods="true">
+      <geometry>
+        <x>490</x>
+        <y>190</y>
+        <w>280</w>
+        <h>160</h>
+      </geometry>
+    </componentView>
     <componentView color="-2079" componentID="3791" displayAttributes="true" displayDefault="true" displayMethods="true">
       <geometry>
         <x>710</x>
@@ -86,19 +169,11 @@
         <h>55</h>
       </geometry>
     </componentView>
-    <componentView color="-2079" componentID="3794" displayAttributes="true" displayDefault="true" displayMethods="true">
+    <componentView color="-2079" componentID="4041" displayAttributes="true" displayDefault="true" displayMethods="true">
       <geometry>
-        <x>210</x>
-        <y>190</y>
-        <w>560</w>
-        <h>100</h>
-      </geometry>
-    </componentView>
-    <componentView color="-2079" componentID="3886" displayAttributes="true" displayDefault="true" displayMethods="true">
-      <geometry>
-        <x>810</x>
-        <y>190</y>
-        <w>130</w>
+        <x>510</x>
+        <y>350</y>
+        <w>240</w>
         <h>70</h>
       </geometry>
     </componentView>
