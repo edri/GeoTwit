@@ -142,7 +142,7 @@ function cloneObject(obj) {
 }
 
 /*
-* Erases each potential drawn polygons of the map.
+* Erases each potential drawn polygons of the given map.
 */
 function erasePolygons(map) {
     // Resets the bounding rectangle's coordinates' array.
@@ -176,10 +176,10 @@ function erasePolygons(map) {
 *   - coordinates: an array of arrays containing each polygon's coordinates as a
 *                  [latitude,longitude] format, for example
 *                  coordinates[[COORD_POLYGON_1], [COORD_POLYGON_2], [COORD_POLYGON_3]].
-*   - readFileMode: indicates whether the user imported a file in the application (true) or not (false - default),
+*   - readFileMode: indicates whether the user imported a file in the application (true) or not (false),
 *                   in order to zoom on the right coordinates.
 */
-function drawPolygons(map, coordinates, readFileMode = false) {
+function drawPolygons(map, coordinates, readFileMode) {
     // Draws each polygon one by one.
     for (var i = 0, nbPoly = coordinates.length; i < nbPoly; ++i) {
         // Adds the current polygon to the map.
@@ -469,9 +469,9 @@ function loadResultsMap(mode) {
 
     // Adds the cluster goup object as a layer to the map of the streaming's results,
     // in order to automatically group markers with the Leaflet.markercluster library.
-    // The cluster group is disabled from a zoom level of 7.
+    // The cluster group is disabled from a zoom level of 8.
     markers = L.markerClusterGroup({
-        disableClusteringAtZoom: 7,
+        disableClusteringAtZoom: 8,
         maxClusterRadius: 50
     });
     resultMaps[mode].addLayer(markers);
@@ -483,10 +483,10 @@ function loadResultsMap(mode) {
 * Parameters:
 *   - hasSecondStream: boolean value indicating if the user filled a second keywords
 *                      set, in order to show/hide graphs according to the value.
-*   - refresh: indicates whether the charts must automatically be refreshed (true - default)
+*   - refresh: indicates whether the charts must automatically be refreshed (true)
 *              or not (false).
 */
-function loadStreamingResultsCharts(hasSecondStream, refresh = true) {
+function loadStreamingResultsCharts(hasSecondStream, refresh) {
     // Sets global charts' parameters.
     Chart.defaults.global.title.display = true;
     Chart.defaults.global.title.fontSize = 15;
@@ -1007,7 +1007,7 @@ function loadStreamingResultsComponents() {
 
     // Loads the map and charts components.
     loadResultsMap(STREAMING_MODE_IDENTIFIER);
-    loadStreamingResultsCharts(secondKeywords.length != 0);
+    loadStreamingResultsCharts(secondKeywords.length != 0, true);
 
     $("#firstStreamingSubject").html(humanQueryString["first"]);
     $("#streamingLanguage").text($("#dynamicLanguage option:selected").val() == "" ? "ANY" : $("#dynamicLanguage option:selected").val());
@@ -1480,12 +1480,15 @@ function initWebSocket() {
                             break;
                         // Occurs when the server stopped the streaming process for reasons.
                         case "stopStreaming":
+                            var redirection = false;
+
                             // Displays an alert, depending on the reason, if set.
                             if (data.reason) {
                                 switch (data.reason) {
                                     // Occurs if the user's session expired during the streaming process.
                                     case "sessionExpired":
                                         alert("Your session expired, you are going to be disconnected.");
+                                        redirection = true;
                                         window.location.replace(jsRoutes.controllers.HomeController.logout().url);
                                         break;
                                     case "tooManyStreamingProcesses":
@@ -1493,6 +1496,7 @@ function initWebSocket() {
                                         break;
                                     case "queryTooLong":
                                         alert("One of the keywords set(s) you filled is too long (> 60 characters), please retry.");
+                                        redirection = true;
                                         // Reloads the page in order to start a new search.
                                         location.reload();
                                         break;
@@ -1505,8 +1509,11 @@ function initWebSocket() {
                             }
 
                             // Stops the streaming process without indicating it to the server (since it is the one which
-                            // ask us to stop the process).
-                            stopStreaming(false, !data.reason || data.reason != "sessionExpired");
+                            // ask us to stop the process). The streaming does not have to be stopped and thus the exportation
+                            // pop-up does not have to be displayed if the user is directly redirected.
+                            if (!redirection) {
+                                stopStreaming(false, !data.reason || data.reason != "sessionExpired");
+                            }
 
                             break;
                     }
@@ -1535,9 +1542,9 @@ function initWebSocket() {
 *   - sendSocket: indicates whether the client must send a "stopStreaming"
 *                 socket to the server (true) or not (false). If this parameter
 *                 is false, it means the server already stopped its process.
-*   - displayExportPopup: indicates whether we want to display the exportation pop-up (true - default) or not (false).
+*   - displayExportPopup: indicates whether we want to display the exportation pop-up (true) or not (false).
 */
-function stopStreaming(sendSocket, displayExportPopup = true) {
+function stopStreaming(sendSocket, displayExportPopup) {
     if (socketConnection && sendSocket) {
         socketConnection.send(JSON.stringify({
             "messageType": "stopStreaming"
@@ -1956,7 +1963,6 @@ $(document).ready(function() {
                 $("#importedFile").prop("disabled", false);
                 $("#dynamicModeSearch").fadeIn("fast");
             } else {
-                console.log(data.result);
                 $("#searchContent").hide();
                 $("#streamingResults").fadeIn();
                 loadFileResultsComponents(data.result);
@@ -2018,6 +2024,6 @@ $(document).ready(function() {
 
     $("#btnStopStreaming").click(function() {
         // Stops the streaming process and indicates it to the server.
-        stopStreaming(true);
+        stopStreaming(true, true);
     })
 })

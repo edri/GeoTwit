@@ -364,8 +364,8 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
         if (firstSubject.nonEmpty && language.nonEmpty && coordinates.length > 0 && lineNumberTweets > 0 &&
           lineNumberResults > 0) {
           // Regular expression used to validate a Tweet entry and get its data.
-          val tweetRE = ("((?>first|second)-subject#\\d+);(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2});(-?\\d+\\.?\\d" +
-            "*);(-?\\d+\\.?\\d*);\"(.+)\";\"(.+)\"").r
+          val tweetRE = ("((?>first|second)-subject#\\d+);(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2});" +
+            "(-?\\d+\\.?\\d*);(-?\\d+\\.?\\d*);\"(.+)\";\"(.+)\"").r
           var error = false
 
           // Iterates over each Tweet.
@@ -791,11 +791,13 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
     */
     def uploadAndParseFile = AuthenticatedAction(parse.multipartFormData) { request =>
     request.body.file("importedFile").map { file =>
+      println("FORMAT: " + file.contentType.get)
+
       // The file cannot be empty
       if (file.ref.file.length <= 0) {
         Ok(Json.obj("error" -> JsBoolean(true), "reason" -> JsString("fileEmpty")))
-      // The file must be a text file.
-      } else if (file.contentType.isEmpty || file.contentType.get != "application/octet-stream") {
+        // The file must be a text file ("text/plain" format is used by Internet Explorer, unlike any other web browser).
+      } else if (file.contentType.isEmpty || (file.contentType.get != "application/octet-stream" && file.contentType.get != "text/plain")) {
         Ok(Json.obj("error" -> JsBoolean(true), "reason" -> JsString("wrongFormat")))
       // Validate and parses the file.
       } else {

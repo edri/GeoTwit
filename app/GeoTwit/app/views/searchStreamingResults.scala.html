@@ -35,49 +35,47 @@
         </tr>
     </table>
 
-    <p>
-        <!-- Nav tabs -->
-        <ul class="nav nav-tabs" id="streamingResultsTabs" role="tablist">
-            <li role="presentation" class="active"><a href="#map" aria-controls="map" role="tab" data-toggle="tab">Map</a></li>
-            <li role="presentation"><a href="#charts" aria-controls="charts" role="tab" data-toggle="tab">Charts</a></li>
-        </ul>
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" id="streamingResultsTabs" role="tablist">
+        <li role="presentation" class="active"><a href="#map" aria-controls="map" role="tab" data-toggle="tab">Map</a></li>
+        <li role="presentation"><a href="#charts" aria-controls="charts" role="tab" data-toggle="tab">Charts</a></li>
+    </ul>
 
-        <!-- Tab panes -->
-        <div class="tab-content">
-            <div role="tabpanel" class="tab-pane fade in active" id="map">
-                <!-- This div will contain the map of the streaming's results. -->
-                <div class="search-map" id="streamingResultsMap"></div>
-            </div>
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane fade in active" id="map">
+            <!-- This div will contain the map of the streaming's results. -->
+            <div class="search-map" id="streamingResultsMap"></div>
+        </div>
 
-            <div role="tabpanel" class="tab-pane fade" id="charts">
-                <div>Charts related to <strong>Tweets <u>having</u> geolocation tags</strong>:</div>
-                <div class="charts-container">
-                    <div class="chart-container">
-                        <canvas id="chartTotalReceivedTweets" height="300"></canvas>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="chartTweetsReception" height="300"></canvas>
-                    </div>
-                    <div class="chart-container only-multiple-streamings" id="chartPartsOfReceivedTweetsContainer">
-                        <canvas id="chartPartsOfReceivedTweets" height="300"></canvas>
-                    </div>
+        <div role="tabpanel" class="tab-pane fade" id="charts">
+            <div>Charts related to <strong>Tweets <u>having</u> geolocation tags</strong>:</div>
+            <div class="charts-container">
+                <div class="chart-container">
+                    <canvas id="chartTotalReceivedTweets" height="300"></canvas>
                 </div>
-                <hr/>
-                <div>Charts related to all kinds of Tweets (<strong>with and <u>without</u> geolocation tags</strong>):</div>
-                <div class="charts-container">
-                    <div class="chart-container">
-                        <canvas id="chartWithoutGeolocation" height="300"></canvas>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="chartWithoutGeolocationCurrent" height="300"></canvas>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="chartGeolocationComparison" height="300"></canvas>
-                    </div>
+                <div class="chart-container">
+                    <canvas id="chartTweetsReception" height="300"></canvas>
+                </div>
+                <div class="chart-container only-multiple-streamings" id="chartPartsOfReceivedTweetsContainer">
+                    <canvas id="chartPartsOfReceivedTweets" height="300"></canvas>
+                </div>
+            </div>
+            <hr/>
+            <div>Charts related to all kinds of Tweets (<strong>with and <u>without</u> geolocation tags</strong>):</div>
+            <div class="charts-container">
+                <div class="chart-container">
+                    <canvas id="chartWithoutGeolocation" height="300"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="chartWithoutGeolocationCurrent" height="300"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="chartGeolocationComparison" height="300"></canvas>
                 </div>
             </div>
         </div>
-    </p>
+    </div>
 
     <table class="tweets-content-results">
         <tr>

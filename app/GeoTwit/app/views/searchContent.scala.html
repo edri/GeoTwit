@@ -11,7 +11,7 @@
     <div class="tab-content">
         <div role="tabpanel" class="tab-pane fade in active" id="dynamic">
             <h3 class="search-first-subtitle">First thing first: do you want to import a peviously generated data file?</h3>
-            <div class="note">If you don't now what this option is about yet, just ignore it.</div>
+            <div class="note">Please select a <u>".gt"</u> file previously exported with GeoTwit. If you don't now what this option is about yet, just ignore it.</div>
 
             <input accept=".gt" data-url="@routes.SearchController.uploadAndParseFile" id="importedFile" name="importedFile" type="file" />
             <div class="progress progress-upload" id="progressUpload">
@@ -36,8 +36,8 @@
                     </div>
                     <div class="form-group">
                         <label for="keywordSetOr">[Optional] Second keyword(s) set to compare against (separate your words with <u>spaces</u> - max. 60 characters per field)</label>
-                        <input type="text" class="form-control" id="streamingSecondKeywordSetOr" placeholder="One of these keywords...">
-                        <input type="text" class="form-control group-field-bottom" id="streamingSecondKeywordSetAnd" placeholder="All these keywords...">
+                        <input type="text" class="form-control" id="streamingSecondKeywordSetOr" maxlength="60" placeholder="One of these keywords...">
+                        <input type="text" class="form-control group-field-bottom" id="streamingSecondKeywordSetAnd" maxlength="60" placeholder="All these keywords...">
                     </div>
                 </div>
 
@@ -85,8 +85,8 @@
                 </div>
                 <div class="form-group">
                     <label for="keywordSetOr">[Optional] Second keyword(s) set to compare against (separate your words with <u>spaces</u> - max. 60 characters per field)</label>
-                    <input type="text" class="form-control" id="staticSecondKeywordSetOr" placeholder="One of these keywords...">
-                    <input type="text" class="form-control group-field-bottom" id="staticSecondKeywordSetAnd" placeholder="All these keywords...">
+                    <input type="text" class="form-control" id="staticSecondKeywordSetOr" maxlength="60" placeholder="One of these keywords...">
+                    <input type="text" class="form-control group-field-bottom" id="staticSecondKeywordSetAnd" maxlength="60" placeholder="All these keywords...">
                 </div>
             </div>
 
@@ -96,18 +96,16 @@
                     Since Twitter only allows us to get Tweets from <strong class="one-week-ago-label"><span id="maxDaysStaticSearch"></span> days ago</strong>,
                     you won't have any result if you search for Tweets <u>before the <strong class="one-week-ago-label" id="dateOneWeekAgo"></strong></u>.
                 </div>
-                <p>
-                    <div class="form-inline">
-                        <div class="form-group search-from-date">
-                            <label class="date-label" for="staticFromDate">From: </label>
-                            <input class="form-control" id="staticFromDate" type="text" />
-                        </div>
-                        <div class="form-group">
-                            <label class="date-label" for="staticToDate">To: </label>
-                            <input class="form-control" id="staticToDate" type="text" />
-                        </div>
+                <div class="form-inline">
+                    <div class="form-group search-from-date">
+                        <label class="date-label" for="staticFromDate">From: </label>
+                        <input class="form-control" id="staticFromDate" type="text" />
                     </div>
-                </p>
+                    <div class="form-group">
+                        <label class="date-label" for="staticToDate">To: </label>
+                        <input class="form-control" id="staticToDate" type="text" />
+                    </div>
+                </div>
                 <div class="note">
                     Be aware of the fact that Twitter restricts the maximum number of retrieved Tweets, so you may not get every results.<br/>
                     If this appends, reduce the dates range in order to get more specific results and try to be more specific with your search criteria.
