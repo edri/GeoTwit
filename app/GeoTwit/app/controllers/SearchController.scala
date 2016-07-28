@@ -791,8 +791,6 @@ class SearchController @Inject() (implicit system: ActorSystem, materializer: Ma
     */
     def uploadAndParseFile = AuthenticatedAction(parse.multipartFormData) { request =>
     request.body.file("importedFile").map { file =>
-      println("FORMAT: " + file.contentType.get)
-
       // The file cannot be empty
       if (file.ref.file.length <= 0) {
         Ok(Json.obj("error" -> JsBoolean(true), "reason" -> JsString("fileEmpty")))
