@@ -1,0 +1,2651 @@
+This is XeTeX, Version 3.1415926-2.5-0.9999.3 (TeX Live 2013/Debian) (format=xelatex 2016.7.24)  29 JUL 2016 09:57
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**thesis.tex
+(./thesis.tex
+LaTeX2e <2011/06/27>
+Babel <3.9h> and hyphenation patterns for 4 languages loaded.
+(/usr/share/texlive/texmf-dist/tex/latex/base/report.cls
+Document Class: report 2007/10/19 v1.4h Standard LaTeX document class
+(/usr/share/texlive/texmf-dist/tex/latex/base/size11.clo
+File: size11.clo 2007/10/19 v1.4h Standard LaTeX file (size option)
+)
+\c@part=\count80
+\c@chapter=\count81
+\c@section=\count82
+\c@subsection=\count83
+\c@subsubsection=\count84
+\c@paragraph=\count85
+\c@subparagraph=\count86
+\c@figure=\count87
+\c@table=\count88
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+)
+(/usr/share/texlive/texmf-dist/tex/latex/base/fontenc.sty
+Package: fontenc 2005/09/27 v1.99g Standard LaTeX package
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/t1enc.def
+File: t1enc.def 2005/09/27 v1.99g Standard LaTeX file
+LaTeX Font Info:    Redeclaring font encoding T1 on input line 43.
+))
+(/usr/share/texlive/texmf-dist/tex/generic/babel/babel.sty
+Package: babel 2013/12/03 3.9h The Babel package
+
+(/usr/share/texlive/texmf-dist/tex/generic/babel-english/english.ldf
+Language: english 2012/08/20 v3.3p English support from the babel system
+
+(/usr/share/texlive/texmf-dist/tex/generic/babel/babel.def
+File: babel.def 2013/12/03 3.9h Babel common definitions
+\babel@savecnt=\count89
+\U@D=\dimen103
+
+(/usr/share/texlive/texmf-dist/tex/generic/babel/xebabel.def))
+\l@british = a dialect from \language\l@english 
+\l@UKenglish = a dialect from \language\l@english 
+\l@canadian = a dialect from \language\l@american 
+\l@australian = a dialect from \language\l@british 
+\l@newzealand = a dialect from \language\l@british 
+))
+(/usr/share/texlive/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty
+\fancy@headwidth=\skip43
+\f@ncyO@elh=\skip44
+\f@ncyO@erh=\skip45
+\f@ncyO@olh=\skip46
+\f@ncyO@orh=\skip47
+\f@ncyO@elf=\skip48
+\f@ncyO@erf=\skip49
+\f@ncyO@olf=\skip50
+\f@ncyO@orf=\skip51
+)
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/hyperref.sty
+Package: hyperref 2012/11/06 v6.83m Hypertext links for LaTeX
+
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/hobsub-hyperref.sty
+Package: hobsub-hyperref 2012/05/28 v1.13 Bundle oberdiek, subset hyperref (HO)
+
+
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/hobsub-generic.sty
+Package: hobsub-generic 2012/05/28 v1.13 Bundle oberdiek, subset generic (HO)
+Package: hobsub 2012/05/28 v1.13 Construct package bundles (HO)
+Package: infwarerr 2010/04/08 v1.3 Providing info/warning/error messages (HO)
+Package: ltxcmds 2011/11/09 v1.22 LaTeX kernel commands for general use (HO)
+Package: ifluatex 2010/03/01 v1.3 Provides the ifluatex switch (HO)
+Package ifluatex Info: LuaTeX not detected.
+Package: ifvtex 2010/03/01 v1.5 Detect VTeX and its facilities (HO)
+Package ifvtex Info: VTeX not detected.
+Package: intcalc 2007/09/27 v1.1 Expandable calculations with integers (HO)
+Package: ifpdf 2011/01/30 v2.3 Provides the ifpdf switch (HO)
+Package ifpdf Info: pdfTeX in PDF mode is not detected.
+Package: etexcmds 2011/02/16 v1.5 Avoid name clashes with e-TeX commands (HO)
+Package etexcmds Info: Could not find \expanded.
+(etexcmds)             That can mean that you are not using pdfTeX 1.50 or
+(etexcmds)             that some package has redefined \expanded.
+(etexcmds)             In the latter case, load this package earlier.
+Package: kvsetkeys 2012/04/25 v1.16 Key value parser (HO)
+Package: kvdefinekeys 2011/04/07 v1.3 Define keys (HO)
+Package: pdftexcmds 2011/11/29 v0.20 Utility functions of pdfTeX for LuaTeX (HO
+)
+Package pdftexcmds Info: LuaTeX not detected.
+Package pdftexcmds Info: pdfTeX >= 1.30 not detected.
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode not found.
+Package: pdfescape 2011/11/25 v1.13 Implements pdfTeX's escape features (HO)
+Package: bigintcalc 2012/04/08 v1.3 Expandable calculations on big integers (HO
+)
+Package: bitset 2011/01/30 v1.1 Handle bit-vector datatype (HO)
+Package: uniquecounter 2011/01/30 v1.2 Provide unlimited unique counter (HO)
+)
+Package hobsub Info: Skipping package `hobsub' (already loaded).
+Package: letltxmacro 2010/09/02 v1.4 Let assignment for LaTeX macros (HO)
+Package: hopatch 2012/05/28 v1.2 Wrapper for package hooks (HO)
+Package: xcolor-patch 2011/01/30 xcolor patch
+Package: atveryend 2011/06/30 v1.8 Hooks at the very end of document (HO)
+Package atveryend Info: \enddocument detected (standard20110627).
+Package: atbegshi 2011/10/05 v1.16 At begin shipout hook (HO)
+Package: refcount 2011/10/16 v3.4 Data extraction from label references (HO)
+Package: hycolor 2011/01/30 v1.7 Color options for hyperref/bookmark (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 1999/03/16 v1.13 key=value parser (DPC)
+\KV@toks@=\toks14
+)
+(/usr/share/texlive/texmf-dist/tex/generic/ifxetex/ifxetex.sty
+Package: ifxetex 2010/09/12 v0.6 Provides ifxetex conditional
+)
+(/usr/share/texlive/texmf-dist/tex/latex/oberdiek/auxhook.sty
+Package: auxhook 2011/03/04 v1.3 Hooks for auxiliary files (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/oberdiek/kvoptions.sty
+Package: kvoptions 2011/06/30 v3.11 Key value format for package options (HO)
+)
+\@linkdim=\dimen104
+\Hy@linkcounter=\count90
+\Hy@pagecounter=\count91
+
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/pd1enc.def
+File: pd1enc.def 2012/11/06 v6.83m Hyperref: PDFDocEncoding definition (HO)
+)
+\Hy@SavedSpaceFactor=\count92
+
+(/usr/share/texlive/texmf-dist/tex/latex/latexconfig/hyperref.cfg
+File: hyperref.cfg 2002/06/06 v1.2 hyperref configuration of TeXLive
+)
+Package hyperref Info: Hyper figures OFF on input line 4443.
+Package hyperref Info: Link nesting OFF on input line 4448.
+Package hyperref Info: Hyper index ON on input line 4451.
+Package hyperref Info: Plain pages OFF on input line 4458.
+Package hyperref Info: Backreferencing OFF on input line 4463.
+Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
+Package hyperref Info: Bookmarks ON on input line 4688.
+\c@Hy@tempcnt=\count93
+
+(/usr/share/texlive/texmf-dist/tex/latex/url/url.sty
+\Urlmuskip=\muskip10
+Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
+)
+LaTeX Info: Redefining \url on input line 5041.
+\XeTeXLinkMargin=\dimen105
+\Fld@menulength=\count94
+\Field@Width=\dimen106
+\Fld@charsize=\dimen107
+Package hyperref Info: Hyper figures OFF on input line 6295.
+Package hyperref Info: Link nesting OFF on input line 6300.
+Package hyperref Info: Hyper index ON on input line 6303.
+Package hyperref Info: backreferencing OFF on input line 6310.
+Package hyperref Info: Link coloring OFF on input line 6315.
+Package hyperref Info: Link coloring with OCG OFF on input line 6320.
+Package hyperref Info: PDF/A mode OFF on input line 6325.
+LaTeX Info: Redefining \ref on input line 6365.
+LaTeX Info: Redefining \pageref on input line 6369.
+\Hy@abspage=\count95
+\c@Item=\count96
+\c@Hfootnote=\count97
+)
+
+Package hyperref Message: Driver (autodetected): hxetex.
+
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/hxetex.def
+File: hxetex.def 2012/11/06 v6.83m Hyperref driver for XeTeX
+
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/puenc.def
+File: puenc.def 2012/11/06 v6.83m Hyperref: PDF Unicode definition (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/stringenc.sty
+Package: stringenc 2011/12/02 v1.10 Convert strings between diff. encodings (HO
+)
+)
+\pdfm@box=\box26
+\c@Hy@AnnotLevel=\count98
+\HyField@AnnotCount=\count99
+\Fld@listcount=\count100
+\c@bookmark@seq@number=\count101
+
+(/usr/share/texlive/texmf-dist/tex/latex/oberdiek/rerunfilecheck.sty
+Package: rerunfilecheck 2011/04/15 v1.7 Rerun checks for auxiliary files (HO)
+Package rerunfilecheck Info: Feature \pdfmdfivesum is not available
+(rerunfilecheck)             (e.g. pdfTeX or LuaTeX with package `pdftexcmds').
+
+(rerunfilecheck)             Therefore file contents cannot be checked efficien
+tly
+(rerunfilecheck)             and the loading of the package is aborted.
+)
+\Hy@SectionHShift=\skip52
+)
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/graphicx.sty
+Package: graphicx 1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2009/02/05 v1.0o Standard LaTeX Graphics (DPC,SPQR)
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/latexconfig/graphics.cfg
+File: graphics.cfg 2010/04/23 v1.9 graphics configuration of TeX Live
+)
+Package graphics Info: Driver file: xetex.def on input line 91.
+
+(/usr/share/texlive/texmf-dist/tex/xelatex/xetex-def/xetex.def
+File: xetex.def 2013/04/29 v0.96 LaTeX color/graphics driver for XeTeX (RRM/JK)
+
+))
+\Gin@req@height=\dimen108
+\Gin@req@width=\dimen109
+)
+(/usr/share/texlive/texmf-dist/tex/latex/float/float.sty
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count102
+\float@exts=\toks15
+\float@box=\box27
+\@float@everytoks=\toks16
+\@floatcapt=\box28
+)
+(/usr/share/texlive/texmf-dist/tex/latex/wrapfig/wrapfig.sty
+\wrapoverhang=\dimen110
+\WF@size=\dimen111
+\c@WF@wrappedlines=\count103
+\WF@box=\box29
+\WF@everypar=\toks17
+Package: wrapfig 2003/01/31  v 3.6
+)
+(/usr/share/texlive/texmf-dist/tex/latex/listings/listings.sty
+\lst@mode=\count104
+\lst@gtempboxa=\box30
+\lst@token=\toks18
+\lst@length=\count105
+\lst@currlwidth=\dimen112
+\lst@column=\count106
+\lst@pos=\count107
+\lst@lostspace=\dimen113
+\lst@width=\dimen114
+\lst@newlines=\count108
+\lst@lineno=\count109
+\lst@maxwidth=\dimen115
+
+(/usr/share/texlive/texmf-dist/tex/latex/listings/lstmisc.sty
+File: lstmisc.sty 2013/08/26 1.5b (Carsten Heinz)
+\c@lstnumber=\count110
+\lst@skipnumbers=\count111
+\lst@framebox=\box31
+)
+(/usr/share/texlive/texmf-dist/tex/latex/listings/listings.cfg
+File: listings.cfg 2013/08/26 1.5b listings configuration
+))
+Package: listings 2013/08/26 1.5b (Carsten Heinz)
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/color.sty
+Package: color 2005/11/14 v1.0j Standard LaTeX Color (DPC)
+
+(/usr/share/texlive/texmf-dist/tex/latex/latexconfig/color.cfg
+File: color.cfg 2007/01/18 v1.5 color configuration of teTeX/TeXLive
+)
+Package color Info: Driver file: xetex.def on input line 130.
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/dvipsnam.def
+File: dvipsnam.def 1999/02/16 v3.0i Driver-dependant file (DPC,SPQR)
+))
+(/usr/share/texlive/texmf-dist/tex/latex/tools/longtable.sty
+Package: longtable 2004/02/01 v4.11 Multi-page Table package (DPC)
+\LTleft=\skip53
+\LTright=\skip54
+\LTpre=\skip55
+\LTpost=\skip56
+\LTchunksize=\count112
+\LTcapwidth=\dimen116
+\LT@head=\box32
+\LT@firsthead=\box33
+\LT@foot=\box34
+\LT@lastfoot=\box35
+\LT@cols=\count113
+\LT@rows=\count114
+\c@LT@tables=\count115
+\c@LT@chunks=\count116
+\LT@p@ftn=\toks19
+)
+(/usr/share/texlive/texmf-dist/tex/latex/fontawesome/fontawesome.sty
+Package: fontawesome 2013/05/10 v3.1.1 font awesome icons
+
+(/usr/share/texlive/texmf-dist/tex/latex/fontspec/fontspec.sty
+Package: fontspec 2013/05/20 v2.3c Font selection for XeLaTeX and LuaLaTeX
+
+(/usr/share/texlive/texmf-dist/tex/latex/l3kernel/expl3.sty
+(/usr/share/texlive/texmf-dist/tex/latex/l3kernel/l3names.sty
+(/usr/share/texlive/texmf-dist/tex/latex/l3kernel/l3bootstrap.sty
+Package: l3bootstrap 2014/01/04 v4640 L3 Experimental bootstrap code
+)
+Package: l3names 2014/01/04 v4640 L3 Namespace for primitives
+)
+(/usr/share/texlive/texmf-dist/tex/latex/etex-pkg/etex.sty
+Package: etex 1998/03/26 v2.0 eTeX basic definition package (PEB)
+\et@xins=\count117
+)
+Package: expl3 2014/01/07 v4646 L3 Experimental code bundle wrapper
+
+(/usr/share/texlive/texmf-dist/tex/latex/l3kernel/l3basics.sty
+Package: l3basics 2014/01/04 v4642 L3 Basic definitions
+)
+(/usr/share/texlive/texmf-dist/tex/latex/l3kernel/l3expan.sty
+Package: l3expan 2014/01/04 v4642 L3 Argument expansion
+)
+(/usr/share/texlive/texmf-dist/tex/latex/l3kernel/l3tl.sty
+Package: l3tl 2013/12/27 v4625 L3 Token lists
+)
+(/usr/share/texlive/texmf-dist/tex/latex/l3kernel/l3seq.sty
+Package: l3seq 2013/12/14 v4623 L3 Sequences and stacks
+)
+(/usr/share/texlive/texmf-dist/tex/latex/l3kernel/l3int.sty
+Package: l3int 2013/08/02 v4583 L3 Integers
+\c_max_int=\count118
+\l_tmpa_int=\count119
+\l_tmpb_int=\count120
+\g_tmpa_int=\count121
+\g_tmpb_int=\count122
+)
+(/usr/share/texlive/texmf-dist/tex/latex/l3kernel/l3quark.sty
+Package: l3quark 2013/12/14 v4623 L3 Quarks
+)
+(/usr/share/texlive/texmf-dist/tex/latex/l3kernel/l3prg.sty
+Package: l3prg 2014/01/04 v4642 L3 Control structures
+\g__prg_map_int=\count123
+)
+(/usr/share/texlive/texmf-dist/tex/latex/l3kernel/l3clist.sty
+Package: l3clist 2013/07/28 v4581 L3 Comma separated lists
+)
+(/usr/share/texlive/texmf-dist/tex/latex/l3kernel/l3token.sty
+Package: l3token 2013/08/25 v4587 L3 Experimental token manipulation
+)
+(/usr/share/texlive/texmf-dist/tex/latex/l3kernel/l3prop.sty
+Package: l3prop 2013/12/14 v4623 L3 Property lists
+)
+(/usr/share/texlive/texmf-dist/tex/latex/l3kernel/l3msg.sty
+Package: l3msg 2013/07/28 v4581 L3 Messages
+)
+(/usr/share/texlive/texmf-dist/tex/latex/l3kernel/l3file.sty
+Package: l3file 2013/10/13 v4596 L3 File and I/O operations
+\l_iow_line_count_int=\count124
+\l__iow_target_count_int=\count125
+\l__iow_current_line_int=\count126
+\l__iow_current_word_int=\count127
+\l__iow_current_indentation_int=\count128
+)
+(/usr/share/texlive/texmf-dist/tex/latex/l3kernel/l3skip.sty
+Package: l3skip 2013/07/28 v4581 L3 Dimensions and skips
+\c_zero_dim=\dimen117
+\c_max_dim=\dimen118
+\l_tmpa_dim=\dimen119
+\l_tmpb_dim=\dimen120
+\g_tmpa_dim=\dimen121
+\g_tmpb_dim=\dimen122
+\c_zero_skip=\skip57
+\c_max_skip=\skip58
+\l_tmpa_skip=\skip59
+\l_tmpb_skip=\skip60
+\g_tmpa_skip=\skip61
+\g_tmpb_skip=\skip62
+\c_zero_muskip=\muskip11
+\c_max_muskip=\muskip12
+\l_tmpa_muskip=\muskip13
+\l_tmpb_muskip=\muskip14
+\g_tmpa_muskip=\muskip15
+\g_tmpb_muskip=\muskip16
+)
+(/usr/share/texlive/texmf-dist/tex/latex/l3kernel/l3keys.sty
+Package: l3keys 2013/12/08 v4614 L3 Experimental key-value interfaces
+\g__keyval_level_int=\count129
+\l_keys_choice_int=\count130
+)
+(/usr/share/texlive/texmf-dist/tex/latex/l3kernel/l3fp.sty
+Package: l3fp 2014/01/04 v4642 L3 Floating points
+\c__fp_leading_shift_int=\count131
+\c__fp_middle_shift_int=\count132
+\c__fp_trailing_shift_int=\count133
+\c__fp_big_leading_shift_int=\count134
+\c__fp_big_middle_shift_int=\count135
+\c__fp_big_trailing_shift_int=\count136
+\c__fp_Bigg_leading_shift_int=\count137
+\c__fp_Bigg_middle_shift_int=\count138
+\c__fp_Bigg_trailing_shift_int=\count139
+)
+(/usr/share/texlive/texmf-dist/tex/latex/l3kernel/l3box.sty
+Package: l3box 2013/07/28 v4581 L3 Experimental boxes
+\c_empty_box=\box36
+\l_tmpa_box=\box37
+\l_tmpb_box=\box38
+\g_tmpa_box=\box39
+\g_tmpb_box=\box40
+)
+(/usr/share/texlive/texmf-dist/tex/latex/l3kernel/l3coffins.sty
+Package: l3coffins 2013/12/14 v4624 L3 Coffin code layer
+\l__coffin_internal_box=\box41
+\l__coffin_internal_dim=\dimen123
+\l__coffin_offset_x_dim=\dimen124
+\l__coffin_offset_y_dim=\dimen125
+\l__coffin_x_dim=\dimen126
+\l__coffin_y_dim=\dimen127
+\l__coffin_x_prime_dim=\dimen128
+\l__coffin_y_prime_dim=\dimen129
+\c_empty_coffin=\box42
+\l__coffin_aligned_coffin=\box43
+\l__coffin_aligned_internal_coffin=\box44
+\l_tmpa_coffin=\box45
+\l_tmpb_coffin=\box46
+\l__coffin_display_coffin=\box47
+\l__coffin_display_coord_coffin=\box48
+\l__coffin_display_pole_coffin=\box49
+\l__coffin_display_offset_dim=\dimen130
+\l__coffin_display_x_dim=\dimen131
+\l__coffin_display_y_dim=\dimen132
+)
+(/usr/share/texlive/texmf-dist/tex/latex/l3kernel/l3color.sty
+Package: l3color 2012/08/29 v4156 L3 Experimental color support
+)
+(/usr/share/texlive/texmf-dist/tex/latex/l3kernel/l3luatex.sty
+Package: l3luatex 2013/07/28 v4581 L3 Experimental LuaTeX-specific functions
+\g__cctab_allocate_int=\count140
+\g__cctab_stack_int=\count141
+)
+(/usr/share/texlive/texmf-dist/tex/latex/l3kernel/l3candidates.sty
+Package: l3candidates 2014/01/06 v4643 L3 Experimental additions to l3kernel
+\l__box_top_dim=\dimen133
+\l__box_bottom_dim=\dimen134
+\l__box_left_dim=\dimen135
+\l__box_right_dim=\dimen136
+\l__box_top_new_dim=\dimen137
+\l__box_bottom_new_dim=\dimen138
+\l__box_left_new_dim=\dimen139
+\l__box_right_new_dim=\dimen140
+\l__box_internal_box=\box50
+\l__coffin_bounding_shift_dim=\dimen141
+\l__coffin_left_corner_dim=\dimen142
+\l__coffin_right_corner_dim=\dimen143
+\l__coffin_bottom_corner_dim=\dimen144
+\l__coffin_top_corner_dim=\dimen145
+\l__coffin_scaled_total_height_dim=\dimen146
+\l__coffin_scaled_width_dim=\dimen147
+))
+(/usr/share/texlive/texmf-dist/tex/latex/l3packages/xparse/xparse.sty
+Package: xparse 2013/12/31 v4634 L3 Experimental document command parser
+\l__xparse_current_arg_int=\count142
+\l__xparse_m_args_int=\count143
+\l__xparse_mandatory_args_int=\count144
+\l__xparse_processor_int=\count145
+\l__xparse_v_nesting_int=\count146
+)
+\l_fontspec_script_int=\count147
+\l_fontspec_language_int=\count148
+\l_fontspec_strnum_int=\count149
+\l_fontspec_tmpa_dim=\dimen148
+\l_fontspec_tmpb_dim=\dimen149
+\l_fontspec_tmpc_dim=\dimen150
+Variant \tl_gset:cV already defined; not changing it on line 69
+
+(/usr/share/texlive/texmf-dist/tex/latex/fontspec/fontspec-patches.sty
+Package: fontspec-patches 2013/05/20 v2.3c Font selection for XeLaTeX and LuaLa
+TeX
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/fixltx2e.sty
+Package: fixltx2e 2006/09/13 v1.1m fixes to LaTeX
+LaTeX Info: Redefining \em on input line 420.
+)
+LaTeX Info: Redefining \em on input line 22.
+LaTeX Info: Redefining \emph on input line 30.
+LaTeX Info: Redefining \- on input line 33.
+
+*************************************************
+* LaTeX warning: "xparse/redefine-command"
+* 
+* Redefining document command \oldstylenums with arg. spec. 'm' on line 128.
+*************************************************
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \liningnums with arg. spec. 'm' on line 132.
+.................................................
+) (/usr/share/texlive/texmf-dist/tex/latex/fontspec/fontspec-xetex.sty
+Package: fontspec-xetex 2013/05/20 v2.3c Font selection for XeLaTeX and LuaLaTe
+X
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/fontenc.sty
+Package: fontenc 2005/09/27 v1.99g Standard LaTeX package
+
+(/usr/share/texlive/texmf-dist/tex/latex/euenc/eu1enc.def
+File: eu1enc.def 2010/05/27 v0.1h Experimental Unicode font encodings
+)
+LaTeX Font Info:    Try loading font information for EU1+lmr on input line 100.
+
+
+(/usr/share/texlive/texmf-dist/tex/latex/euenc/eu1lmr.fd
+File: eu1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
+))
+(/usr/share/texlive/texmf-dist/tex/xelatex/xunicode/xunicode.sty
+File: xunicode.sty 2011/09/09 v0.981 provides access to latin accents and many 
+other characters in Unicode lower plane
+
+(/usr/share/texmf/tex/latex/tipa/t3enc.def
+File: t3enc.def 2001/12/31 T3 encoding
+LaTeX Font Info:    Try loading font information for EU1+lmss on input line 357
+.
+
+(/usr/share/texlive/texmf-dist/tex/latex/euenc/eu1lmss.fd
+File: eu1lmss.fd 2009/10/30 v1.6 Font defs for Latin Modern
+))
+\tipaTiiicode=\count150
+\tipasavetokens=\toks20
+\tipachecktokens=\toks21
+)
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \fontspec with arg. spec. 'O{}m' on line 41.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \setmainfont with arg. spec. 'O{}m' on line 46.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \setsansfont with arg. spec. 'O{}m' on line 51.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \setmonofont with arg. spec. 'O{}m' on line 56.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \setmathrm with arg. spec. 'O{}m' on line 65.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \setboldmathrm with arg. spec. 'O{}m' on line 69.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \setmathsf with arg. spec. 'O{}m' on line 73.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \setmathtt with arg. spec. 'O{}m' on line 77.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \newfontfamily with arg. spec. 'mO{}m' on line 96.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \newfontface with arg. spec. 'mO{}m' on line 100.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \defaultfontfeatures with arg. spec. 'om' on line
+. 108.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \addfontfeatures with arg. spec. 'm' on line 144.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \newfontfeature with arg. spec. 'mm' on line 156.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \newAATfeature with arg. spec. 'mmmm' on line 164.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \newICUfeature with arg. spec. 'mmm' on line 172.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \aliasfontfeature with arg. spec. 'mm' on line
+. 201.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \aliasfontfeatureoption with arg. spec. 'mmm' on
+. line 203.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \newfontscript with arg. spec. 'mm' on line 208.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \newfontlanguage with arg. spec. 'mm' on line 235.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining document command \DeclareFontsExtensions with arg. spec. 'm' on
+. line 256.
+.................................................
+Variant \prop_gput:cnV already defined; not changing it on line 582
+Variant \prop_gput:cnx already defined; not changing it on line 583
+\l_fontspec_tmp_int=\count151
+LaTeX Info: Redefining \itshape on input line 2087.
+LaTeX Info: Redefining \slshape on input line 2092.
+LaTeX Info: Redefining \scshape on input line 2097.
+LaTeX Info: Redefining \upshape on input line 2102.
+
+(/usr/share/texlive/texmf-dist/tex/latex/fontspec/fontspec.cfg)))
+\g__file_internal_ior=\read1
+.................................................
+. fontspec info: "no-scripts"
+. 
+. Font FontAwesome does not contain any OpenType `Script' information.
+.................................................
+\g_fontspec_family_FontAwesome_int=\count152
+.................................................
+. fontspec info: "no-font-shape"
+. 
+. Could not resolve font FontAwesome/B (it probably doesn't exist).
+.................................................
+.................................................
+. fontspec info: "no-font-shape"
+. 
+. Could not resolve font FontAwesome/I (it probably doesn't exist).
+.................................................
+.................................................
+. fontspec info: "no-font-shape"
+. 
+. Could not resolve font FontAwesome/BI (it probably doesn't exist).
+.................................................
+.................................................
+. fontspec info: "defining-font"
+. 
+. Font family 'FontAwesome(0)' created for font 'FontAwesome' with options [].
+. 
+. This font family consists of the following shapes:
+. 
+. * 'normal' with NFSS spec.:
+. <->"FontAwesome/ICU:"
+.................................................
+)
+(/usr/share/texmf/tex/latex/xcolor/xcolor.sty
+Package: xcolor 2007/01/21 v2.11 LaTeX color extensions (UK)
+
+(/usr/share/texlive/texmf-dist/tex/latex/latexconfig/color.cfg
+File: color.cfg 2007/01/18 v1.5 color configuration of teTeX/TeXLive
+)
+Package xcolor Info: Driver file: xetex.def on input line 225.
+
+(/usr/share/texlive/texmf-dist/tex/latex/colortbl/colortbl.sty
+Package: colortbl 2012/02/13 v1.0a Color table columns (DPC)
+
+(/usr/share/texlive/texmf-dist/tex/latex/tools/array.sty
+Package: array 2008/09/09 v2.4c Tabular extension package (FMi)
+\col@sep=\dimen151
+\extrarowheight=\dimen152
+\NC@list=\toks22
+\extratabsurround=\skip63
+\backup@length=\skip64
+)
+\everycr=\toks23
+\minrowclearance=\skip65
+)
+LaTeX Info: Redefining \color on input line 702.
+\rownum=\count153
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1337.
+Package xcolor Info: Model `RGB' extended on input line 1353.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1355.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1356.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1357.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1358.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1359.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1360.
+)
+(/usr/share/texlive/texmf-dist/tex/latex/adjustbox/adjustbox.sty
+Package: adjustbox 2012/05/21 v1.0 Adjusting TeX boxes (trim, clip, ...)
+
+(/usr/share/texlive/texmf-dist/tex/latex/xkeyval/xkeyval.sty
+Package: xkeyval 2012/10/14 v2.6b package option processing (HA)
+
+(/usr/share/texlive/texmf-dist/tex/generic/xkeyval/xkeyval.tex
+\XKV@toks=\toks24
+\XKV@tempa@toks=\toks25
+\XKV@depth=\count154
+File: xkeyval.tex 2012/10/14 v2.6b key=value parser (HA)
+))
+(/usr/share/texlive/texmf-dist/tex/latex/adjustbox/adjcalc.sty
+Package: adjcalc 2012/05/16 v1.1 Provides advanced setlength with multiple back
+-ends (calc, etex, pgfmath)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/adjustbox/trimclip.sty
+Package: trimclip 2012/05/16 v1.0 Trim and clip general TeX material
+
+(/usr/share/texlive/texmf-dist/tex/latex/collectbox/collectbox.sty
+Package: collectbox 2012/05/17 v0.4b Collect macro arguments as boxes
+\collectedbox=\box51
+)
+\tc@llx=\dimen153
+\tc@lly=\dimen154
+\tc@urx=\dimen155
+\tc@ury=\dimen156
+Package trimclip Info: Using driver 'tc-xetex.def'.
+
+(/usr/share/texlive/texmf-dist/tex/latex/adjustbox/tc-xetex.def
+File: tc-xetex.def 2012/05/13 v1.0 Clipping driver for xetex
+))
+\adjbox@Width=\dimen157
+\adjbox@Height=\dimen158
+\adjbox@Depth=\dimen159
+\adjbox@Totalheight=\dimen160
+
+(/usr/share/texlive/texmf-dist/tex/latex/ifoddpage/ifoddpage.sty
+Package: ifoddpage 2011/09/13 v1.0 Conditionals for odd/even page detection
+\c@checkoddpage=\count155
+)
+(/usr/share/texlive/texmf-dist/tex/latex/varwidth/varwidth.sty
+Package: varwidth 2009/03/30 ver 0.92;  Variable-width minipages
+\@vwid@box=\box52
+\sift@deathcycles=\count156
+\@vwid@loff=\dimen161
+\@vwid@roff=\dimen162
+))
+(/usr/share/texlive/texmf-dist/tex/latex/titlesec/titlesec.sty
+Package: titlesec 2011/12/15 v2.10.0 Sectioning titles
+\ttl@box=\box53
+\beforetitleunit=\skip66
+\aftertitleunit=\skip67
+\ttl@plus=\dimen163
+\ttl@minus=\dimen164
+\ttl@toksa=\toks26
+\titlewidth=\dimen165
+\titlewidthlast=\dimen166
+\titlewidthfirst=\dimen167
+)
+(/usr/share/texlive/texmf-dist/tex/latex/pst-vectorian/psvectorian.sty
+(/usr/share/texlive/texmf-dist/tex/latex/pstricks/pstricks.sty
+Package: pstricks 2013/12/12 v0.60 LaTeX wrapper for `PSTricks' (RN,HV)
+
+(/usr/share/texlive/texmf-dist/tex/generic/pstricks/pstricks.tex
+(/usr/share/texlive/texmf-dist/tex/generic/xkeyval/pst-xkey.tex
+File: pst-xkey.tex 2005/11/25 v1.6 PSTricks specialization of xkeyval (HA)
+)
+(/usr/share/texlive/texmf-dist/tex/generic/pstricks/pst-fp.tex
+`pst-fp' v0.05, 2010/01/17 (hv)
+\pstFP@xs=\count157
+\pstFP@xia=\count158
+\pstFP@xib=\count159
+\pstFP@xfa=\count160
+\pstFP@xfb=\count161
+\pstFP@rega=\count162
+\pstFP@regb=\count163
+\pstFP@regs=\count164
+\pstFP@times=\count165
+)
+(/usr/share/texmf/tex/generic/pgf/utilities/pgfutil-common.tex
+\pgfutil@everybye=\toks27
+)
+(/usr/share/texmf/tex/generic/pgf/utilities/pgfkeys.code.tex
+\pgfkeys@pathtoks=\toks28
+\pgfkeys@temptoks=\toks29
+
+(/usr/share/texmf/tex/generic/pgf/utilities/pgfkeysfiltered.code.tex
+\pgfkeys@tmptoks=\toks30
+))
+(/usr/share/texmf/tex/generic/pgf/utilities/pgffor.code.tex
+\pgffor@iter=\dimen168
+\pgffor@skip=\dimen169
+\pgffor@stack=\toks31
+\pgffor@toks=\toks32
+)
+\psLoopIndex=\count166
+
+`PSTricks' v2.51  <2014/02/03> (tvz)
+\pst@dima=\dimen170
+\pst@dimb=\dimen171
+\pst@dimc=\dimen172
+\pst@dimd=\dimen173
+\pst@dimg=\dimen174
+\pst@dimh=\dimen175
+\pst@dimm=\dimen176
+\pst@dimn=\dimen177
+\pst@dimo=\dimen178
+\pst@dimp=\dimen179
+\pst@hbox=\box54
+\pst@ibox=\box55
+\pst@boxg=\box56
+\pst@cnta=\count167
+\pst@cntb=\count168
+\pst@cntc=\count169
+\pst@cntd=\count170
+\pst@cntg=\count171
+\pst@cnth=\count172
+\pst@cntm=\count173
+\pst@cntn=\count174
+\pst@cnto=\count175
+\pst@cntp=\count176
+\@zero=\count177
+\pst@toks=\toks33
+(/usr/share/texlive/texmf-dist/tex/xelatex/xetex-pstricks/pstricks.con
+(/usr/share/texlive/texmf-dist/tex/generic/pstricks/config/xdvipdfmx.cfg))
+\psunit=\dimen180
+\psxunit=\dimen181
+\psyunit=\dimen182
+\pst@C@@rType=\count178
+\pslinewidth=\dimen183
+\psk@startLW=\dimen184
+\psk@endLW=\dimen185
+\pst@customdefs=\toks34
+\pslinearc=\dimen186
+\pst@symbolStep=\dimen187
+\pst@symbolWidth=\dimen188
+\pst@symbolLinewidth=\dimen189
+\everypsbox=\toks35
+\psframesep=\dimen190
+\pslabelsep=\dimen191
+\sh@wgridXunit=\dimen192
+\sh@wgridYunit=\dimen193
+\pst@shift=\dimen194
+
+(/usr/share/texlive/texmf-dist/tex/xelatex/xetex-pstricks/pstricks.con
+(/usr/share/texlive/texmf-dist/tex/generic/pstricks/config/xdvipdfmx.cfg
+Using PSTricks configuration for XeTeX+xdvipdfmx
+)))
+File: pstricks.tex 2014/02/03 v2.51 `PSTricks' (tvz,hv)
+ (/usr/share/texlive/texmf-dist/tex/generic/pstricks/pst-fp.tex)
+File: pst-fp.tex 2014/02/03 v2.51 `PST-fp' (hv)
+)
+Package: psvectorian 2012/12/12 v0.4 vector ornaments
+)
+(./thesis.aux)
+\openout1 = `thesis.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 37.
+LaTeX Font Info:    ... okay on input line 37.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 37.
+LaTeX Font Info:    ... okay on input line 37.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 37.
+LaTeX Font Info:    ... okay on input line 37.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 37.
+LaTeX Font Info:    ... okay on input line 37.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 37.
+LaTeX Font Info:    ... okay on input line 37.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 37.
+LaTeX Font Info:    ... okay on input line 37.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 37.
+LaTeX Font Info:    ... okay on input line 37.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 37.
+LaTeX Font Info:    ... okay on input line 37.
+LaTeX Font Info:    Checking defaults for EU1/lmr/m/n on input line 37.
+LaTeX Font Info:    ... okay on input line 37.
+LaTeX Font Info:    Checking defaults for T3/cmr/m/n on input line 37.
+LaTeX Font Info:    Try loading font information for T3+cmr on input line 37.
+ (/usr/share/texmf/tex/latex/tipa/t3cmr.fd
+File: t3cmr.fd 2001/12/31 TIPA font definitions
+)
+LaTeX Font Info:    ... okay on input line 37.
+\AtBeginShipoutBox=\box57
+Package hyperref Info: Link coloring OFF on input line 37.
+
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
+Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
+
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
+Package: gettitlestring 2010/12/03 v1.4 Cleanup title references (HO)
+)
+\c@section@level=\count179
+)
+LaTeX Info: Redefining \ref on input line 37.
+LaTeX Info: Redefining \pageref on input line 37.
+LaTeX Info: Redefining \nameref on input line 37.
+
+(./thesis.out) (./thesis.out)
+\@outlinefile=\write3
+\openout3 = `thesis.out'.
+
+\c@lstlisting=\count180
+.................................................
+. fontspec info: "setup-math"
+. 
+. Adjusting the maths setup (use [no-math] to avoid this).
+.................................................
+\symlegacymaths=\mathgroup4
+LaTeX Font Info:    Overwriting symbol font `legacymaths' in version `bold'
+(Font)                  OT1/cmr/m/n --> OT1/cmr/bx/n on input line 37.
+LaTeX Font Info:    Redeclaring math accent \acute on input line 37.
+LaTeX Font Info:    Redeclaring math accent \grave on input line 37.
+LaTeX Font Info:    Redeclaring math accent \ddot on input line 37.
+LaTeX Font Info:    Redeclaring math accent \tilde on input line 37.
+LaTeX Font Info:    Redeclaring math accent \bar on input line 37.
+LaTeX Font Info:    Redeclaring math accent \breve on input line 37.
+LaTeX Font Info:    Redeclaring math accent \check on input line 37.
+LaTeX Font Info:    Redeclaring math accent \hat on input line 37.
+LaTeX Font Info:    Redeclaring math accent \dot on input line 37.
+LaTeX Font Info:    Redeclaring math accent \mathring on input line 37.
+LaTeX Font Info:    Redeclaring math symbol \colon on input line 37.
+LaTeX Font Info:    Redeclaring math symbol \Gamma on input line 37.
+LaTeX Font Info:    Redeclaring math symbol \Delta on input line 37.
+LaTeX Font Info:    Redeclaring math symbol \Theta on input line 37.
+LaTeX Font Info:    Redeclaring math symbol \Lambda on input line 37.
+LaTeX Font Info:    Redeclaring math symbol \Xi on input line 37.
+LaTeX Font Info:    Redeclaring math symbol \Pi on input line 37.
+LaTeX Font Info:    Redeclaring math symbol \Sigma on input line 37.
+LaTeX Font Info:    Redeclaring math symbol \Upsilon on input line 37.
+LaTeX Font Info:    Redeclaring math symbol \Phi on input line 37.
+LaTeX Font Info:    Redeclaring math symbol \Psi on input line 37.
+LaTeX Font Info:    Redeclaring math symbol \Omega on input line 37.
+LaTeX Font Info:    Redeclaring math symbol \mathdollar on input line 37.
+LaTeX Font Info:    Redeclaring symbol font `operators' on input line 37.
+LaTeX Font Info:    Encoding `OT1' has changed to `EU1' for symbol font
+(Font)              `operators' in the math version `normal' on input line 37.
+LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
+(Font)                  OT1/cmr/m/n --> EU1/lmr/m/n on input line 37.
+LaTeX Font Info:    Encoding `OT1' has changed to `EU1' for symbol font
+(Font)              `operators' in the math version `bold' on input line 37.
+LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
+(Font)                  OT1/cmr/bx/n --> EU1/lmr/m/n on input line 37.
+LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
+(Font)                  EU1/lmr/m/n --> EU1/lmr/m/n on input line 37.
+LaTeX Font Info:    Overwriting math alphabet `\mathrm' in version `normal'
+(Font)                  EU1/lmr/m/n --> EU1/lmr/m/n on input line 37.
+LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `normal'
+(Font)                  OT1/cmr/m/it --> EU1/lmr/m/it on input line 37.
+LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `normal'
+(Font)                  OT1/cmr/bx/n --> EU1/lmr/bx/n on input line 37.
+LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `normal'
+(Font)                  OT1/cmss/m/n --> EU1/lmss/m/n on input line 37.
+LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `normal'
+(Font)                  OT1/cmtt/m/n --> EU1/lmtt/m/n on input line 37.
+LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
+(Font)                  EU1/lmr/m/n --> EU1/lmr/bx/n on input line 37.
+LaTeX Font Info:    Overwriting math alphabet `\mathrm' in version `bold'
+(Font)                  EU1/lmr/m/n --> EU1/lmr/bx/n on input line 37.
+LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
+(Font)                  OT1/cmr/bx/it --> EU1/lmr/bx/it on input line 37.
+LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
+(Font)                  OT1/cmss/bx/n --> EU1/lmss/bx/n on input line 37.
+LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
+(Font)                  OT1/cmtt/m/n --> EU1/lmtt/bx/n on input line 37.
+File: figures/logo-heig.png Graphic file (type QTm)
+ <use  "figures/logo-heig.png" >
+File: figures/logo.png Graphic file (type QTm)
+
+<use  "figures/logo.png" >
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <10.95> on input line 69.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 69.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 69.
+
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/se-ascii-print.def
+File: se-ascii-print.def 2011/12/02 v1.10 stringenc: Printable ASCII characters
+
+)
+[1
+
+] [2] [0] [1
+
+] (./thesis.toc [2
+
+])
+\tf@toc=\write4
+\openout4 = `thesis.toc'.
+
+ [3] [4] [5]
+Chapter 1.
+
+Underfull \hbox (badness 10000) in paragraph at lines 114--115
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 116--117
+
+ []
+
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <9> on input line 118.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 118.
+[4
+
+]
+Underfull \hbox (badness 10000) in paragraph at lines 122--123
+
+ []
+
+[5]
+Chapter 2.
+[6
+
+] [7]
+
+Package xcolor Warning: Incompatible color definition on input line 179.
+
+
+Package xcolor Warning: Incompatible color definition on input line 179.
+
+
+Package xcolor Warning: Incompatible color definition on input line 179.
+
+
+Package xcolor Warning: Incompatible color definition on input line 186.
+
+[8]
+Underfull \hbox (badness 10000) in paragraph at lines 210--211
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 226--227
+
+ []
+
+[9] [10]
+File: figures/twitter-application-authorization.png Graphic file (type QTm)
+ <use  "figures/twitter-application-authorization.png" >
+Underfull \hbox (badness 3557) in paragraph at lines 244--252
+\EU1/lmr/m/n/10.95 oper can choose from among two ways of authentication within
+ their application:
+ []
+
+[11]
+File: figures/twitter-rest-api-use-case.png Graphic file (type QTm)
+ <use  "figures/twitter-rest-api-use-case.png" >
+Underfull \hbox (badness 10000) in paragraph at lines 279--280
+
+ []
+
+File: figures/twitter-streaming-api-use-case.png Graphic file (type QTm)
+<use  "figures/twitter-streaming-api-use-case.png" >
+Underfull \hbox (badness 10000) in paragraph at lines 291--292
+
+ []
+
+[12]
+Underfull \hbox (badness 10000) in paragraph at lines 300--301
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 305--306
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 307--308
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 309--310
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 311--313
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 314--315
+
+ []
+
+[13]
+Underfull \hbox (badness 10000) in paragraph at lines 316--317
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 318--320
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 321--322
+
+ []
+
+File: figures/coordinates-pair-bounding-switzerland.png Graphic file (type QTm)
+
+<use  "figures/coordinates-pair-bounding-switzerland.png" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 327--329
+ [] 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 333--334
+
+ []
+
+[14]
+File: figures/search-keyword-only.png Graphic file (type QTm)
+ <use  "figures/search-keyword-only.png" >
+File: figures/search-location-only.png Graphic file (type QTm)
+
+<use  "figures/search-location-only.png" >
+File: figures/search-keyword-and-location.png Graphic file (type QTm)
+
+<use  "figures/search-keyword-and-location.png" >
+Underfull \hbox (badness 10000) in paragraph at lines 372--373
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 374--375
+
+ []
+
+[15]
+Underfull \hbox (badness 10000) in paragraph at lines 403--404
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 405--406
+
+ []
+
+[16]
+Underfull \hbox (badness 10000) in paragraph at lines 408--410
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 411--412
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 416--417
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 418--420
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 421--422
+
+ []
+
+[17]
+Underfull \hbox (badness 10000) in paragraph at lines 431--433
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 434--435
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 436--437
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 438--439
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 440--442
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 443--444
+
+ []
+
+[18]
+File: figures/twitter-api-console-authorization.png Graphic file (type QTm)
+ <use  "figures/twitter-api-console-authorization.png" >
+Underfull \hbox (badness 10000) in paragraph at lines 446--454
+
+ []
+
+
+Underfull \hbox (badness 1490) in paragraph at lines 454--457
+\EU1/lmr/m/n/10.95 To enable facilitated and speedy search requests, the ad-
+ []
+
+
+Underfull \hbox (badness 2165) in paragraph at lines 454--457
+\EU1/lmr/m/n/10.95 vanced search tool[][][] was used for the coming couple of
+ []
+
+
+Underfull \hbox (badness 3646) in paragraph at lines 454--457
+\EU1/lmr/m/n/10.95 examples. Whenever a search is made, the developer
+ []
+
+
+Underfull \hbox (badness 1389) in paragraph at lines 454--457
+\EU1/lmr/m/n/10.95 is redirected to a web page containing a URL, built us-
+ []
+
+
+Underfull \hbox (badness 3579) in paragraph at lines 454--457
+\EU1/lmr/m/n/10.95 ing a particular format. For example, with a search
+ []
+
+
+Underfull \hbox (badness 4229) in paragraph at lines 454--457
+\EU1/lmr/m/n/10.95 about the @twitterapi user, one will get the following
+ []
+
+
+Underfull \hbox (badness 1354) in paragraph at lines 454--457
+\EU1/lmr/m/n/10.95 Once done, the developer can get the valid URL to use
+ []
+
+
+Underfull \hbox (badness 4859) in paragraph at lines 454--457
+\EU1/lmr/m/n/10.95 in the API by replacing ”\EU1/lmr/m/it/10.95 https://twitter
+.com/search\EU1/lmr/m/n/10.95 ” by
+ []
+
+
+Overfull \hbox (4.63184pt too wide) in paragraph at lines 454--457
+\EU1/lmr/m/it/10.95 https://api.twitter.com/1.1/search/tweets.json?q=%40twitter
+api\EU1/lmr/m/n/10.95 ). 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 454--457
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 454--457
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 454--457
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 454--457
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 454--457
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 458--459
+
+ []
+
+[19]
+File: figures/french-tweets-yverdon.png Graphic file (type QTm)
+ <use  "figures/french-tweets-yverdon.png" >
+File: figures/french-tweets-yverdon-twitter.png Graphic file (type QTm)
+
+<use  "figures/french-tweets-yverdon-twitter.png" > [20]
+File: figures/popular-happy-pizza-tweets.png Graphic file (type QTm)
+
+<use  "figures/popular-happy-pizza-tweets.png" > [21]
+File: figures/subjects-list.png Graphic file (type QTm)
+
+<use  "figures/subjects-list.png" > [22]
+Underfull \hbox (badness 10000) in paragraph at lines 518--520
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 521--522
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 523--524
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 525--526
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 527--528
+
+ []
+
+File: figures/trend24.png Graphic file (type QTm)
+<use  "figures/trend24.png" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 533--535
+ [] 
+ []
+
+[23]
+Underfull \hbox (badness 10000) in paragraph at lines 540--541
+
+ []
+
+[24]
+File: figures/en-ru-match-results.png Graphic file (type QTm)
+ <use  "figures/en-ru-match-results.png" >
+File: figures/en-ru-match-progression.png Graphic file (type QTm)
+
+<use  "figures/en-ru-match-progression.png" > [25]
+File: figures/ro-ch-match-results.png Graphic file (type QTm)
+
+<use  "figures/ro-ch-match-results.png" >
+File: figures/ro-ch-match-progression.png Graphic file (type QTm)
+
+<use  "figures/ro-ch-match-progression.png" >
+File: figures/en-wls-match-results.png Graphic file (type QTm)
+
+<use  "figures/en-wls-match-results.png" >
+File: figures/en-wls-match-progression.png Graphic file (type QTm)
+
+<use  "figures/en-wls-match-progression.png" >
+Overfull \hbox (2.43091pt too wide) in paragraph at lines 644--679
+ [] 
+ []
+
+[26]
+File: figures/al-fr-match-results.png Graphic file (type QTm)
+ <use  "figures/al-fr-match-results.png" >
+File: figures/al-fr-match-progression.png Graphic file (type QTm)
+
+<use  "figures/al-fr-match-progression.png" >
+File: figures/al-fr-match-stadium.png Graphic file (type QTm)
+
+<use  "figures/al-fr-match-stadium.png" > [27]
+File: figures/de-pl-match-results.png Graphic file (type QTm)
+
+<use  "figures/de-pl-match-results.png" >
+File: figures/de-pl-match-progression.png Graphic file (type QTm)
+
+<use  "figures/de-pl-match-progression.png" >
+Underfull \hbox (badness 10000) in paragraph at lines 734--742
+
+ []
+
+[28]
+File: figures/fr-ch-match-results.png Graphic file (type QTm)
+ <use  "figures/fr-ch-match-results.png" >
+File: figures/fr-ch-match-progression.png Graphic file (type QTm)
+
+<use  "figures/fr-ch-match-progression.png" >
+File: figures/al-ro-match-progression.png Graphic file (type QTm)
+
+<use  "figures/al-ro-match-progression.png" > [29]
+File: figures/it-es-match-results.png Graphic file (type QTm)
+
+<use  "figures/it-es-match-results.png" >
+File: figures/it-es-match-progression.png Graphic file (type QTm)
+
+<use  "figures/it-es-match-progression.png" >
+Underfull \hbox (badness 10000) in paragraph at lines 802--810
+
+ []
+
+[30]
+File: figures/en-is-match-results.png Graphic file (type QTm)
+ <use  "figures/en-is-match-results.png" >
+File: figures/en-is-match-progression.png Graphic file (type QTm)
+
+<use  "figures/en-is-match-progression.png" >
+Underfull \hbox (badness 10000) in paragraph at lines 832--840
+
+ []
+
+[31]
+File: figures/fr-de-match-results.png Graphic file (type QTm)
+ <use  "figures/fr-de-match-results.png" >
+File: figures/fr-de-match-progression.png Graphic file (type QTm)
+
+<use  "figures/fr-de-match-progression.png" >
+Overfull \hbox (2.43091pt too wide) in paragraph at lines 844--876
+ [] 
+ []
+
+File: figures/fr-de-match-geotwit-results.png Graphic file (type QTm)
+<use  "figures/fr-de-match-geotwit-results.png" > [32]
+File: figures/fr-pt-match-results.png Graphic file (type QTm)
+
+<use  "figures/fr-pt-match-results.png" >
+File: figures/fr-pt-match-progression.png Graphic file (type QTm)
+
+<use  "figures/fr-pt-match-progression.png" >
+Underfull \hbox (badness 10000) in paragraph at lines 907--915
+
+ []
+
+[33]
+Underfull \hbox (badness 10000) in paragraph at lines 928--929
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 930--931
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 932--933
+
+ []
+
+File: figures/twitter-application-parameters.png Graphic file (type QTm)
+<use  "figures/twitter-application-parameters.png" >
+Underfull \hbox (badness 10000) in paragraph at lines 950--951
+
+ []
+
+
+Underfull \hbox (badness 1406) in paragraph at lines 952--953
+\EU1/lmr/m/n/10.95 which contains all the parameters of his applica-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 952--953
+
+ []
+
+[34]
+Underfull \hbox (badness 10000) in paragraph at lines 958--959
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 963--964
+
+ []
+
+File: figures/twitter-application-authorization-page.png Graphic file (type QTm
+)
+<use  "figures/twitter-application-authorization-page.png" >
+File: figures/twitter-generated-code.png Graphic file (type QTm)
+
+<use  "figures/twitter-generated-code.png" >
+File: figures/twitter-desktop-application-output-example.png Graphic file (type
+ QTm)
+
+<use  "figures/twitter-desktop-application-output-example.png" > [35]
+Underfull \hbox (badness 10000) in paragraph at lines 1009--1011
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1012--1014
+
+ []
+
+[36] [37]
+Underfull \hbox (badness 10000) in paragraph at lines 1032--1033
+
+ []
+
+File: figures/leaflet-prototype-application.png Graphic file (type QTm)
+<use  "figures/leaflet-prototype-application.png" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 1038--1040
+ [] 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1044--1045
+
+ []
+
+[38]
+File: figures/mapbox-project.png Graphic file (type QTm)
+ <use  "figures/mapbox-project.png" >
+File: figures/mapbox-integration-into-leaflet.png Graphic file (type QTm)
+
+<use  "figures/mapbox-integration-into-leaflet.png" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 1065--1067
+ [] 
+ []
+
+[39]
+File: figures/leafletcountriesborders-prototype-application.png Graphic file (t
+ype QTm)
+ <use  "figures/leafletcountriesborders-prototype-application.png" >
+Underfull \hbox (badness 10000) in paragraph at lines 1095--1096
+
+ []
+
+
+Overfull \hbox (16.86522pt too wide) in paragraph at lines 1097--1098
+\EU1/lmr/m/n/10.95 found on Google and which perfectly works by writing ”shp(’d
+ata/TM_WORLD_BORDERS-
+ []
+
+[40]
+File: figures/twitter4jdesktop-prototype-application.png Graphic file (type QTm
+)
+ <use  "figures/twitter4jdesktop-prototype-application.png" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 1113--1115
+ [] 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1119--1120
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1125--1126
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1127--1128
+
+ []
+
+File: figures/deployment-glassfish-server-twitter4jweb.png Graphic file (type Q
+Tm)
+<use  "figures/deployment-glassfish-server-twitter4jweb.png" > [41]
+File: figures/leafletandtwitter-prototype-application.png Graphic file (type QT
+m)
+
+<use  "figures/leafletandtwitter-prototype-application.png" >
+Underfull \hbox (badness 10000) in paragraph at lines 1161--1162
+
+ []
+
+[42]
+Chapter 3.
+File: figures/mock-up-connection.png Graphic file (type QTm)
+<use  "figures/mock-up-connection.png" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 1174--1176
+ [] 
+ []
+
+[43
+
+]
+File: figures/mock-up-dynamic-mode-search.png Graphic file (type QTm)
+ <use  "figures/mock-up-dynamic-mode-search.png" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 1185--1186
+ [] 
+ []
+
+[44]
+File: figures/mock-up-streaming-process.png Graphic file (type QTm)
+ <use  "figures/mock-up-streaming-process.png" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 1196--1197
+ [] 
+ []
+
+[45]
+File: figures/mock-up-charts.png Graphic file (type QTm)
+ <use  "figures/mock-up-charts.png" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 1208--1209
+ [] 
+ []
+
+[46]
+File: figures/mock-up-static-mode-search.png Graphic file (type QTm)
+ <use  "figures/mock-up-static-mode-search.png" > [47]
+File: figures/mock-up-static-results.png Graphic file (type QTm)
+
+<use  "figures/mock-up-static-results.png" > [48]
+File: figures/anatomy.png Graphic file (type QTm)
+
+<use  "figures/anatomy.png" >
+Overfull \hbox (0.60641pt too wide) in paragraph at lines 1259--1260
+[]\EU1/lmr/bx/n/10.95 javascript\EU1/lmr/m/n/10.95 : contains the Search page’s
+ JavaScript
+ []
+
+[49]
+File: figures/uml.jpg Graphic file (type QTm)
+ <use  "figures/uml.jpg" >
+Overfull \hbox (9.3323pt too wide) in paragraph at lines 1279--1280
+[]\EU1/lmr/m/it/10.95 callback(denied: Option[String], oauthToken: Option[Strin
+g], oauthVerifier: Option[String]):
+ []
+
+
+Overfull \hbox (15.99213pt too wide) in paragraph at lines 1281--1282
+[]\EU1/lmr/m/it/10.95 streaming(out: ActorRef, twitterStream: TwitterStream, id
+: String, isAreaRectangle: Boolean,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1284--1286
+
+ []
+
+[50] [51]
+Underfull \hbox (badness 10000) in paragraph at lines 1321--1322
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1327--1328
+
+ []
+
+[52]
+File: figures/configuration-injection.png Graphic file (type QTm)
+ <use  "figures/configuration-injection.png" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 1335--1337
+ [] 
+ []
+
+File: figures/javascript-routes-declaration.png Graphic file (type QTm)
+<use  "figures/javascript-routes-declaration.png" >
+Overfull \hbox (12.27168pt too wide) in paragraph at lines 1350--1358
+[]\EU1/lmr/bx/n/10.95 search.scala.html\EU1/lmr/m/n/10.95 : JavaScript routes a
+re declared with a helper that generate the JavaScript
+ []
+
+File: figures/implicit-request-inclusion.png Graphic file (type QTm)
+<use  "figures/implicit-request-inclusion.png" > [53]
+File: figures/javascript-route-redirection.jpg Graphic file (type QTm)
+
+<use  "figures/javascript-route-redirection.jpg" >
+Overfull \hbox (18.38176pt too wide) in paragraph at lines 1369--1377
+[]\EU1/lmr/bx/n/10.95 search.js\EU1/lmr/m/n/10.95 : JavaScript routes are used 
+with the \EU1/lmr/m/it/10.95 jsRoutes.controllers.[CONTROLLER_NAME].
+ []
+
+
+Overfull \hbox (2.59738pt too wide) in paragraph at lines 1369--1377
+\EU1/lmr/m/n/10.95 it must replace the controller and action’s names by the \EU
+1/lmr/m/it/10.95 Assets.versioned(’ASSET_NAME’)
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1383--1384
+
+ []
+
+File: figures/session-add-string-example.jpg Graphic file (type QTm)
+<use  "figures/session-add-string-example.jpg" >
+Underfull \hbox (badness 10000) in paragraph at lines 1396--1397
+
+ []
+
+[54]
+File: figures/flash-scope-use.jpg Graphic file (type QTm)
+ <use  "figures/flash-scope-use.jpg" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 1410--1412
+ [] 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1421--1422
+
+ []
+
+File: figures/cacheapi-injection.jpg Graphic file (type QTm)
+<use  "figures/cacheapi-injection.jpg" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 1427--1429
+ [] 
+ []
+
+File: figures/cache-timer.jpg Graphic file (type QTm)
+<use  "figures/cache-timer.jpg" > [55]
+File: figures/cache-reading.jpg Graphic file (type QTm)
+ <use  "figures/cache-reading.jpg" >
+Underfull \hbox (badness 10000) in paragraph at lines 1458--1459
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1482--1483
+
+ []
+
+[56]
+File: figures/twitter-authorization-page-in-geotwit.jpg Graphic file (type QTm)
+
+ <use  "figures/twitter-authorization-page-in-geotwit.jpg" > [57]
+File: figures/filters-actions-compositions.png Graphic file (type QTm)
+
+<use  "figures/filters-actions-compositions.png" > [58]
+Underfull \hbox (badness 10000) in paragraph at lines 1520--1521
+
+ []
+
+File: figures/actions-composition-example.jpg Graphic file (type QTm)
+<use  "figures/actions-composition-example.jpg" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 1526--1528
+ [] 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1533--1534
+
+ []
+
+File: figures/action-using-actions-composition.jpg Graphic file (type QTm)
+<use  "figures/action-using-actions-composition.jpg" > [59]
+Underfull \hbox (badness 10000) in paragraph at lines 1550--1551
+
+ []
+
+File: figures/web-sockets.png Graphic file (type QTm)
+<use  "figures/web-sockets.png" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 1556--1558
+ [] 
+ []
+
+File: figures/web-socket-connection-openning.jpg Graphic file (type QTm)
+<use  "figures/web-socket-connection-openning.jpg" > [60]
+Underfull \hbox (badness 10000) in paragraph at lines 1578--1579
+
+ []
+
+File: figures/web-socket-sending-server-to-client.jpg Graphic file (type QTm)
+<use  "figures/web-socket-sending-server-to-client.jpg" > [61] [62]
+File: figures/france-bounding-rectangle-example.jpg Graphic file (type QTm)
+
+<use  "figures/france-bounding-rectangle-example.jpg" > [63] [64]
+File: figures/web-sockets-in-geotwit.png Graphic file (type QTm)
+
+<use  "figures/web-sockets-in-geotwit.png" >
+Underfull \hbox (badness 10000) in paragraph at lines 1651--1652
+
+ []
+
+[65]
+Underfull \hbox (badness 10000) in paragraph at lines 1653--1654
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1659--1660
+
+ []
+
+File: figures/generated-file-format.jpg Graphic file (type QTm)
+<use  "figures/generated-file-format.jpg" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 1665--1667
+ [] 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1671--1672
+
+ []
+
+[66]
+Underfull \hbox (badness 10000) in paragraph at lines 1701--1702
+
+ []
+
+[67]
+Underfull \hbox (badness 10000) in paragraph at lines 1703--1704
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1705--1706
+
+ []
+
+File: figures/export-data-pop-up.jpg Graphic file (type QTm)
+<use  "figures/export-data-pop-up.jpg" > [68]
+File: figures/jquery-filedownload-sample.jpg Graphic file (type QTm)
+
+<use  "figures/jquery-filedownload-sample.jpg" >
+Underfull \hbox (badness 10000) in paragraph at lines 1729--1730
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1731--1732
+
+ []
+
+File: figures/rendering-file-in-action.jpg Graphic file (type QTm)
+<use  "figures/rendering-file-in-action.jpg" > [69]
+Underfull \hbox (badness 10000) in paragraph at lines 1744--1745
+
+ []
+
+
+Overfull \hbox (40.94304pt too wide) in paragraph at lines 1746--1747
+[]\EU1/lmr/m/n/10.95 The ”Set-Cookie” HTTP header added at the end of the \EU1/
+lmr/m/it/10.95 Result \EU1/lmr/m/n/10.95 object is used by the ”jquery.fileDown
+load”
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1746--1747
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1751--1752
+
+ []
+
+File: figures/jquery-file-upload-progress-bar.jpg Graphic file (type QTm)
+<use  "figures/jquery-file-upload-progress-bar.jpg" > [70]
+File: figures/ajax-upload-process-initialization.jpg Graphic file (type QTm)
+
+<use  "figures/ajax-upload-process-initialization.jpg" >
+Underfull \hbox (badness 10000) in paragraph at lines 1778--1779
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1780--1781
+
+ []
+
+[71]
+File: figures/language-regex.jpg Graphic file (type QTm)
+ <use  "figures/language-regex.jpg" > [72]
+File: figures/language-regex-matching.jpg Graphic file (type QTm)
+
+<use  "figures/language-regex-matching.jpg" >
+File: figures/tweet-regex.jpg Graphic file (type QTm)
+
+<use  "figures/tweet-regex.jpg" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 1834--1836
+ [] 
+ []
+
+
+Overfull \hbox (40.98479pt too wide) in paragraph at lines 1847--1848
+[]\EU1/lmr/m/n/10.95 The content, which must follow the same rules as the user’
+s name. For example: $[]$. 
+ []
+
+[73] [74]
+File: figures/rest-api-limitations.png Graphic file (type QTm)
+ <use  "figures/rest-api-limitations.png" >
+Underfull \hbox (badness 10000) in paragraph at lines 1880--1881
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1882--1883
+
+ []
+
+File: figures/rest-api-query-creation.jpg Graphic file (type QTm)
+<use  "figures/rest-api-query-creation.jpg" > [75]
+Underfull \hbox (badness 10000) in paragraph at lines 1897--1898
+
+ []
+
+File: figures/number-static-requests-before-error.jpg Graphic file (type QTm)
+<use  "figures/number-static-requests-before-error.jpg" > [76]
+Underfull \hbox (badness 10000) in paragraph at lines 1910--1911
+
+ []
+
+
+Overfull \hbox (5.4903pt too wide) in paragraph at lines 1912--1914
+\EU1/lmr/m/n/10.95 mode in GeoTwit. Also for the same reasons, $[]$
+ []
+
+[77]
+Overfull \hbox (7.28458pt too wide) in paragraph at lines 1958--1959
+[]\EU1/lmr/bx/n/10.95 Leaflet[][][]\EU1/lmr/m/n/10.95 : allows the developer to
+ build interactive maps coupled with OpenStreetMap. 
+ []
+
+[78]
+Overfull \hbox (5.10434pt too wide) in paragraph at lines 1974--1975
+[]\EU1/lmr/bx/n/10.95 jQuery[][][]\EU1/lmr/m/n/10.95 : provides an easier way t
+o manipulate DOM elements than simple JavaScript
+ []
+
+
+Overfull \hbox (6.76501pt too wide) in paragraph at lines 1976--1977
+[]\EU1/lmr/bx/n/10.95 shapefile-js[][][]\EU1/lmr/m/n/10.95 : the \EU1/lmr/m/it/
+10.95 calvinmetcalf\EU1/lmr/m/n/10.95 ’s library provides a tool to read Shapef
+ile-formatted[][][]
+ []
+
+[79] [80]
+File: figures/languages-selection.jpg Graphic file (type QTm)
+ <use  "figures/languages-selection.jpg" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 2018--2020
+ [] 
+ []
+
+[81]
+File: figures/langid_examples_table.png Graphic file (type QTm)
+ <use  "figures/langid_examples_table.png" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 2031--2033
+ [] 
+ []
+
+[82]
+Underfull \hbox (badness 10000) in paragraph at lines 2044--2046
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2047--2049
+
+ []
+
+File: figures/rectangle-drawing.jpg Graphic file (type QTm)
+<use  "figures/rectangle-drawing.jpg" > [83]
+File: figures/rectangle-edition.jpg Graphic file (type QTm)
+
+<use  "figures/rectangle-edition.jpg" >
+Underfull \hbox (badness 10000) in paragraph at lines 2081--2082
+
+ []
+
+File: figures/cluster-group-creation.jpg Graphic file (type QTm)
+<use  "figures/cluster-group-creation.jpg" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 2087--2089
+ [] 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2093--2094
+
+ []
+
+File: figures/tweet-adding-in-cluster-group.jpg Graphic file (type QTm)
+<use  "figures/tweet-adding-in-cluster-group.jpg" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 2099--2101
+ [] 
+ []
+
+[84]
+Overfull \hbox (114.03554pt too wide) in paragraph at lines 2113--2114
+[]\EU1/lmr/m/n/10.95 The content of the last 100 received tweets; this number c
+an be changed with the ”MAX_DISPLAYED_TWEETS”
+ []
+
+File: figures/speed-color-example-1.jpg Graphic file (type QTm)
+<use  "figures/speed-color-example-1.jpg" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 2121--2123
+ [][] 
+ []
+
+File: figures/speed-color-example-2.jpg Graphic file (type QTm)
+<use  "figures/speed-color-example-2.jpg" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 2127--2129
+ [][] 
+ []
+
+[85]
+
+Package xcolor Warning: Incompatible color definition on input line 2137.
+
+File: figures/streaming-interface-example.jpg Graphic file (type QTm)
+<use  "figures/streaming-interface-example.jpg" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 2141--2143
+ [] 
+ []
+
+[86]
+File: figures/tweet-located-in-the-bounding-box-but-not-in-the-polygon.jpg Grap
+hic file (type QTm)
+
+<use  "figures/tweet-located-in-the-bounding-box-but-not-in-the-polygon.jpg" >
+[87] [88]
+
+Package xcolor Warning: Incompatible color definition on input line 2176.
+
+File: figures/gtrt-example.jpg Graphic file (type QTm)
+<use  "figures/gtrt-example.jpg" >
+File: figures/grt-example.jpg Graphic file (type QTm)
+ <use  "figures/grt-example.jpg" >
+File: figures/gprt-example.jpg Graphic file (type QTm)
+
+<use  "figures/gprt-example.jpg" > [89]
+File: figures/atrt-example.jpg Graphic file (type QTm)
+ <use  "figures/atrt-example.jpg" >
+[90]
+File: figures/art-example.jpg Graphic file (type QTm)
+ <use  "figures/art-example.jpg" >
+File: figures/agvw-example.jpg Graphic file (type QTm)
+ <use  "figures/agvw-example.jpg" >
+[91]
+Underfull \hbox (badness 10000) in paragraph at lines 2266--2267
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2268--2269
+
+ []
+
+File: figures/date-picker-loading.jpg Graphic file (type QTm)
+<use  "figures/date-picker-loading.jpg" > [92]
+File: figures/search-button.jpg Graphic file (type QTm)
+
+<use  "figures/search-button.jpg" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 2297--2300
+ [] 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2305--2306
+
+ []
+
+[93]
+
+Package xcolor Warning: Incompatible color definition on input line 2320.
+
+File: figures/static-mode-interface.jpg Graphic file (type QTm)
+<use  "figures/static-mode-interface.jpg" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 2324--2326
+ [] 
+ []
+
+[94]
+Chapter 4.
+
+Overfull \hbox (3.02539pt too wide) in alignment at lines 2347--2348
+ [] [] [] 
+ []
+
+
+Package xcolor Warning: Incompatible color definition on input line 2350.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2351.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2352.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2353.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2354.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2357.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2358.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2359.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2360.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2361.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2362.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2363.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2366.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2367.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2369.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2370.
+
+
+Overfull \hbox (3.02539pt too wide) in alignment at lines 2348--2370
+ [] [] [] 
+ []
+
+
+Package xcolor Warning: Incompatible color definition on input line 2371.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2372.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2373.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2374.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2375.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2379.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2380.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2381.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2382.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2383.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2384.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2385.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2386.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2387.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2388.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2391.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2392.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2393.
+
+
+Overfull \hbox (3.02539pt too wide) in alignment at lines 2370--2393
+ [] [] [] 
+ []
+
+[95
+
+]
+
+Package xcolor Warning: Incompatible color definition on input line 2394.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2395.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2396.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2397.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2398.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2399.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2400.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2401.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2402.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2403.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2404.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2405.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2406.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2407.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2408.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2411.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2412.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2413.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2414.
+
+
+Overfull \hbox (3.02539pt too wide) in alignment at lines 2393--2414
+ [] [] [] 
+ []
+
+[96]
+
+Package xcolor Warning: Incompatible color definition on input line 2415.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2416.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2417.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2418.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2419.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2420.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2421.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2424.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2425.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2426.
+
+
+Underfull \hbox (badness 2865) in paragraph at lines 2426--2426
+[]|[]\EU1/lmr/m/n/10.95 Certain tweets are dis-
+ []
+
+
+Package xcolor Warning: Incompatible color definition on input line 2429.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2430.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2431.
+
+
+Overfull \hbox (3.02539pt too wide) in alignment at lines 2414--2434
+ [] [] [] 
+ []
+
+[97] [98] [99]
+Underfull \hbox (badness 10000) in paragraph at lines 2443--2444
+
+ []
+
+
+Overfull \hbox (1.84372pt too wide) in alignment at lines 2448--2449
+ [] [] [] [] 
+ []
+
+
+Package xcolor Warning: Incompatible color definition on input line 2450.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2451.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2452.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2453.
+
+
+Package xcolor Warning: Incompatible color definition on input line 2454.
+
+
+Overfull \hbox (1.84372pt too wide) in alignment at lines 2449--2455
+ [] [] [] [] 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2459--2460
+
+ []
+
+[100]
+Underfull \hbox (badness 10000) in paragraph at lines 2467--2468
+
+ []
+
+File: figures/load-tests-static-mode.jpg Graphic file (type QTm)
+<use  "figures/load-tests-static-mode.jpg" >
+Underfull \hbox (badness 10000) in paragraph at lines 2480--2481
+
+ []
+
+[101]
+File: figures/load-test-streaming-map.png Graphic file (type QTm)
+ <use  "figures/load-test-streaming-map.png" >
+File: figures/load-test-streaming-charts.png Graphic file (type QTm)
+
+<use  "figures/load-test-streaming-charts.png" >
+Underfull \hbox (badness 10000) in paragraph at lines 2504--2505
+
+ []
+
+[102]
+File: figures/load-tests-streaming-.map-zoomed.jpg Graphic file (type QTm)
+ <use  "figures/load-tests-streaming-.map-zoomed.jpg" >
+Underfull \hbox (badness 10000) in paragraph at lines 2521--2522
+
+ []
+
+[103]
+File: figures/job-chart.jpg Graphic file (type QTm)
+ <use  "figures/job-chart.jpg" > [104]
+File: figures/analysis-uk-bbc-london-map.jpg Graphic file (type QTm)
+
+<use  "figures/analysis-uk-bbc-london-map.jpg" >
+File: figures/analysis-uk-bbc-london-charts.jpg Graphic file (type QTm)
+
+<use  "figures/analysis-uk-bbc-london-charts.jpg" > [105] [106]
+File: figures/analysis-uk-hot-sun-map.jpg Graphic file (type QTm)
+
+<use  "figures/analysis-uk-hot-sun-map.jpg" >
+File: figures/analysis-uk-hot-sun-charts.jpg Graphic file (type QTm)
+
+<use  "figures/analysis-uk-hot-sun-charts.jpg" > [107]
+File: figures/analysis-france-paris-map.png Graphic file (type QTm)
+
+<use  "figures/analysis-france-paris-map.png" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 2605--2607
+ [] 
+ []
+
+[108]
+File: figures/analysis-france-paris-charts.png Graphic file (type QTm)
+ <use  "figures/analysis-france-paris-charts.png" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 2617--2619
+ [] 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2624--2625
+
+ []
+
+[109]
+File: figures/analysis-switzerland-paleo-map.png Graphic file (type QTm)
+ <use  "figures/analysis-switzerland-paleo-map.png" >
+File: figures/analysis-world-swiss-companies-map.png Graphic file (type QTm)
+
+<use  "figures/analysis-world-swiss-companies-map.png" >
+Underfull \hbox (badness 10000) in paragraph at lines 2651--2652
+
+ []
+
+[110]
+File: figures/analysis-usa-clinton-trump-map.png Graphic file (type QTm)
+ <use  "figures/analysis-usa-clinton-trump-map.png" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 2661--2663
+ [] 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2657--2665
+
+ []
+
+File: figures/analysis-usa-clinton-trump-charts.png Graphic file (type QTm)
+<use  "figures/analysis-usa-clinton-trump-charts.png" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 2672--2674
+ [] 
+ []
+
+[111] [112]
+File: figures/analysis-argentina-argentina-map.png Graphic file (type QTm)
+ <use  "figures/analysis-argentina-argentina-map.png" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 2686--2688
+ [] 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2703--2704
+
+ []
+
+File: figures/analysis-euro2016-final-europe-map.jpg Graphic file (type QTm)
+<use  "figures/analysis-euro2016-final-europe-map.jpg" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 2709--2711
+ [] 
+ []
+
+[113] [114]
+File: figures/analysis-euro2016-final-europe-first-zoomed-map.jpg Graphic file 
+(type QTm)
+
+<use  "figures/analysis-euro2016-final-europe-first-zoomed-map.jpg" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 2721--2723
+ [] 
+ []
+
+[115]
+File: figures/analysis-euro2016-final-europe-second-zoomed-map.jpg Graphic file
+ (type QTm)
+ <use  "figures/analysis-euro2016-final-europe-second-zoomed-map.jpg" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 2733--2735
+ [] 
+ []
+
+[116]
+File: figures/analysis-euro2016-final-europe-france-map.jpg Graphic file (type 
+QTm)
+ <use  "figures/analysis-euro2016-final-europe-france-map.jpg" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 2745--2747
+ [] 
+ []
+
+[117]
+File: figures/analysis-euro2016-final-europe-charts.jpg Graphic file (type QTm)
+
+ <use  "figures/analysis-euro2016-final-europe-charts.jpg" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 2757--2759
+ [] 
+ []
+
+[118]
+Underfull \hbox (badness 10000) in paragraph at lines 2769--2770
+
+ []
+
+File: figures/analysis-pokemon-go-world-map.jpg Graphic file (type QTm)
+<use  "figures/analysis-pokemon-go-world-map.jpg" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 2775--2777
+ [] 
+ []
+
+[119]
+File: figures/analysis-pokemon-go-charts.jpg Graphic file (type QTm)
+ <use  "figures/analysis-pokemon-go-charts.jpg" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 2788--2790
+ [] 
+ []
+
+[120]
+File: figures/analysis-vacation-world-map.png Graphic file (type QTm)
+ <use  "figures/analysis-vacation-world-map.png" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 2803--2805
+ [] 
+ []
+
+[121]
+Chapter 5.
+[122
+
+]
+File: figures/github-chart.png Graphic file (type QTm)
+ <use  "figures/github-chart.png" >
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 2851--2853
+ [] 
+ []
+
+[123] [124] [125]
+Underfull \hbox (badness 10000) in paragraph at lines 2910--2911
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2912--2913
+
+ []
+
+[126] (./thesis.lof [127
+
+] [128] [129])
+\tf@lof=\write5
+\openout5 = `thesis.lof'.
+
+ [130]
+Underfull \hbox (badness 2452) in paragraph at lines 2922--2925
+[]\EU1/lmr/m/n/10.95 elliotbonneville, \EU1/lmr/m/it/10.95 4 creative ways to c
+lone objects in JavaScript\EU1/lmr/m/n/10.95 , November 2011:
+ []
+
+
+Overfull \hbox (18.90399pt too wide) in paragraph at lines 2938--2941
+[]\EU1/lmr/m/n/10.95 Twitter Team, \EU1/lmr/m/it/10.95 Documentation of Twitter
+ API\EU1/lmr/m/n/10.95 , https://dev.twitter.com/overview/documentation 
+ []
+
+[131
+
+]
+Appendix A.
+[132
+
+]
+Appendix B.
+File: figures/home-page.png Graphic file (type QTm)
+<use  "figures/home-page.png" > [133
+
+]
+File: figures/geotwit-authorization-page.png Graphic file (type QTm)
+
+<use  "figures/geotwit-authorization-page.png" >
+Underfull \hbox (badness 10000) in paragraph at lines 3004--3005
+
+ []
+
+File: figures/access_denied.png Graphic file (type QTm)
+<use  "figures/access_denied.png" > [134]
+File: figures/header.png Graphic file (type QTm)
+ <use  "figures/header.png" >
+File: figures/footer.png Graphic file (type QTm)
+
+<use  "figures/footer.png" >
+File: figures/tabs-dynamic-static.png Graphic file (type QTm)
+ <use  "figures/tabs-dynamic-static.png" > [135]
+File: figures/import.png Graphic file (type QTm)
+
+<use  "figures/import.png" >
+File: figures/import-error.png Graphic file (type QTm)
+ <use  "figures/import-error.png" >
+File: figures/keywords-set.png Graphic file (type QTm)
+
+<use  "figures/keywords-set.png" >
+Underfull \hbox (badness 10000) in paragraph at lines 3099--3100
+
+ []
+
+[136]
+File: figures/default-area.png Graphic file (type QTm)
+ <use  "figures/default-area.png" >
+File: figures/draw-rectangle-button.png Graphic file (type QTm)
+
+<use  "figures/draw-rectangle-button.png" > [137]
+File: figures/rectangle.png Graphic file (type QTm)
+
+<use  "figures/rectangle.png" >
+File: figures/language.png Graphic file (type QTm)
+ <use  "figures/language.png" > [138]
+File: figures/streaming-process.png Graphic file (type QTm)
+
+<use  "figures/streaming-process.png" >
+File: figures/mouse-hover.png Graphic file (type QTm)
+ <use  "figures/mouse-hover.png" >
+File: figures/charts.png Graphic file (type QTm)
+
+<use  "figures/charts.png" > [139]
+File: figures/stop-streaming.png Graphic file (type QTm)
+ <use  "figures/stop-streaming.png" >
+[140]
+File: figures/export.png Graphic file (type QTm)
+ <use  "figures/export.png" >
+Underfull \hbox (badness 10000) in paragraph at lines 3225--3226
+
+ []
+
+[141]
+File: figures/date-picker.png Graphic file (type QTm)
+ <use  "figures/date-picker.png" >
+File: figures/static-search-button.png Graphic file (type QTm)
+
+<use  "figures/static-search-button.png" > [142]
+File: figures/limit-rate-exceeded.png Graphic file (type QTm)
+
+<use  "figures/limit-rate-exceeded.png" >
+File: figures/static-results.png Graphic file (type QTm)
+ <use  "figures/static-results.png" >
+[143] [144]
+Appendix C.
+
+Underfull \hbox (badness 10000) in paragraph at lines 3328--3329
+
+ []
+
+[145
+
+]
+Underfull \hbox (badness 10000) in paragraph at lines 3330--3331
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3332--3333
+
+ []
+
+[146]
+Appendix D.
+File: figures/initial-planning.png Graphic file (type QTm)
+<use  "figures/initial-planning.png" > [147
+
+]
+File: figures/second-half-planning.png Graphic file (type QTm)
+
+<use  "figures/second-half-planning.png" > [148]
+Appendix E.
+[149
+
+]
+Underfull \hbox (badness 1622) in paragraph at lines 3455--3456
+[]|\EU1/lmr/m/n/10.95 Display of streaming information (number of received
+ []
+
+[150] [151] [152]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 3493.
+ [153]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 3493.
+ (./thesis.aux)
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 3493.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 3493.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 3493.
+ ) 
+Here is how much of TeX's memory you used:
+ 26299 strings out of 495631
+ 472599 string characters out of 6186830
+ 579175 words of memory out of 5000000
+ 29018 multiletter control sequences out of 15000+600000
+ 8644 words of font info for 56 fonts, out of 8000000 for 9000
+ 14 hyphenation exceptions out of 8191
+ 45i,12n,53p,10416b,940s stack positions out of 5000i,500n,10000p,200000b,80000s
+
+Output written on thesis.pdf (158 pages).

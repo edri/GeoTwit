@@ -1,0 +1,110 @@
+Week;Date;Hours;Task
+1;22.02.16;4;Conduction of various research on Scala and on the Play framework
+2;01.03.16;0.5;Meeting with Mrs. Fatemi
+;02.03.16;2;Writing of the specifications and the logbook
+;04.03.16;2;Writing of the planning
+;06.03.16;2;Writing of the planning and creation of the GitHub deposit
+3;07.03.16;6;Analysis of the Twitter's API and of Twitter4J, and consequently writing of the analysis documentation
+;08.03.16;0.5;Meeting with Mrs. Fatemi
+;08.03.16;1;Analysis of the Twitter's API and of Twitter4J, and consequently writing of the analysis documentation
+;13.03.16;1;
+4;15.03.16;0.5;Meeting with Mrs. Fatemi
+;15.03.16;0.5;Analysis of the libraries usable for the geolocation as well as the interesting keywords for Switzerland, and production of a planning of news
+;16.03.16;3;
+5;21.03.16;4.5;Installation and production of tests on Twitter4J
+;22.03.16;0.5;Meeting with Mrs. Fatemi
+;27.03.16;1.5;Production of stats in the prototype application
+;28.03.16;3.5;Analysis of various Twitter's research
+6;04.04.16;0.5;Finalization of the specifications
+;;3.5;Analysis of libraries concerning the maps
+;05.04.16;0.5;Meeting with Mrs. Fatemi
+;06.04.16;1;Adaptation of the map vizualisation app for the Tweets' visualization
+;07.04.16;4;Implementation of a web-sockets system between the Java prototype application and the JavaScript one
+;08.04.16;2;
+7;11.04.16;3;Display of Tweets in the JavaScript application
+;12.04.16;0.5;Meeting with Mrs. Fatemi
+;17.04.16;1.5;Production of the application's mock-up
+8;18.04.16;3.5;Production of the application's mock-up and analysis of the already existing applications on the Internet
+;24.04.16;3.5;Analysis of the percentage of Tweets which have geolocation tags with various parameters
+9;25.04.16;4;Analysis and research of interesting subjects and minor modifications on prototype applications
+;26.04.16;0.5;Meeting with Mrs. Fatemi
+10;02.05.16;3;Modification of the mock-up, according to the 26.04 meeting
+;;5;Development of a new prototype application, allowing a user to draw a polygon all around a country by double-clicking on it
+;;1;Translation of documents
+;03.05.16;0.5;Meeting with Mrs. Fatemi
+11;09.05.16;4;Reading of the Play framework's documentation
+12;16.05.16;3;Reading of the Play framework's documentation and production of test-applications
+;16.05.16;5;Creation of the application's basics and modification of the documentation
+;17.05.16;0.5;Meeting with Mrs. Fatemi
+13;23.05.16;2;Importation of the project in the IntelliJ IDE
+;23.05.16;6.5;Integration of the Twitter4J library in the project, development of the connection process and modification of the GUI
+;23.05.16;1;Modification of the documentation
+;24.05.16;0.5;Meeting with Mrs. Fatemi
+14;30.05.16;8;Development of the search page's GUI
+;31.05.16;1;
+;31.05.16;1;Translation of the analysis part of the documentation
+;01.06.16;2;
+;02.06.16;1;
+;03.06.16;1.5;
+15;06.06.16;2;Translation of the analysis part
+;;0.5;Writing of the progress report's structure
+;;0.5;Translation of the specifications
+;07.06.16;2;Creation and writing of the progress report
+;11.06.16;1.5;Writing of the progress report
+;12.06.16;3.5;
+16;13.06.16;4;Writing of the progress report
+;14.06.16;1.5;
+;15.06.16;5;
+;16.06.16;5;
+;17.06.16;1;
+18;27.06.16;1;Production of the GANTT planning for the second half
+;27.06.16;6;Implementation of sessions in GeoTwit and protection of pages (the user must be authenticated, etc.)
+;28.06.16;7;Implementation of sessions in GeoTwit and protection of pages (the user must be authenticated, etc.)
+;29.06.16;3;Writing of the documentation related to configurations, routes, sessions, flash scopes, cache and actions compositions
+;;5;Integration of maps in the application
+;;1;Writing of the documentation related to the drawing of rectangle by drag-and-dropping the cursor on the map
+;30.06.16;4.5;Implementation of a web-sockets system between the Play's server and the JavaScript client
+;30.06.16;0.5;Meeting with Mrs. Fatemi
+;01.07.16;8;Implementation of the streaming process in GeoTwit with web sockets
+19;04.07.16;4;Writing of the documentation related to JavaScript routing and web sockets
+;05.07.16;2;
+;;2;Reading and validation of user's inputs for the streaming process
+;;1;Grouping of the Tweets on the map
+;;3.5;Selection of countries on the map with the drop-down menu
+;06.07.16;0.5;Meeting with Mrs. Fatemi
+;;5;Selection of countries on the map with the drop-down menu
+;;1.5;Implementation of two streaming processes at the same time, when the user filled the two keywords sets
+;07.07.16;0.5;Filtering of Tweets by language
+;;7;Display of streaming information (number of received Tweets, speed, etc.)
+;08.07.16;0.5;Analysis of the FR-DE match of the Euro2016 event
+;;8.5;Implementation of the streamings' charts
+;09.07.16;1;
+;;1;Handling of exceptions
+;10.07.16;1;Writing of the documentation related to the analysis of the Euro 2016's final
+20;11.07.16;7;Writing of the documentation related to the last week's implementation
+;12.07.16;5;Reading and validation of user's inputs for the static mode
+;13.07.16;0.5;Writing of the documentation related to the langages' selection
+;;4.5;Reading and validation of user's inputs for the static mode and retrieval of Tweets from the server
+;;0.5;Meeting with Mrs. Fatemi
+;14.07.16;6.5;Implementation of the static mode
+;15.07.16;4;
+;;3;Generation of the backup files of the streaming's results
+21;18.07.16;4;Generation of the backup files of the streaming's results
+;;4;Writing of the documentation related to the static mode and the generation of backup files
+;;1;Review of the documentation
+;19.07.16;6;
+;;2;Writing of the documentation related to the generation of the backup files
+;20.07.16;0.5;Meeting with Mrs. Fatemi
+;;3.5;Implementation of the about and help pages and modification of the GUI
+;21.07.16;8;Implementation of the files' importation
+;22.07.16;5;
+;;3.5;Writing of the documentation related to the files' importation
+;23.07.16;2;
+;;4;Implementation of the static mode
+;;2.5;Writing of the documentation related to the static mode
+;24.07.16;3;Writing of the documentation related to the static mode
+;;3.5;Writing of the LaTeX document
+22;25.07.16;14.5;Writing and review of the LaTeX document and writing of the tests
+;26.07.16;10;
+;27.07.16;15.5;
+;28.07.16;5;

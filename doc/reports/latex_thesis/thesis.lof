@@ -1,0 +1,163 @@
+\select@language {english}
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {2.1}{\ignorespaces example of Twitter application's authorization}}{11}{figure.2.1}
+\contentsline {figure}{\numberline {2.2}{\ignorespaces use-case of the REST API within a web application, taken from the documentation of the Twitter's APIs}}{12}{figure.2.2}
+\contentsline {figure}{\numberline {2.3}{\ignorespaces use-case of the Streaming API within a web application, also taken from the documentation of the Twitter's APIs}}{12}{figure.2.3}
+\contentsline {figure}{\numberline {2.4}{\ignorespaces graphical representation of the coordinates pair bounding Switzerland, taken from Google Maps}}{14}{figure.2.4}
+\contentsline {figure}{\numberline {2.5}{\ignorespaces search of tweets with keyword only}}{15}{figure.2.5}
+\contentsline {figure}{\numberline {2.6}{\ignorespaces search of tweets with location only}}{15}{figure.2.6}
+\contentsline {figure}{\numberline {2.7}{\ignorespaces search of tweets with both keyword and location}}{15}{figure.2.7}
+\contentsline {figure}{\numberline {2.8}{\ignorespaces authorization of the API console through a Twitter account}}{19}{figure.2.8}
+\contentsline {figure}{\numberline {2.9}{\ignorespaces results of the latest French tweets containing the "yverdon" keyword and (OR) being located near Yverdon-Les-Bains in the API console}}{20}{figure.2.9}
+\contentsline {figure}{\numberline {2.10}{\ignorespaces results on Twitter of the latest French tweets containing the "yverdon" keyword and (OR) being located near Yverdon-Les-Bains}}{20}{figure.2.10}
+\contentsline {figure}{\numberline {2.11}{\ignorespaces results on Twitter of the popular and positive tweets, having the "\#pizza" hashtag and (OR) being located near to Rome}}{21}{figure.2.11}
+\contentsline {figure}{\numberline {2.12}{\ignorespaces example of hot trends in the world within trend24}}{23}{figure.2.12}
+\contentsline {figure}{\numberline {2.13}{\ignorespaces tweets results for the UK-RU match}}{25}{figure.2.13}
+\contentsline {figure}{\numberline {2.14}{\ignorespaces progression of the EN-RU match, taken from the RTS web site on the euro2016 section.}}{25}{figure.2.14}
+\contentsline {figure}{\numberline {2.15}{\ignorespaces tweets results for the RO-CH match}}{26}{figure.2.15}
+\contentsline {figure}{\numberline {2.16}{\ignorespaces progression of the RO-CH match, taken from the RTS web site}}{26}{figure.2.16}
+\contentsline {figure}{\numberline {2.17}{\ignorespaces tweets results for the EN-WLS match}}{26}{figure.2.17}
+\contentsline {figure}{\numberline {2.18}{\ignorespaces progression of the EN-WLS match, taken from the RTS web site}}{26}{figure.2.18}
+\contentsline {figure}{\numberline {2.19}{\ignorespaces tweets results for the AL-FR match}}{27}{figure.2.19}
+\contentsline {figure}{\numberline {2.20}{\ignorespaces progression of the AL-FR match, taken from the RTS web site}}{27}{figure.2.20}
+\contentsline {figure}{\numberline {2.21}{\ignorespaces tweets results for the AL-FR match in the "Stade Vélodrome" of Marseille}}{27}{figure.2.21}
+\contentsline {figure}{\numberline {2.22}{\ignorespaces tweets results for the DE-PL match}}{28}{figure.2.22}
+\contentsline {figure}{\numberline {2.23}{\ignorespaces progression of the DE-PL match, taken from the RTS web site}}{28}{figure.2.23}
+\contentsline {figure}{\numberline {2.24}{\ignorespaces tweets results for the FR-CH match}}{29}{figure.2.24}
+\contentsline {figure}{\numberline {2.25}{\ignorespaces progression of the FR-CH match, taken from the RTS web site}}{29}{figure.2.25}
+\contentsline {figure}{\numberline {2.26}{\ignorespaces progression of the AL-RO match, taken from the RTS web site}}{29}{figure.2.26}
+\contentsline {figure}{\numberline {2.27}{\ignorespaces tweets results for the IT-ES match}}{30}{figure.2.27}
+\contentsline {figure}{\numberline {2.28}{\ignorespaces progression of the IT-ES match, taken from the RTS web site}}{30}{figure.2.28}
+\contentsline {figure}{\numberline {2.29}{\ignorespaces tweets results for the EN-IS match}}{31}{figure.2.29}
+\contentsline {figure}{\numberline {2.30}{\ignorespaces progression of the EN-IS match, taken from the RTS web site}}{31}{figure.2.30}
+\contentsline {figure}{\numberline {2.31}{\ignorespaces tweets results for the FR-DE match}}{32}{figure.2.31}
+\contentsline {figure}{\numberline {2.32}{\ignorespaces progression of the FR-DE match, taken from the RTS web site}}{32}{figure.2.32}
+\contentsline {figure}{\numberline {2.33}{\ignorespaces tweets results for the FR-DE match with the GeoTwit application}}{32}{figure.2.33}
+\contentsline {figure}{\numberline {2.34}{\ignorespaces tweets results for the FR-PT match}}{33}{figure.2.34}
+\contentsline {figure}{\numberline {2.35}{\ignorespaces progression of the FR-PT match, taken from the RTS web site}}{33}{figure.2.35}
+\contentsline {figure}{\numberline {2.36}{\ignorespaces Twitter application's parameters}}{34}{figure.2.36}
+\contentsline {figure}{\numberline {2.37}{\ignorespaces Twitter application's authorization page}}{35}{figure.2.37}
+\contentsline {figure}{\numberline {2.38}{\ignorespaces PIN code generated from Twitter}}{35}{figure.2.38}
+\contentsline {figure}{\numberline {2.39}{\ignorespaces output example of a Twitter's desktop application}}{36}{figure.2.39}
+\contentsline {figure}{\numberline {2.40}{\ignorespaces "Leaflet" prototype application}}{38}{figure.2.40}
+\contentsline {figure}{\numberline {2.41}{\ignorespaces a MapBox project}}{39}{figure.2.41}
+\contentsline {figure}{\numberline {2.42}{\ignorespaces MapBox integration into Leaflet}}{39}{figure.2.42}
+\contentsline {figure}{\numberline {2.43}{\ignorespaces "LeafletCountriesBorders" prototype application}}{40}{figure.2.43}
+\contentsline {figure}{\numberline {2.44}{\ignorespaces "Twitter4JDesktop" prototype application}}{41}{figure.2.44}
+\contentsline {figure}{\numberline {2.45}{\ignorespaces deployment of the GlassFish server in the "twitter4JWeb" prototype application}}{42}{figure.2.45}
+\contentsline {figure}{\numberline {2.46}{\ignorespaces "LeafletAndTwitter" prototype application, using the "job" keyword in the U.S.A.}}{42}{figure.2.46}
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {3.1}{\ignorespaces mock-up - connection process}}{43}{figure.3.1}
+\contentsline {figure}{\numberline {3.2}{\ignorespaces mock-up - main search page (dynamic mode)}}{44}{figure.3.2}
+\contentsline {figure}{\numberline {3.3}{\ignorespaces mock-up - streaming process}}{45}{figure.3.3}
+\contentsline {figure}{\numberline {3.4}{\ignorespaces mock-up - charts of a streaming process}}{46}{figure.3.4}
+\contentsline {figure}{\numberline {3.5}{\ignorespaces mock-up - main search page (static mode)}}{47}{figure.3.5}
+\contentsline {figure}{\numberline {3.6}{\ignorespaces mock-up - view of the results in the static mode}}{48}{figure.3.6}
+\contentsline {figure}{\numberline {3.7}{\ignorespaces anatomy of GeoTwit}}{49}{figure.3.7}
+\contentsline {figure}{\numberline {3.8}{\ignorespaces UML diagram of the application's server, made with Slyum}}{50}{figure.3.8}
+\contentsline {figure}{\numberline {3.9}{\ignorespaces injection of a Configuration object in a controller}}{53}{figure.3.9}
+\contentsline {figure}{\numberline {3.10}{\ignorespaces declaration of JavaScript routes in the Search page's view}}{53}{figure.3.10}
+\contentsline {figure}{\numberline {3.11}{\ignorespaces declaration of JavaScript routes in the Search page's view}}{54}{figure.3.11}
+\contentsline {figure}{\numberline {3.12}{\ignorespaces example of redirection to the Logout page with a JavaScript route}}{54}{figure.3.12}
+\contentsline {figure}{\numberline {3.13}{\ignorespaces example of addition of a string value to the session}}{54}{figure.3.13}
+\contentsline {figure}{\numberline {3.14}{\ignorespaces example of use-case of a flash scope in GeoTwit}}{55}{figure.3.14}
+\contentsline {figure}{\numberline {3.15}{\ignorespaces injection of a CacheApi object in a controller}}{55}{figure.3.15}
+\contentsline {figure}{\numberline {3.16}{\ignorespaces example of addition of objects in the cache, for a 2 minutes' period}}{55}{figure.3.16}
+\contentsline {figure}{\numberline {3.17}{\ignorespaces example of reading a cache object}}{56}{figure.3.17}
+\contentsline {figure}{\numberline {3.18}{\ignorespaces Twitter's authorization page in GeoTwit application}}{57}{figure.3.18}
+\contentsline {figure}{\numberline {3.19}{\ignorespaces pipeline-like schema of filters and actions compositions, made with Evolus Pencil}}{58}{figure.3.19}
+\contentsline {figure}{\numberline {3.20}{\ignorespaces an example of an actions composition}}{59}{figure.3.20}
+\contentsline {figure}{\numberline {3.21}{\ignorespaces an action using an actions composition}}{59}{figure.3.21}
+\contentsline {figure}{\numberline {3.22}{\ignorespaces diagram of the web sockets' process is Play Framework, made with Evolus Pencil}}{60}{figure.3.22}
+\contentsline {figure}{\numberline {3.23}{\ignorespaces opening of a new web socket connection from the client to the server}}{60}{figure.3.23}
+\contentsline {figure}{\numberline {3.24}{\ignorespaces example of a web socket's path from the server to the client}}{61}{figure.3.24}
+\contentsline {figure}{\numberline {3.25}{\ignorespaces example of a rectangle bounding French territories}}{63}{figure.3.25}
+\contentsline {figure}{\numberline {3.26}{\ignorespaces web sockets' operation diagram in GeoTwit, made with Evolus Pencil}}{65}{figure.3.26}
+\contentsline {figure}{\numberline {3.27}{\ignorespaces format of the generated text file that contains streaming process(es) data}}{66}{figure.3.27}
+\contentsline {figure}{\numberline {3.28}{\ignorespaces pop-up asking the user if he wants to export the data as a text file (French buttons are due to the browser's default language)}}{68}{figure.3.28}
+\contentsline {figure}{\numberline {3.29}{\ignorespaces sample of code used to download the generated file}}{69}{figure.3.29}
+\contentsline {figure}{\numberline {3.30}{\ignorespaces rendering of a file at the end of an action}}{69}{figure.3.30}
+\contentsline {figure}{\numberline {3.31}{\ignorespaces progress-bar managed by the jQuery-File-Upload library during an upload process}}{70}{figure.3.31}
+\contentsline {figure}{\numberline {3.32}{\ignorespaces initialization of the automatic Ajax upload process on the "file" input}}{71}{figure.3.32}
+\contentsline {figure}{\numberline {3.33}{\ignorespaces Regex used to match the language string in the imported file}}{72}{figure.3.33}
+\contentsline {figure}{\numberline {3.34}{\ignorespaces matching of the regex used for the language}}{73}{figure.3.34}
+\contentsline {figure}{\numberline {3.35}{\ignorespaces Regex used to validate and get data of tweets}}{73}{figure.3.35}
+\contentsline {figure}{\numberline {3.36}{\ignorespaces example of the limitations of the Twitter's REST API}}{75}{figure.3.36}
+\contentsline {figure}{\numberline {3.37}{\ignorespaces creation of a query for asking the Twitter's REST API with Twitter4J}}{76}{figure.3.37}
+\contentsline {figure}{\numberline {3.38}{\ignorespaces example of the number of requests executed before getting an error in a period of 15 minutes}}{76}{figure.3.38}
+\contentsline {figure}{\numberline {3.39}{\ignorespaces selection of a tweets' language in GeoTwit}}{81}{figure.3.39}
+\contentsline {figure}{\numberline {3.40}{\ignorespaces example of difficulties that the language-identification algorithm can encounter\cite {MitjaTrampus2015}}}{82}{figure.3.40}
+\contentsline {figure}{\numberline {3.41}{\ignorespaces drawing of a rectangle on the dynamic map}}{83}{figure.3.41}
+\contentsline {figure}{\numberline {3.42}{\ignorespaces addition of the rectangle on the dynamic map}}{84}{figure.3.42}
+\contentsline {figure}{\numberline {3.43}{\ignorespaces creation of the cluster group in GeoTwit}}{84}{figure.3.43}
+\contentsline {figure}{\numberline {3.44}{\ignorespaces adding of a tweet in the cluster group, in GeoTwit}}{84}{figure.3.44}
+\contentsline {figure}{\numberline {3.45}{\ignorespaces first example of speed's color}}{85}{figure.3.45}
+\contentsline {figure}{\numberline {3.46}{\ignorespaces second example of color}}{85}{figure.3.46}
+\contentsline {figure}{\numberline {3.47}{\ignorespaces example of an interface of the streaming process' results}}{86}{figure.3.47}
+\contentsline {figure}{\numberline {3.48}{\ignorespaces example of a tweet located in the bounding box of the selected country's territories, but not in the territories themselves}}{87}{figure.3.48}
+\contentsline {figure}{\numberline {3.49}{\ignorespaces example of the "GTRT" chart}}{89}{figure.3.49}
+\contentsline {figure}{\numberline {3.50}{\ignorespaces example of the "GRT" chart}}{89}{figure.3.50}
+\contentsline {figure}{\numberline {3.51}{\ignorespaces example of the "GPRT" chart}}{90}{figure.3.51}
+\contentsline {figure}{\numberline {3.52}{\ignorespaces example of the "ATRT" chart}}{90}{figure.3.52}
+\contentsline {figure}{\numberline {3.53}{\ignorespaces example of the "ART" chart}}{91}{figure.3.53}
+\contentsline {figure}{\numberline {3.54}{\ignorespaces example of the "AGVW" chart}}{91}{figure.3.54}
+\contentsline {figure}{\numberline {3.55}{\ignorespaces loading of the date picker on the dates fields}}{92}{figure.3.55}
+\contentsline {figure}{\numberline {3.56}{\ignorespaces display of the search button after the user has clicked on it in order to search for tweets}}{93}{figure.3.56}
+\contentsline {figure}{\numberline {3.57}{\ignorespaces example of the interface of the static mode's results}}{94}{figure.3.57}
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {4.1}{\ignorespaces results of the load tests for the static mode with the "job" keyword}}{101}{figure.4.1}
+\contentsline {figure}{\numberline {4.2}{\ignorespaces results' map of the streaming mode's load tests with the "job" and "beach" keywords}}{102}{figure.4.2}
+\contentsline {figure}{\numberline {4.3}{\ignorespaces charts of the streaming mode's load tests with the "job" and "beach" keywords}}{102}{figure.4.3}
+\contentsline {figure}{\numberline {4.4}{\ignorespaces map of the load tests' results zoomed at a zoom level of 8}}{103}{figure.4.4}
+\contentsline {figure}{\numberline {4.5}{\ignorespaces total number of received tweets by time, for the "job" subject in the U.S.A.}}{104}{figure.4.5}
+\contentsline {figure}{\numberline {4.6}{\ignorespaces analysis' map of the "bbc" and "london" keywords in UK}}{105}{figure.4.6}
+\contentsline {figure}{\numberline {4.7}{\ignorespaces analysis' charts of the "bbc" and "london" keywords in UK}}{105}{figure.4.7}
+\contentsline {figure}{\numberline {4.8}{\ignorespaces analysis' map of the "hot" or "sun" keywords in UK during the hottest day}}{107}{figure.4.8}
+\contentsline {figure}{\numberline {4.9}{\ignorespaces analysis' charts of the "hot" or "sun" keywords in UK during the hottest day}}{107}{figure.4.9}
+\contentsline {figure}{\numberline {4.10}{\ignorespaces analysis' map of the "paris" keyword in France}}{108}{figure.4.10}
+\contentsline {figure}{\numberline {4.11}{\ignorespaces analysis' charts of the "paris" keyword in France}}{109}{figure.4.11}
+\contentsline {figure}{\numberline {4.12}{\ignorespaces analysis' map of the "paleo" keyword in Switzerland}}{110}{figure.4.12}
+\contentsline {figure}{\numberline {4.13}{\ignorespaces analysis' map of the keywords related to Swiss companies in the world}}{110}{figure.4.13}
+\contentsline {figure}{\numberline {4.14}{\ignorespaces analysis' map of the "clinton" and "trump" keywords in the U.S.A.}}{111}{figure.4.14}
+\contentsline {figure}{\numberline {4.15}{\ignorespaces analysis' charts of the "clinton" and "trump" keywords in the U.S.A.}}{112}{figure.4.15}
+\contentsline {figure}{\numberline {4.16}{\ignorespaces analysis' map of the "argentina" keywords in Argentina}}{113}{figure.4.16}
+\contentsline {figure}{\numberline {4.17}{\ignorespaces tweets map of the FR-PT final match}}{114}{figure.4.17}
+\contentsline {figure}{\numberline {4.18}{\ignorespaces first zoom on the tweets map of the FR-PT final match}}{115}{figure.4.18}
+\contentsline {figure}{\numberline {4.19}{\ignorespaces second zoom on the tweets map of the FR-PT final match}}{116}{figure.4.19}
+\contentsline {figure}{\numberline {4.20}{\ignorespaces France map of the FR-PT final match's results}}{117}{figure.4.20}
+\contentsline {figure}{\numberline {4.21}{\ignorespaces France map of the FR-PT final match's results}}{118}{figure.4.21}
+\contentsline {figure}{\numberline {4.22}{\ignorespaces world map of the Pokémon GO analysis}}{119}{figure.4.22}
+\contentsline {figure}{\numberline {4.23}{\ignorespaces charts of the Pokémon GO analysis}}{120}{figure.4.23}
+\contentsline {figure}{\numberline {4.24}{\ignorespaces analysis' map of the "vacation" keyword in the whole world}}{121}{figure.4.24}
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {5.1}{\ignorespaces graph of the GitHub commits that were done during the semester}}{123}{figure.5.1}
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {B.1}{\ignorespaces home page}}{133}{figure.B.1}
+\contentsline {figure}{\numberline {B.2}{\ignorespaces Authorization page of GeoTwit}}{134}{figure.B.2}
+\contentsline {figure}{\numberline {B.3}{\ignorespaces explicit error message that appears when something went wrong during the connection process}}{134}{figure.B.3}
+\contentsline {figure}{\numberline {B.4}{\ignorespaces header element of the search pages}}{135}{figure.B.4}
+\contentsline {figure}{\numberline {B.5}{\ignorespaces footer element of the search pages}}{135}{figure.B.5}
+\contentsline {figure}{\numberline {B.6}{\ignorespaces tabs system used to navigate through the modes of the application}}{135}{figure.B.6}
+\contentsline {figure}{\numberline {B.7}{\ignorespaces button used to import a previously exported GeoTwit file}}{136}{figure.B.7}
+\contentsline {figure}{\numberline {B.8}{\ignorespaces error message displayed when an importation error occurs}}{136}{figure.B.8}
+\contentsline {figure}{\numberline {B.9}{\ignorespaces example of value that can be contained in the first keywords set field}}{136}{figure.B.9}
+\contentsline {figure}{\numberline {B.10}{\ignorespaces selection of the location with the default area option}}{137}{figure.B.10}
+\contentsline {figure}{\numberline {B.11}{\ignorespaces button that allows the user to draw a rectangle on the map}}{137}{figure.B.11}
+\contentsline {figure}{\numberline {B.12}{\ignorespaces selection of the location by drawing a rectangle}}{138}{figure.B.12}
+\contentsline {figure}{\numberline {B.13}{\ignorespaces selection of the language used to filter received tweets}}{138}{figure.B.13}
+\contentsline {figure}{\numberline {B.14}{\ignorespaces annotated example of a streaming process for the tweets that contain the "job" and/or "beach" keywords, are written in English, and was posted from a part of the U.S.A.}}{139}{figure.B.14}
+\contentsline {figure}{\numberline {B.15}{\ignorespaces display of the tweet content by moving the mouse over the related marker}}{139}{figure.B.15}
+\contentsline {figure}{\numberline {B.16}{\ignorespaces chart view}}{140}{figure.B.16}
+\contentsline {figure}{\numberline {B.17}{\ignorespaces the button that allows the user to stop the current streaming process}}{140}{figure.B.17}
+\contentsline {figure}{\numberline {B.18}{\ignorespaces pop-up that asks the user if he want to export the analyzed data}}{141}{figure.B.18}
+\contentsline {figure}{\numberline {B.19}{\ignorespaces date-picker element that appears when the user clicked on a date field}}{142}{figure.B.19}
+\contentsline {figure}{\numberline {B.20}{\ignorespaces state of the "View Results!" button when the user clicked on it}}{142}{figure.B.20}
+\contentsline {figure}{\numberline {B.21}{\ignorespaces the pop-up window that appears if the user exceeded the maximum limit rate imposed by Twitter}}{143}{figure.B.21}
+\contentsline {figure}{\numberline {B.22}{\ignorespaces annotated example of a static results' page with the "job" and "beach" keywords}}{143}{figure.B.22}
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {D.1}{\ignorespaces initial planning of the project}}{147}{figure.D.1}
+\contentsline {figure}{\numberline {D.2}{\ignorespaces planning of the second half of the project}}{148}{figure.D.2}
+\addvspace {10\p@ }

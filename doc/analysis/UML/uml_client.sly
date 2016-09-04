@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="iso-8859-15" standalone="no"?>
+<classDiagram>
+  <diagramElements name="GeoTwit - Client">
+    <entity entityType="CLASS" id="3791" isAbstract="false" name="Controller" visibility="PUBLIC"/>
+  </diagramElements>
+  <umlView grid="10" name="view no name">
+    <componentView color="-2079" componentID="3791" displayAttributes="true" displayDefault="true" displayMethods="true">
+      <geometry>
+        <x>330</x>
+        <y>70</y>
+        <w>150</w>
+        <h>55</h>
+      </geometry>
+    </componentView>
+  </umlView>
+</classDiagram>

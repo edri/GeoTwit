@@ -1,6 +1,16 @@
 # What is GeoTwit?
 GeoTwit is an application, which allows you to visualize real-time activities on Twitter's subjects with a map.
 
+# Content of the Package
+- app -> contains the GeoTwit application's code.
+- doc -> contains the project's thesis.
+- prototypes -> contains the four developed prototype applications:
+    - leaflet
+    - leafletAndTwitter4J
+    - leaflet_countries_borders
+    - twitter4jDesktop
+- README.md: contains information about the content of the package and the instructions of installation.
+
 # Installation
 In order to use the application, please follow the instructions below:
 
