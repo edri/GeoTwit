@@ -2,11 +2,22 @@
 
 GeoTwit is an application, which allows you to visualize real-time activities on Twitter's subjects with a map.
 
+The goal of this project is thus to set up a web application that allows users to enter one or two subjects of their choice, to visualize a real-time activity graph/map for these subjects both on Twitter and on a geographic map and finally to import and export the results as external files. Static analyses are also possible, but are not as expanded as the real-time functionality.
+
+The application provides the following features:
+
+- The reading of keywords and the selection of geographic areas on the map by the user.
+- The retrieval of tweets, using the Twitter’s APIs. Note that only a certain percentage of these tweets include geographic information, necessary for the future operations; a first filtering is thus operated here.
+- The analysis and the filtering of tweets via calculation of the number of tweets by areas and by subjects.
+- The visualization of the results on maps.
+- The interaction (zoom-in, zoom-out, etc.) with the maps. The development of this feature involved the use of appropriate algorithms (like tweet grouping) and libraries.
+- The generation of data charts and the possibility to import/export one’s analysis.
+
 ## Documentation
 
+- You can find the (french) poster of the applicaiton [here](https://github.com/edri/GeoTwit/blob/master/doc/affiche/affiche_miguel_santamaria.pdf)
 - You can find my report thesis [here](https://github.com/edri/GeoTwit/blob/master/doc/reports/latex_thesis/thesis.pdf).
 - You can find documentation about the application right [here](https://github.com/edri/GeoTwit/blob/master/app/GeoTwit/README.md).
-- You can find the (french) poster of the applicaiton [here](https://github.com/edri/GeoTwit/blob/master/doc/affiche/affiche_miguel_santamaria.pdf)
 
 ## Images
 
